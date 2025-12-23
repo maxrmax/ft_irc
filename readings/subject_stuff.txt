@@ -1,0 +1,40 @@
+Subject is about
+- text based
+
+- real time
+
+- private
+- public
+
+- choining group channels
+- solo
+
+
+- irc client        provided: chose 1 as reference for eval, but in the end our irc server should work with all freely available as we need to follow the standard irc protocoll
+- multiple          connect to
+- irc server        connecting many to form a network, BUT 'You must not implement server-to-server COMMUNICATION." 
+
+
+Program requirements
+- no crash          !on run out of memory!
+- no unexpected quit
+
+- Makefile
+
+
+Privacy 
+- ./ircserv <port> <connection password>
+
+Port
+- my server will be listening on for incoming irc connection
+
+
+poll()
+- or equivalent such as select()   kqueue()   epoll()
+
+
+IRC Protocoll 
+- TCP/IP v4 or v6
+
+
+

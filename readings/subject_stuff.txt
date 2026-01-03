@@ -6,7 +6,7 @@ Subject is about
 - private
 - public
 
-- choining group channels
+- joining group channels
 - solo
 
 
@@ -19,11 +19,7 @@ Program requirements
 - no crash          !on run out of memory!
 - no unexpected quit
 
-- Makefile
 
-
-Privacy 
-- ./ircserv <port> <connection password>
 
 Port
 - my server will be listening on for incoming irc connection

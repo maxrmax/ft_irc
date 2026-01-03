@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:10:50 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/03 12:49:07 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/03 21:40:35 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,12 @@ int check_arguments(int argc, char **argv)
 int main(int argc, char **argv)
 {
     if (check_arguments(argc, argv) == -1)
-    {
         return (-1);
-    };
     
+    server  irc_server;
+    if (irc_server.get_server_ready() == -1)
+        return -1;
+    std::cout << "Server created. fd =" << irc_server.get_server_fd() << std::endl;
+
     return (0);
 }

@@ -1,28 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ircserv.hpp                                        :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/03 21:29:36 by nsloniow         ###   ########.fr       */
+/*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
+/*   Updated: 2026/01/03 21:39:35 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <algorithm>
-#include <cctype>
-#include <iostream>
-#include <string>
+#include "ircserv.hpp"
 
-#include "irc_packet.hpp"
-#include "server.hpp"
+#include <sys/types.h>
+#include <sys/socket.h>
 
-//isDigit.cpp
-bool is_digits_only(const std::string &string);
 
-//main.cpp
-int check_arguments(int argc, char **argv);
+class server
+{
+    private:
+        int server_fd;
+    
+    public:
+        ~server();
+        server();
+        server(int filedescriptor);
 
+        int get_server_fd();
+        
+        int get_server_ready();
+};

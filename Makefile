@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/03 12:10:23 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/01/03 12:54:59 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,8 @@ FLAGS	= 	-Wall -Wextra -Werror
 NAME	= 	ircserv
 
 SRC		= 	source/main.cpp \
-			source/packet/irc_packet.cpp
+			source/packet/irc_packet.cpp \
+			source/parsing_check/isDigit.cpp
 
 
 OBJ		= 	$(SRC:.cpp=.o)

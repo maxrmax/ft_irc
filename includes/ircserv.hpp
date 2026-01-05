@@ -6,14 +6,14 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/03 21:29:36 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/05 10:28:46 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+
 #include <algorithm>
-#include <cctype>
 #include <iostream>
 #include <string>
 

@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/05 12:44:36 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/05 19:13:21 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,17 @@ class server
     private:
         int         server_fd;
         int         server_port;
-        sockaddr_in server_address; //INternet not incomming
+        //INternet not incomming
+        //man 7 ip explains the IPv4 address
+        sockaddr_in server_address;
     
     public:
         ~server();
         server();
         server(int filedescriptor, int port);
 
-        int get_server_fd();
+        int         get_server_fd();
+        sockaddr_in get_server_address();
         
-        int get_server_ready(int port);
+        int         get_server_ready(int port);
 };

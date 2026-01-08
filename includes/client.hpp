@@ -1,29 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ircserv.hpp                                        :+:      :+:    :+:   */
+/*   client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/08 18:43:03 by nsloniow         ###   ########.fr       */
+/*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
+/*   Updated: 2026/01/05 21:07:55 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-
-#include <algorithm>
 #include <iostream>
-#include <string>
+#include <unistd.h>
 
-#include "irc_packet.hpp"
-#include "poll.hpp"
-#include "server.hpp"
+class client
+{
+    private:
+        int client_fd;
+  
+        public:
+            ~client();
+            client();
+            client(int filedescriptor);
 
-//isDigit.cpp
-bool is_digits_only(const std::string &string);
-
-//main.cpp
-int check_arguments(int argc, char **argv);
-
+            int set_client_fd(int filedescriptor);
+            int get_client_fd();
+};

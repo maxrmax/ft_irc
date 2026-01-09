@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/08 18:43:03 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/09 16:22:51 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,3 +27,7 @@ bool is_digits_only(const std::string &string);
 //main.cpp
 int check_arguments(int argc, char **argv);
 
+//runServer.cpp
+int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd);
+int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd);
+int runServer(Server &irc_server);

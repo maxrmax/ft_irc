@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/09 09:56:17 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/09 12:58:20 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ const int   ADDRESS_FAMILY  =   AF_INET;
 const int   PORT_LISTEN     =   6667;  
 
 
-class server
+class Server
 {
     private:
         int         server_fd;
@@ -39,9 +39,9 @@ class server
         sockaddr_in server_address;
     
     public:
-        ~server();
-        server();
-        server(int filedescriptor, int port);
+        ~Server();
+        Server();
+        Server(int filedescriptor, int port);
 
         int         get_server_fd();
         sockaddr_in get_server_address();

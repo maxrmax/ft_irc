@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/03 21:36:55 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/01/09 13:45:15 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,8 @@ NAME	= 	ircserv
 
 SRC		= 	source/main.cpp \
 			source/packet/irc_packet.cpp \
-			source/parsing_check/isDigit.cpp \
+			source/checker/isDigit.cpp \
+			source/server/runServer.cpp \
 			source/server/server.cpp \
 
 

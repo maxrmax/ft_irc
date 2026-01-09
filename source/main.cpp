@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:10:50 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/08 18:41:42 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/09 09:54:33 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,10 @@ int main(int argc, char **argv)
     std::vector<pollfd> poll_fd;
     // int poll_fd_cnt = 0;^
     pollfd   temp;
-    temp.fd     = irc_server.get_server_fd();
-    temp.events = POLLIN;
+    temp.fd         = irc_server.get_server_fd();
+    temp.events     = POLLIN;
+    temp.revents    = 0;
     poll_fd.push_back(temp);
-    // wait for connections or just sleep
-    // sleep(1); // placeholder so the server doesn’t exit
-    // int client_fd = accept(irc_server.get_server_fd(), nullptr, nullptr);
-    // std::cout << "Client connected! fd=" << client_fd << std::endl;
-    //accept() 
     
     //create sockets for our client/user, get fd and some more stuff
     //init server_address as it is a pointer
@@ -64,41 +60,86 @@ int main(int argc, char **argv)
     // let server run and accept
     while (true)
     {
-  
         // poll()—Synchronous I/O Multiplexing
         // let the system do the dirty stuff of looping over socket fds and check for data, that got received
         // What you really want to be able to do is somehow monitor a bunch of sockets at once and then handle the ones that have data ready. This way you don’t have to continuously poll all those sockets to see which are ready to read.
         // it is slow with gigantic amounts
         // int poll(struct pollfd *fds, nfds_t numberOfFdTypes, int timeout)
-        // data() = pointer to firest elementS
+        // data() = pointer to first elementS
         int poll__fd_ready__amount = poll(poll_fd.data(), poll_fd.size(), -1);
+        //if not fd is ready
         if ( poll__fd_ready__amount < 0)
         {
-            std::cout << "Polling failed." << std::endl;
-            return -1;
+            // non-blocking needs check on errno so it keeps looping until we finish our loop 
+            //-1 can be either
+            // The socket is marked nonblocking and no connections are  present  to  be  accepted.
+            // POSIX.1-2001  and POSIX.1-2008 allow either error to be returned for this case, and
+            // do not require these constants to have the same value, so  a  portable  application
+            // should check for both possibilities.
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+            {
+                // No client ready right now, just skip and continue loop
+                continue;
+            }
+            else
+            {
+                std::cout << "Polling failed." << std::endl;
+                return -1;
+            }
         }
         std::cout << "Polling " << poll__fd_ready__amount << std::endl;
         
-        for (size_t i = 0;i < poll_fd.size(); (i++))
+        for (size_t i = 0;i < poll_fd.size(); i++)
         {
-        if (poll_fd[i].fd == irc_server.get_server_fd())
+            std::cout << "poll fd = " << poll_fd[i].fd << std::endl;
+            if (poll_fd[i].fd == irc_server.get_server_fd())
             {
-                // client_fd = accept(irc_server.get_server_fd(), (struct sockaddr *)&server_address_in, &server_address_length);
-                client_fd_accept= accept(irc_server.get_server_fd(), (struct sockaddr *)&server_address_in, &server_address_length);
-                if ( client_fd_accept < 0)
-                {
-                    std::cout << "Client acception failed." << std::endl;
-                    return -1;
+                while (true)  // accept all clients that are ready
+                {       
+                    client_fd_accept= accept(irc_server.get_server_fd(), (struct sockaddr *)&server_address_in, &server_address_length);
+                    if ( client_fd_accept < 0)
+                    {
+                        // non-blocking needs check on errno so it keeps looping until we finish our loop 
+                        if (errno == EAGAIN || errno == EWOULDBLOCK)
+                        {
+                            // No client ready right now, just skip and continue loop
+                            break;
+                        }
+                        else
+                        {
+                            std::cout << "Client acception failed." << std::endl;
+                            return -1;
+                        }
+                    }
+                    std::cout << "Client fd = " << client_fd_accept << std::endl;
+                    // Make the client socket non-blocking
+                    fcntl(client_fd_accept, F_SETFL, O_NONBLOCK);
+                    //append client fd to poll list
+                    // client_fd[client_fd_cnt].fd     = client_fd_accept;
+                    // client_fd[client_fd_cnt].events = POLLIN;
+                    temp.fd         = client_fd_accept;
+                    temp.events     = POLLIN;
+                    temp.revents    = 0;
+                    poll_fd.push_back(temp);
                 }
-                std::cout << "Client fd = " << client_fd_accept << std::endl;
-                //append client fd to poll list
-                // client_fd[client_fd_cnt].fd     = client_fd_accept;
-                // client_fd[client_fd_cnt].events = POLLIN;
-                temp.fd = client_fd_accept;
-                poll_fd.push_back(temp);
             }
-            
-            std::cout << "poll fd = " << client_fd_accept << std::endl;
+            else
+            {
+                std::cout << "m";
+                //when data is ready on that fd, so it just sits and waits there in front of the door, it knocks on it with POLLIN
+                //we now can receive - recv()- it, open our door, let it in, into the waiting room for that fd, into a message_received thingy to start processen, which is parsing and so fort
+                // if (poll_fd[i].revents == POLLIN)
+                //Bitmask in revents 0000, POLLIN least bit set, bitwise AND
+                //& we check if it is set as well
+                if (poll_fd[i].revents & POLLIN)
+                {
+                    char    msg[1024]; 
+                    int     read_len =0;
+                    read_len = recv(poll_fd[i].fd,msg, sizeof(msg)-1,0);
+                    msg[read_len] = '\0';
+                    std::cout << poll_fd[i].fd << ": " << msg << std::endl;
+                }
+            }
         }   
     }
 

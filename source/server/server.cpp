@@ -1,4 +1,3 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -7,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/05 19:10:57 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/09 09:53:52 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +61,10 @@ int server::get_server_ready(int port)
         std::cout << "Server could not be created. Try again." << std::endl;
         return -1;
     }
+    
+    // just sits there until a packet arrives.  it is blocking
+    // Manipulating fd behavior, set flag to nonblocking, so it does not sit there open and blocks the system till something arrives at that socket
+    fcntl(server_fd, F_SETFL, O_NONBLOCK);
 
     //setting address informatiom
     std::memset(&server_address, 0, sizeof(server_address));    //setting memory to 0 to not have garbage

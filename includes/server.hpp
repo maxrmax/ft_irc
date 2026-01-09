@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/08 18:40:33 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/09 09:56:17 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 // #include "ircserv.hpp"
 
+#include <fcntl.h>
 #include <iostream>
 #include <netinet/in.h>
 #include <cstring>

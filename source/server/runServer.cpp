@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/09 16:41:01 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/09 17:53:42 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,56 @@ int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd)
     return 0;
 }
 
+int clients_waiting(Server &irc_server, std::vector<pollfd> &poll_fd)
+{
+    // accept all clients that are to be ready as per poll(fd) desicion
+    // int client_fd_accept = -1;
+    bool clients_waiting = true;
+    // while (true) 
+    while (clients_waiting)
+    {       
+        //create sockets for our client/user, get fd and some more stuff
+        switch (acceptClient(irc_server, poll_fd))
+        {
+        case -1:
+            return -1;
+        case -2:
+            clients_waiting = false;
+        }
+    }
+    return 0;
+}
+
+int receive_message(std::vector<pollfd> &poll_fd, int i)
+{
+    // if (poll_fd[i].revents == POLLIN)
+    //Bitmask in revents 0000, POLLIN least bit set, bitwise AND
+    //& we check if it is set as well
+    if (poll_fd[i].revents & POLLIN)
+    {
+        char    msg[1024]; 
+        int     read_len =0;
+        read_len = recv(poll_fd[i].fd,msg, sizeof(msg)-1,0);
+        msg[read_len] = '\0';
+        std::cout << poll_fd[i].fd << ": \n" << msg << std::endl;
+    }
+    return 0;
+}
+
+int process_ready_fd(Server &irc_server, std::vector<pollfd> &poll_fd, int i)
+{
+    // std::cout << "poll fd = " << poll_fd[i].fd<< std::endl;
+    if (poll_fd[i].fd == irc_server.get_server_fd())
+    {
+        clients_waiting(irc_server, poll_fd);
+    }
+    else
+    {
+        receive_message(poll_fd, i);
+    }
+    return 0;
+}
+
 int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd)
 {
         // poll()—Synchronous I/O Multiplexing
@@ -63,7 +113,7 @@ int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd)
         if ( poll__fd_ready__amount < 0)
         {
             // non-blocking needs check on errno so it keeps looping until we finish our loop 
-            //-1 can be either
+            //return -1 can be either
             if (errno == EAGAIN || errno == EWOULDBLOCK)
             {
                 //No client ready right now, just skip and continue loop
@@ -82,39 +132,7 @@ int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd)
         
         for (size_t i = 0;i < poll_fd.size(); i++)
         {
-            // std::cout << "poll fd = " << poll_fd[i].fd<< std::endl;
-            if (poll_fd[i].fd == irc_server.get_server_fd())
-            {
-                // accept all clients that are to be ready as per poll(fd) desicion
-                // int client_fd_accept = -1;
-                bool clients_waiting = true;
-                // while (true) 
-                while (clients_waiting)
-                {       
-                    //create sockets for our client/user, get fd and some more stuff
-                    switch (acceptClient(irc_server, poll_fd))
-                    {
-                    case -1:
-                        return -1;
-                    case -2:
-                        clients_waiting = false;
-                    }
-                }
-            }
-            else
-            {
-                // if (poll_fd[i].revents == POLLIN)
-                //Bitmask in revents 0000, POLLIN least bit set, bitwise AND
-                //& we check if it is set as well
-                if (poll_fd[i].revents & POLLIN)
-                {
-                    char    msg[1024]; 
-                    int     read_len =0;
-                    read_len = recv(poll_fd[i].fd,msg, sizeof(msg)-1,0);
-                    msg[read_len] = '\0';
-                    std::cout << poll_fd[i].fd << ": \n" << msg << std::endl;
-                }
-            }
+            process_ready_fd(irc_server, poll_fd, i);
         }   
     return 0;
 }

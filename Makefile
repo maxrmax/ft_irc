@@ -3,39 +3,53 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
+#    By: marvin <marvin@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/03 21:36:55 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/01/09 11:38:03 by marvin           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-#clean does not delete .o inside source subfolder
-# no relink
+NAME = ircserv
+CC = c++
+CFLAGS = -Wall -Wextra -Werror -std=c++17
 
+# directories
+SRC_DIR	=	src/
+OBJ_DIR	=	obj/
+INC_DIR	=	includes/
 
-CC 		= 	c++
-STD		= 	-std=c++17
-# FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
-FLAGS	= 	-Wall -Wextra -Werror
-NAME	= 	ircserv
+# source files
+SRC_FILES = \
+	main.cpp \
+	parser/Parser.cpp \
+	
 
-SRC		= 	source/main.cpp \
-			source/packet/irc_packet.cpp \
-			source/parsing_check/isDigit.cpp \
-			source/server/server.cpp \
+OBJ_FILES = $(SRC_FILES:.cpp=.o)
 
+# paths
+SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
+OBJ = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
 
-OBJ		= 	$(SRC:.cpp=.o)
+all: $(NAME)
 
-all		:	$(NAME)
-$(NAME)	:	$(OBJ)
-		 	$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-clean	:	
-			rm -f $(OBJ)
-fclean	:	clean
-		 	rm -f $(NAME)
-re		:	fclean all
+$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
+
+clean:
+	@if [ -d "$(OBJ_DIR)" ]; then \
+	rm -rf $(OBJ_DIR); \
+	fi;
+
+fclean: clean
+	@if [ -f "$(NAME)" ]; then \
+	rm -f $(NAME); \
+	fi;
+
+re: fclean all
 
 .PHONY: all clean fclean re

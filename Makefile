@@ -7,37 +7,35 @@ SRC_DIR	=	source/
 OBJ_DIR	=	obj/
 INC_DIR	=	includes/
 
-# source files
-SRC_FILES = \
-	main.cpp \
-	parser/Parser.cpp \
-	
+CC 		= 	c++
+STD		= 	-std=c++17
+# FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
+FLAGS	= 	-Wall -Wextra -Werror
+NAME	= 	ircserv
 
-OBJ_FILES = $(SRC_FILES:.cpp=.o)
+# SRC		= 	source/main.cpp \
+# 			source/packet/irc_packet.cpp \
+# 			source/parsing_check/isDigit.cpp \
+# 			source/server/server.cpp \
 
-# paths
-SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
-OBJ = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
+SRC		= 	src/main.cpp \
+			src/checker/isDigit.cpp \
+			src/packet/irc_packet.cpp \
+			src/server/runServer.cpp \
+			src/server/server.cpp \
+			
+#            src/parser/Parser.cpp \
 
-all: $(NAME)
+OBJ		= 	$(SRC:.cpp=.o)
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+all		:	$(NAME)
+$(NAME)	:	$(OBJ)
+		 	$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
-	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
-
-clean:
-	@if [ -d "$(OBJ_DIR)" ]; then \
-	rm -rf $(OBJ_DIR); \
-	fi;
-
-fclean: clean
-	@if [ -f "$(NAME)" ]; then \
-	rm -f $(NAME); \
-	fi;
-
-re: fclean all
+clean	:	
+			rm -f $(OBJ)
+fclean	:	clean
+		 	rm -f $(NAME)
+re		:	fclean all
 
 .PHONY: all clean fclean re

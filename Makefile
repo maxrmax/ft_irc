@@ -1,18 +1,11 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/15 17:30:56 by nsloniow         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME = ircserv
+CC = c++
+CFLAGS = -Wall -Wextra -Werror -std=c++17
 
-#clean does not delete .o inside source subfolder
-# no relink
-
+# directories
+SRC_DIR	=	source/
+OBJ_DIR	=	obj/
+INC_DIR	=	includes/
 
 CC 		= 	c++
 STD		= 	-std=c++17

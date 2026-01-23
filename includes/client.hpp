@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/05 21:07:55 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/15 17:55:50 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 class client
 {
     private:
-        int client_fd;
+        int         client_fd;
+        std::string message_received;
   
         public:
             ~client();

@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/09 17:53:42 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/22 15:36:18 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,10 @@ int receive_message(std::vector<pollfd> &poll_fd, int i)
     //& we check if it is set as well
     if (poll_fd[i].revents & POLLIN)
     {
-        char    msg[1024]; 
+        // char    msg[1024]; 
         int     read_len =0;
-        read_len = recv(poll_fd[i].fd,msg, sizeof(msg)-1,0);
+        // read_len = recv(poll_fd[i].fd,msg, sizeof(msg)-1,0);
+        read_len = recv(poll_fd[i].fd,client[i].message_received, sizeof(client[i].message_received)-1,0);
         msg[read_len] = '\0';
         std::cout << poll_fd[i].fd << ": \n" << msg << std::endl;
     }

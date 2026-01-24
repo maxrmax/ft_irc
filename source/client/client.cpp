@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/05 21:08:00 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/23 11:57:02 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ client::client():client_fd(-1){};
 client::client(int filedescriptor):client_fd(filedescriptor){};
 
 
-int client::set_client_fd(int filedescriptor)
+void client::set_client_fd(int filedescriptor)
 {
     client_fd = filedescriptor;
 };

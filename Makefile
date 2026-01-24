@@ -1,17 +1,27 @@
-NAME = ircserv
-CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++17
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
+#    Updated: 2026/01/23 12:50:12 by nsloniow         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-# directories
-SRC_DIR	=	source/
-OBJ_DIR	=	obj/
-INC_DIR	=	includes/
+
 
 CC 		= 	c++
 STD		= 	-std=c++17
 # FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
 FLAGS	= 	-Wall -Wextra -Werror
 NAME	= 	ircserv
+
+# directories
+SRC_DIR	=	source/
+OBJ_DIR	=	obj/
+INC_DIR	=	includes/
 
 # SRC		= 	source/main.cpp \
 # 			source/packet/irc_packet.cpp \
@@ -20,6 +30,7 @@ NAME	= 	ircserv
 
 SRC		= 	src/main.cpp \
 			src/checker/isDigit.cpp \
+			src/client/Client.cpp \
 			src/packet/irc_packet.cpp \
 			src/server/runServer.cpp \
 			src/server/server.cpp \

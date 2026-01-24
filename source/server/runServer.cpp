@@ -6,14 +6,15 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/09 17:53:42 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/23 12:44:26 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/poll.hpp"
-#include "../../includes/server.hpp"
+// #include "../../includes/poll.hpp"
+// #include "../../includes/server.hpp"
+#include "ircserv.hpp"
 
-int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd)
+int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd,  std::unordered_map<int, Client> &poll_client__mapping_via_fd)
 {
     //init server_address as it is a pointer
     //init socklen as it is a pointer here
@@ -62,7 +63,7 @@ int clients_waiting(Server &irc_server, std::vector<pollfd> &poll_fd)
     while (clients_waiting)
     {       
         //create sockets for our client/user, get fd and some more stuff
-        switch (acceptClient(irc_server, poll_fd))
+        switch (acceptClient(irc_server, poll_fdd, poll_client__mapping_via_fd)
         {
         case -1:
             return -1;

@@ -1,41 +1,3 @@
-#include <iostream>
-#include "Parser.hpp"
-
-static void printCommand(const ParsedCommand& cmd)
-{
-    size_t i;
-
-    if (cmd.command.empty())
-    {
-        std::cout << "[invalid]\n";
-        return;
-    }
-
-    std::cout << "Command: [" << cmd.command << "]\n";
-    std::cout << "Params:\n";
-
-    i = 0;
-    while (i < cmd.params.size())
-    {
-        std::cout << "  [" << i << "] -> [" << cmd.params[i] << "]\n";
-        i++;
-    }
-    std::cout << "----------------------\n";
-}
-
-int main(void)
-{
-    std::string line;
-    ParsedCommand cmd;
-
-    std::cout << "IRC Parser Test (Ctrl+D to quit)\n";
-    while (std::getline(std::cin, line))
-    {
-        cmd = Parser::parseLine(line);
-        printCommand(cmd);
-    }
-    return 0;
-}
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -47,6 +9,45 @@ int main(void)
 /*   Updated: 2026/01/15 17:15:11 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// #include <iostream>
+// #include "Parser.hpp"
+
+// static void printCommand(const ParsedCommand& cmd)
+// {
+//     size_t i;
+
+//     if (cmd.command.empty())
+//     {
+//         std::cout << "[invalid]\n";
+//         return;
+//     }
+
+//     std::cout << "Command: [" << cmd.command << "]\n";
+//     std::cout << "Params:\n";
+
+//     i = 0;
+//     while (i < cmd.params.size())
+//     {
+//         std::cout << "  [" << i << "] -> [" << cmd.params[i] << "]\n";
+//         i++;
+//     }
+//     std::cout << "----------------------\n";
+// }
+
+// int main(void)
+// {
+//     std::string line;
+//     ParsedCommand cmd;
+
+//     std::cout << "IRC Parser Test (Ctrl+D to quit)\n";
+//     while (std::getline(std::cin, line))
+//     {
+//         cmd = Parser::parseLine(line);
+//         printCommand(cmd);
+//     }
+//     return 0;
+// }
 
 #include "../includes/ircserv.hpp"
 
@@ -80,10 +81,14 @@ int main(int argc, char **argv)
     std::cout << "Server created. fd = " << irc_server.get_server_fd() << std::endl;
 
     //run server
-    return(runServer(irc_server));
-    
+    // return(runServer(irc_server));
+    if (runServer(irc_server) < 0)
+    {
+        printf("heho\n");
+    }
     
     // //delete what I alloced with new
     // //do inside destructor
-    // return (0);
+
+    return (0);
 }

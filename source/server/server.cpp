@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 17:35:30 by marvin           ###   ########.fr       */
+/*   Updated: 2026/01/27 22:06:35 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/server.hpp"
-#include "../../includes/Parser.hpp"
+#include "../../../includes/server.hpp"
+#include "../../../includes/Parser.hpp"
 #include <unistd.h>
 
 // recv → buffer → lines → parser → dispatcher

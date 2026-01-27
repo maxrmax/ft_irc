@@ -2,7 +2,7 @@
 #define COMMANDDISPATCHER_HPP
 #include <map>
 #include <string>
-#include "Command.hpp"
+#include "command.hpp"
 
 class CommandDispatcher {
 public:

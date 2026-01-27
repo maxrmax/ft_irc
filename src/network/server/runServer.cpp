@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 21:10:22 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/27 22:06:02 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 // #include "../../includes/poll.hpp"
 // #include "../../includes/server.hpp"
-#include "../../includes/ircserv.hpp"
+#include "../../../includes/ircserv.hpp"
 
 int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map<int, Client> &poll_client__mapping_via_fd)
 {

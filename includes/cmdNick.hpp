@@ -1,6 +1,6 @@
 #ifndef CMDNICK_HPP
 #define CMDNICK_HPP
-#include "Command.hpp"
+#include "command.hpp"
 
 class CmdNick : public Command {
 public:

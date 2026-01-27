@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/23 12:50:12 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/01/27 22:00:43 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,9 +31,11 @@ INC_DIR	=	includes/
 SRC		= 	src/main.cpp \
 			src/checker/isDigit.cpp \
 			src/client/Client.cpp \
+			src/commands/CmdNick.cpp \
+			src/commands/CommandDispatcher.cpp \
 			src/packet/irc_packet.cpp \
-			src/server/runServer.cpp \
-			src/server/server.cpp \
+			src/network/server/runServer.cpp \
+			src/network/server/server.cpp \
 			
 #            src/parser/Parser.cpp \
 

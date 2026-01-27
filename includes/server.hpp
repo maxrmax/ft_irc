@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 17:17:58 by marvin           ###   ########.fr       */
+/*   Updated: 2026/01/27 21:58:02 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "CommandDispatcher.hpp"
+#include "commandDispatcher.hpp"
 
 //saver than define a macro is to do a const
 //this is in its very own scope for each programm this header is included
@@ -40,6 +40,7 @@ class Server
         sockaddr_in server_address;
 
         CommandDispatcher _dispatcher;
+        
     
     public:
         ~Server();

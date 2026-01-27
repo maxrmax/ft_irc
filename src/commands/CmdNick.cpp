@@ -1,5 +1,5 @@
-#include "CmdNick.hpp"
-#include "client.hpp"
+#include "../../includes/cmdNick.hpp"
+#include "../../includes/Client.hpp"
 
 void CmdNick::execute(Server&, Client& client, const ParsedCommand& cmd)
 {

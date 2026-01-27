@@ -1,13 +1,14 @@
-#include "CommandDispatcher.hpp"
-#include "CmdNick.hpp"
-#include "CmdUser.hpp"
-#include "CmdJoin.hpp"
+// #include "../../includes/commandDispatcher.hpp"
+// #include "../../includes/cmdNick.hpp"
+// #include "../../includes/CmdUser.hpp"
+// #include "../../includes/CmdJoin.hpp"
+#include "../../includes/ircserv.hpp"
 
 CommandDispatcher::CommandDispatcher()
 {
     _commands["NICK"] = new CmdNick();
-    _commands["USER"] = new CmdUser();
-    _commands["JOIN"] = new CmdJoin();
+    // _commands["USER"] = new CmdUser();
+    // _commands["JOIN"] = new CmdJoin();
 }
 
 CommandDispatcher::~CommandDispatcher()

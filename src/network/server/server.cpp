@@ -6,11 +6,12 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/09 15:36:05 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/27 23:39:37 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/server.hpp"
+// #include "../../../includes/server.hpp"
+#include "../../../includes/ircserv.hpp"
 
 
 Server::~Server()

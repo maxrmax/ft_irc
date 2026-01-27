@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 22:06:02 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/27 23:45:31 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,10 @@ int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int
         //put received message together 
         poll_client__mapping_via_fd[poll_fd[fd].fd].put_message_together();
         std::cout << "Concatenated: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together() << std::endl;
+        std::cout << __LINE__ << ": \n" << std::endl;
+        //parse msg for command
+        ParsedCommand cmd = Parser::parseLine(poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together());
+        printCommand(cmd);
     }
     else 
     {   

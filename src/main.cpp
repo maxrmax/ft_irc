@@ -10,30 +10,32 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../includes/ircserv.hpp"
 // #include <iostream>
 // #include "Parser.hpp"
 
 // static void printCommand(const ParsedCommand& cmd)
-// {
-//     size_t i;
+void printCommand(const ParsedCommand& cmd)
+{
+    size_t i;
 
-//     if (cmd.command.empty())
-//     {
-//         std::cout << "[invalid]\n";
-//         return;
-//     }
+    if (cmd.command.empty())
+    {
+        std::cout << "[invalid]\n";
+        return;
+    }
 
-//     std::cout << "Command: [" << cmd.command << "]\n";
-//     std::cout << "Params:\n";
+    std::cout << "Command: [" << cmd.command << "]\n";
+    std::cout << "Params:\n";
 
-//     i = 0;
-//     while (i < cmd.params.size())
-//     {
-//         std::cout << "  [" << i << "] -> [" << cmd.params[i] << "]\n";
-//         i++;
-//     }
-//     std::cout << "----------------------\n";
-// }
+    i = 0;
+    while (i < cmd.params.size())
+    {
+        std::cout << "  [" << i << "] -> [" << cmd.params[i] << "]\n";
+        i++;
+    }
+    std::cout << "----------------------\n";
+}
 
 // int main(void)
 // {
@@ -49,7 +51,6 @@
 //     return 0;
 // }
 
-#include "../includes/ircserv.hpp"
 
 int check_arguments(int argc, char **argv)
 {

@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/27 22:00:43 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/01/27 23:47:07 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,12 +33,11 @@ SRC		= 	src/main.cpp \
 			src/client/Client.cpp \
 			src/commands/CmdNick.cpp \
 			src/commands/CommandDispatcher.cpp \
-			src/packet/irc_packet.cpp \
 			src/network/server/runServer.cpp \
 			src/network/server/server.cpp \
+			src/packet/irc_packet.cpp \
+            src/parser/Parser.cpp \
 			
-#            src/parser/Parser.cpp \
-
 OBJ		= 	$(SRC:.cpp=.o)
 
 all		:	$(NAME)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/09 12:58:20 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/27 17:17:58 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "CommandDispatcher.hpp"
 
 //saver than define a macro is to do a const
 //this is in its very own scope for each programm this header is included
@@ -37,6 +38,8 @@ class Server
         //INternet not incomming
         //man 7 ip explains the IPv4 address
         sockaddr_in server_address;
+
+        CommandDispatcher _dispatcher;
     
     public:
         ~Server();

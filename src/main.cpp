@@ -81,11 +81,7 @@ int main(int argc, char **argv)
     std::cout << "Server created. fd = " << irc_server.get_server_fd() << std::endl;
 
     //run server
-    // return(runServer(irc_server));
-    if (runServer(irc_server) < 0)
-    {
-        printf("heho\n");
-    }
+    return(runServer(irc_server));
     
     // //delete what I alloced with new
     // //do inside destructor

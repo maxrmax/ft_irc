@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/24 12:17:52 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/27 20:55:11 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,27 +17,6 @@
 
 Client::~Client()
 {
-    //do not close filedescriptors here anymore
-    //we create Client object deep inside some nested functions accept_client
-    //there we receive the fd and it is opened. 
-    //we copy the constructed client into mapping fd to Client object
-    //thus those values belong and are owned by the mapping 
-    //when we leave accept_client the constructed Client inside there goes out of scope
-    //and this very deconstructor is being called and then would close our fd.
-    // //close Client fd
-    // if (client_fd != -1)
-    // {
-    //     if (close(client_fd) == 0)
-    //     {    
-    //         std::cout << "Client filedescriptor closed for a good nights sleep." << std::endl;
-    //         client_fd = -1;
-    //     }
-    //     else 
-    //     {
-    //         std::cout << "Client filedescriptor could not be closed." << std::endl;
-    //     }
-    // }       
-        
     std::cout << "Client with fd:" << client_fd << " destructed." << std::endl;
     //errno
 };
@@ -51,11 +30,26 @@ void Client::set_client_fd(int filedescriptor)
 {
     client_fd = filedescriptor;
 };
-void Client::set_message(std::string string_buffer)
+void Client::set_message_received(std::string string_buffer)
 {
-    message.append(string_buffer, sizeof(string_buffer));
+    message_received.append(string_buffer);
 };
 int Client::get_client_fd()
 {
     return client_fd;
+};
+std::string Client::get_message_received()
+{
+    return(message_received);
+};
+std::string Client::get_message_put_together()
+{
+    return(message_put_together);
+};
+
+void Client::put_message_together()
+{
+    message_put_together += message_received;
+    // message_received = "";
+    message_received.clear();
 };

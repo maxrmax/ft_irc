@@ -6,47 +6,13 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 22:06:35 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/27 23:39:37 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/server.hpp"
-#include "../../../includes/Parser.hpp"
-#include <unistd.h>
+// #include "../../../includes/server.hpp"
+#include "../../../includes/ircserv.hpp"
 
-// recv → buffer → lines → parser → dispatcher
-void Server::handleClientInput(Client& client)
-{
-    char buffer[1024];
-    ssize_t bytes;
-    std::string line;
-    ParsedCommand cmd;
-
-    bytes = recv(client.getFd(), buffer, sizeof(buffer), 0);
-    if (bytes <= 0)
-    {
-        // client disconnected or error
-        removeClient(client);
-        return;
-    }
-
-    client.getInputBuffer().append(std::string(buffer, bytes));
-
-    while (client.getInputBuffer().hasLine())
-    {
-        line = client.getInputBuffer().popLine();
-
-        // IRC: max 512 bytes incl. \r\n → 510 content
-        if (line.length() > 510)
-        {
-            // ERR_INPUTTOOLONG oder disconnect
-            continue;
-        }
-
-        cmd = Parser::parseLine(line);
-        _dispatcher.dispatch(*this, client, cmd);
-    }
-}
 
 Server::~Server()
 {

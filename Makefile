@@ -1,43 +1,53 @@
-NAME = ircserv
-CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++17
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
+#    Updated: 2026/01/27 23:47:07 by nsloniow         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
+
+CC 		= 	c++
+STD		= 	-std=c++17
+# FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
+FLAGS	= 	-Wall -Wextra -Werror
+NAME	= 	ircserv
 
 # directories
 SRC_DIR	=	source/
 OBJ_DIR	=	obj/
 INC_DIR	=	includes/
 
-# source files
-SRC_FILES = \
-	main.cpp \
-	parser/Parser.cpp \
-	
+# SRC		= 	source/main.cpp \
+# 			source/packet/irc_packet.cpp \
+# 			source/parsing_check/isDigit.cpp \
+# 			source/server/server.cpp \
 
-OBJ_FILES = $(SRC_FILES:.cpp=.o)
+SRC		= 	src/main.cpp \
+			src/checker/isDigit.cpp \
+			src/client/Client.cpp \
+			src/commands/CmdNick.cpp \
+			src/commands/CommandDispatcher.cpp \
+			src/network/server/runServer.cpp \
+			src/network/server/server.cpp \
+			src/packet/irc_packet.cpp \
+            src/parser/Parser.cpp \
+			
+OBJ		= 	$(SRC:.cpp=.o)
 
-# paths
-SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
-OBJ = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
+all		:	$(NAME)
+$(NAME)	:	$(OBJ)
+		 	$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
 
-all: $(NAME)
-
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
-
-$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
-	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
-
-clean:
-	@if [ -d "$(OBJ_DIR)" ]; then \
-	rm -rf $(OBJ_DIR); \
-	fi;
-
-fclean: clean
-	@if [ -f "$(NAME)" ]; then \
-	rm -f $(NAME); \
-	fi;
-
-re: fclean all
+clean	:	
+			rm -f $(OBJ)
+fclean	:	clean
+		 	rm -f $(NAME)
+re		:	fclean all
 
 .PHONY: all clean fclean re

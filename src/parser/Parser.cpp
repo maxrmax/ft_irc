@@ -1,8 +1,11 @@
-#include "Parser.hpp"
+// #include "Parser.hpp"
 #include <cctype>
+#include "../../includes/ircserv.hpp"
 
 ParsedCommand Parser::parseLine(const std::string& rawInp)
 {
+    std::cout << __LINE__ << ": \n" << std::endl;
+
     ParsedCommand cmd;
     std::string line;
     size_t i;

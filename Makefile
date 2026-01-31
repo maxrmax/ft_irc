@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/27 23:47:07 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/01/31 21:54:34 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,14 +23,10 @@ SRC_DIR	=	source/
 OBJ_DIR	=	obj/
 INC_DIR	=	includes/
 
-# SRC		= 	source/main.cpp \
-# 			source/packet/irc_packet.cpp \
-# 			source/parsing_check/isDigit.cpp \
-# 			source/server/server.cpp \
-
 SRC		= 	src/main.cpp \
 			src/checker/isDigit.cpp \
 			src/client/Client.cpp \
+			src/client/InputBuffer.cpp \
 			src/commands/CmdNick.cpp \
 			src/commands/CommandDispatcher.cpp \
 			src/network/server/runServer.cpp \

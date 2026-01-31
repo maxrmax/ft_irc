@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 23:45:31 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/01 00:25:15 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,15 +88,8 @@ int clients_waiting(Server &irc_server, std::vector<pollfd> &poll_fd, std::unord
 
 int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int, Client> &poll_client__mapping_via_fd)
 {
-    int polled_fd = poll_fd[fd].fd;
-    
-    // std::cout << __LINE__ << ": \n" << std::endl;
-    
+    int polled_fd = poll_fd[fd].fd;    
     int     read_len =0;
-    
-    //     std::cout << __LINE__ << ": \n" << std::endl;
-    //     poll_client__mapping_via_fd[polled_fd].set_message(read_buffer);
-    //     std::cout.write(read_buffer, read_len) << std::endl;
 
     //check if fd is REALLY ready, POLLIN set to 1
     // std::cout << "revents=" << poll_fd[i].revents << " POLLIN=" << POLLIN << std::endl;
@@ -104,24 +97,35 @@ int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int
     char    msg[1024]; 
     read_len = recv(poll_fd[fd].fd,msg, sizeof(msg)-1,0);
     msg[read_len] = '\0';
-    std::cout << poll_fd[fd].fd << ": " << msg << std::endl;
+    std::cout << poll_fd[fd].fd << " received: " << msg << std::endl;
 
     // save message in message_received for that client, mapped via fd
-    poll_client__mapping_via_fd[poll_fd[fd].fd].set_message_received(msg);
+    // poll_client__mapping_via_fd[poll_fd[fd].fd].set_message_received(msg);
+    //use class InputBuffer instead of msg received and msg put together
     
-    // std::cout << __LINE__ << ": \n" << std::endl;
     if (read_len > 0)
     {
         msg[read_len] = '\0';
-        // std::cout << "Received: " << msg << std::endl;
-        std::cout << "Received:     " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_received() << std::endl;
+        std::cout << "current Buffer:     " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
         //put received message together 
-        poll_client__mapping_via_fd[poll_fd[fd].fd].put_message_together();
-        std::cout << "Concatenated: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together() << std::endl;
-        std::cout << __LINE__ << ": \n" << std::endl;
+        // poll_client__mapping_via_fd[poll_fd[fd].fd].put_message_together();
+        //appened to InputBuffer
+        poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().append(msg);
+    
+
+        // std::cout << "Received: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together() << std::endl;
+        std::cout << "recv appended to current Buffer: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
+        
         //parse msg for command
-        ParsedCommand cmd = Parser::parseLine(poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together());
-        printCommand(cmd);
+        // ParsedCommand cmd = Parser::parseLine(poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together());
+        while (poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().hasLine())
+        {
+            std::cout << __LINE__ << ": \n" << std::endl;
+
+            ParsedCommand cmd = Parser::parseLine(poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().popLine());
+            printCommand(cmd);
+        }
+        // std::cout << __LINE__ << ": \n" << std::endl;
     }
     else 
     {   
@@ -164,7 +168,6 @@ int process_ready_fd(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, s
 int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map<int, Client> &poll_client__mapping_via_fd)
 {
         // poll()—Synchronous I/O Multiplexing
-        // let the system do the dirty stuff of looping over socket fds and check for data, that got received
         // data() = pointer to first elementS
         int poll__fd_ready__amount = poll(poll_fd.data(), poll_fd.size(), -1);
         //if not fd is ready

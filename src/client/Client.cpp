@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 20:55:11 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/01/31 22:04:00 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,26 +30,30 @@ void Client::set_client_fd(int filedescriptor)
 {
     client_fd = filedescriptor;
 };
-void Client::set_message_received(std::string string_buffer)
-{
-    message_received.append(string_buffer);
-};
+// void Client::set_message_received(std::string string_buffer)
+// {
+//     message_received.append(string_buffer);
+// };
 int Client::get_client_fd()
 {
     return client_fd;
 };
-std::string Client::get_message_received()
-{
-    return(message_received);
-};
-std::string Client::get_message_put_together()
-{
-    return(message_put_together);
-};
+// std::string Client::get_message_received()
+// {
+//     return(message_received);
+// };
+// std::string Client::get_message_put_together()
+// {
+//     return(message_put_together);
+// };
 
-void Client::put_message_together()
+// void Client::put_message_together()
+// {
+//     message_put_together += message_received;
+//     // message_received = "";
+//     message_received.clear();
+// };
+InputBuffer &Client::get_inputBuffer()
 {
-    message_put_together += message_received;
-    // message_received = "";
-    message_received.clear();
+    return (inputBuffer);
 };

@@ -20,9 +20,10 @@ class InputBuffer
 public:
     InputBuffer();
 
-    void        append(const std::string& data);
-    bool        hasLine() const;
-    std::string popLine();
+    void                append(const std::string& data);
+    bool                hasLine() const;
+    std::string         popLine();
+    const std::string   &get_buffer() const;
 
 private:
     std::string _buffer;

@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "InputBuffer.hpp"
+// #include "InputBuffer.hpp"
+#include "../../includes/inputBuffer.hpp"
 #include <stdexcept>
 
 InputBuffer::InputBuffer() {}
@@ -56,6 +57,11 @@ std::string InputBuffer::popLine()
     std::string line = _buffer.substr(0, pos);
     _buffer.erase(0, pos + 2);
     return line;
+}
+
+const std::string &InputBuffer::get_buffer() const
+{
+    return _buffer;
 }
 
 //TODO integration with recv()/poll() loop

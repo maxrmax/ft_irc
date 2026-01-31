@@ -16,7 +16,7 @@
 
 ParsedCommand Parser::parseLine(const std::string& rawInp)
 {
-    std::cout << __LINE__ << ": \n" << std::endl;
+    // std::cout << __LINE__ << ": \n" << std::endl;
 
     ParsedCommand cmd;
     std::string line;

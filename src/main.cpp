@@ -87,5 +87,8 @@ int main(int argc, char **argv)
     // //delete what I alloced with new
     // //do inside destructor
 
+    //handle ctrl c, z, whatever and free, close all 
+    //free close port
+
     return (0);
 }

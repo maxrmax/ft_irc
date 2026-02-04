@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/01 00:25:15 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/04 03:44:40 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,50 @@
 // #include "../../includes/poll.hpp"
 // #include "../../includes/server.hpp"
 #include "../../../includes/ircserv.hpp"
+
+
+//simple first send message
+static void sendMsg(Client &client)
+{
+    //client.nick
+    std::string nick = "MyNick";
+    std::string msgToBeSend = "MyFirstSendMessage " + nick + " 815Server\r\n";
+
+    
+    //Copy exactly length bytes from my memory into the kernel’s send buffer for this socket.
+    size_t send_len = send(client.get_client_fd(), msgToBeSend.c_str(), msgToBeSend.size(), 0);
+    if (send_len < 0)
+    {
+        if (errno == EAGAIN)
+        {
+            //send() refuses to put more buytes to that fds kernel output
+            // It does not throw, explode, or crash.
+            // It simply returns: -1, errno = EAGAIN  (or EWOULDBLOCK)
+            // The kernel cannot accept more bytes for this socket right now.
+            // No bytes were copied.
+            // kernel cannot accept more, because that socket’s send buffer is full.
+            // Every socket has a fixed-size send buffer.
+            // Typical sizes: ~64 KB, ~128 KB, depends on OS
+            // Usually never notice this when sending small messages.
+            // But if: Client is slow, Network slow, we spam output
+            //
+            // Each layer minding its own business.
+            // IRC Layer        → lines, commands, \r\n
+            // TCP Layer        → byte stream
+            // Kernel Buffer    → bytes
+            // send()/recv()    → bytes
+            //
+            // Kernel networking stack actually Sends Data to Network
+            // It decides when packets go out, how many bytes per packet,
+            // Retransmissions, Congestion control
+            std::cout << "Socket fd not ready to send yet.\n";
+        }
+        else
+        {
+            std::cerr << "Error sending to client.\n";
+        }
+    }
+}
 
 int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map<int, Client> &poll_client__mapping_via_fd)
 {
@@ -30,7 +74,7 @@ int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordere
     if ( client_accept_fd < 0)
     {
         // non-blocking needs check on errno so it keeps looping until we finish our loop 
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
+        if (errno == EAGAIN)
         {
             // No more clients waiting to be accept()ed; return to poll loop
             // accept() would block — no more pending connections; closing accept loop, return to poll loop             
@@ -63,6 +107,10 @@ int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordere
     // The Client lives inside the map
     poll_client__mapping_via_fd[client_accept_fd] = client_created;
     //we do not create client here
+
+    //testing
+    //send msg back
+    sendMsg(client_created);
     return 0;
 }
 
@@ -85,6 +133,7 @@ int clients_waiting(Server &irc_server, std::vector<pollfd> &poll_fd, std::unord
     
     return 0;
 }
+
 
 int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int, Client> &poll_client__mapping_via_fd)
 {
@@ -125,7 +174,6 @@ int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int
             ParsedCommand cmd = Parser::parseLine(poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().popLine());
             printCommand(cmd);
         }
-        // std::cout << __LINE__ << ": \n" << std::endl;
     }
     else 
     {   
@@ -160,7 +208,9 @@ int process_ready_fd(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, s
     else
     {
         if (receive_message(poll_fd, fd, poll_client__mapping_via_fd) < 0)
+        {
             return -1;
+        }
     }
     return 0;
 }

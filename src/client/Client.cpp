@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/31 22:04:00 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/05 12:18:08 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 Client::~Client()
 {
-    std::cout << "Client with fd:" << client_fd << " destructed." << std::endl;
+    // std::cout << "Client with fd:" << client_fd << " destructed." << std::endl;
     //errno
 };
 

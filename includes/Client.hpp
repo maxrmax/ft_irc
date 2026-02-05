@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/31 22:03:45 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/05 14:02:58 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 // #include <iostream>
 // #include <unistd.h>
 #include "inputBuffer.hpp"
+#include "OutputBuffer.hpp"
 #include "ircserv.hpp"
 
 class Client
@@ -28,6 +29,7 @@ class Client
         // Append recv() raw bytes
         // cut of front bytes on finding \r\n
         InputBuffer inputBuffer;
+        OutputBuffer outputBuffer;
   
         public:
             ~Client();
@@ -40,6 +42,7 @@ class Client
             // std::string get_message_received();
             // std::string get_message_put_together();
             InputBuffer &get_inputBuffer();
+            OutputBuffer &get_outputBuffer();
             
             void put_message_together();
 };

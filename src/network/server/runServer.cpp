@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/05 12:21:12 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/05 15:07:02 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,47 +23,64 @@ static int sendMsg(Client &client)
     static int sent = 0;
     //client.nick
     std::string nick = "MyNick";
-    std::string msgToBeSend = "MyFirstSendMessage " + nick + " 815Server\r\n";
-
+    // std::string msgToBeSend = "MyFirstSendMessage " + nick + " 815Server\r\n";
+    nick = "Learning to build step by step is the smartest approach. Start with simple structures, see them work, then gradually layer complexity. This applies to code, logic, and even life. Hard-coded messages in a buffer are fine for now. You understand flow, poll, and send. Later, refactor, handle partial sends, and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.510";
+    // std::string msgToBeSend = nick + "\r\n";
+    if (sent == 0)
+    // if (client.get_outputBuffer().get_buffer().length() > 0)
+    {
+        client.get_outputBuffer().append(nick);
+    }
+    
     //recv() pull bytes from kernel
     //send()push bytes to kernel
     //Copy exactly length bytes from my memory into the kernel’s send buffer for this socket.
     //c_str returns a pointer to the string
     
-    if (sent == 0)
-    {size_t send_len = send(client.get_client_fd(), msgToBeSend.c_str(), msgToBeSend.size(), 0);
-    sent =1;
-    if (send_len < 0)
+    // if (sent == 0)
+    if (client.get_outputBuffer().get_buffer().length() > 0)
     {
-        if (errno == EAGAIN)
+        std::cout << "out BEFORE send: " << client.get_outputBuffer().get_buffer() << std::endl << "sent " << sent << std::endl;
+        // {size_t send_len = send(client.get_client_fd(), msgToBeSend.c_str(), msgToBeSend.size(), 0);
+        // {size_t send_len = send(client.get_client_fd(), client.get_outputBuffer().popLine().c_str(), nick.size(), 0);
+        size_t send_len = send(client.get_client_fd(), client.get_outputBuffer().get_buffer().c_str(), client.get_outputBuffer().get_buffer().size(), 0);
+        if (send_len < 0)
         {
-            //send() refuses to put more buytes to that fds kernel output
-            // It does not throw, explode, or crash.
-            // It simply returns: -1, errno = EAGAIN  (or EWOULDBLOCK)
-            // The kernel cannot accept more bytes for this socket right now.
-            // No bytes were copied.
-            // kernel cannot accept more, because that socket’s send buffer is full.
-            // Every socket has a fixed-size send buffer.
-            // Typical sizes: ~64 KB, ~128 KB, depends on OS
-            // Usually never notice this when sending small messages.
-            // But if: Client is slow, Network slow, we spam output
-            //
-            // Each layer minding its own business.
-            // IRC Layer        → lines, commands, \r\n
-            // TCP Layer        → byte stream
-            // Kernel Buffer    → bytes
-            // send()/recv()    → bytes
-            //
-            // Kernel networking stack actually Sends Data to Network
-            // It decides when packets go out, how many bytes per packet,
-            // Retransmissions, Congestion control
-            std::cout << "Socket fd not ready to send yet.\n";
+            if (errno == EAGAIN)
+            {
+                //send() refuses to put more buytes to that fds kernel output
+                // It does not throw, explode, or crash.
+                // It simply returns: -1, errno = EAGAIN  (or EWOULDBLOCK)
+                // The kernel cannot accept more bytes for this socket right now.
+                // No bytes were copied.
+                // kernel cannot accept more, because that socket’s send buffer is full.
+                // Every socket has a fixed-size send buffer.
+                // Typical sizes: ~64 KB, ~128 KB, depends on OS
+                // Usually never notice this when sending small messages.
+                // But if: Client is slow, Network slow, we spam output
+                //
+                // Each layer minding its own business.
+                // IRC Layer        → lines, commands, \r\n
+                // TCP Layer        → byte stream
+                // Kernel Buffer    → bytes
+                // send()/recv()    → bytes
+                //
+                // Kernel networking stack actually Sends Data to Network
+                // It decides when packets go out, how many bytes per packet,
+                // Retransmissions, Congestion control
+                std::cout << "Socket fd not ready to send yet.\n";
+            }
+            else
+            {
+                std::cerr << "Error sending to client.\n";
+            }
         }
         else
         {
-            std::cerr << "Error sending to client.\n";
+            sent =1;
+            client.get_outputBuffer().popLine();
         }
-    }
+    std::cout << "out after send: " << client.get_outputBuffer().get_buffer() << std::endl;
     }
     return 0;
 }
@@ -103,9 +120,9 @@ int acceptClient(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordere
     //append client fd to poll list
     pollfd   temp;
     temp.fd         = client_accept_fd;
-//     &   → bitwise AND
-// |   → bitwise OR
-// ^   → bitwise XOR
+    // &   → bitwise AND
+    // |   → bitwise OR
+    // ^   → bitwise XOR
     temp.events     = POLLIN | POLLOUT;
     temp.revents    = 0;
     poll_fd.push_back(temp);

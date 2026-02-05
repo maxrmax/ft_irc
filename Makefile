@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/01/31 21:54:34 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/02/05 14:18:03 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC		= 	src/main.cpp \
 			src/checker/isDigit.cpp \
 			src/client/Client.cpp \
 			src/client/InputBuffer.cpp \
+			src/client/OuputBuffer.cpp \
 			src/commands/CmdNick.cpp \
 			src/commands/CommandDispatcher.cpp \
 			src/network/server/runServer.cpp \

@@ -17,6 +17,13 @@ void CmdNick::execute(Server&, Client& client, const ParsedCommand& cmd)
 {
     if (cmd.params.empty())
         return;
+    if (client.isReadyToRegister() && !client.getNickname().empty() && !client.getUsername().empty() && client.isRegistered() == false)
+    {
+        client.setRegistered(true);
+        // send welcome message
+        return;
+        // ERR_ALREADYREGISTRED
+    }
 // TODO: check for valid nicknames + add error handling + add to client.cpp
     // client.setNick(cmd.params[0]);
 }

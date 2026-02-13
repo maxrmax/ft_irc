@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/23 11:57:02 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:38:14 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ client::~client()
     //errno
 };
 
-client::client():client_fd(-1){};
+client::client():client_fd(-1), passAccepted(false), registered(false){};
 
-client::client(int filedescriptor):client_fd(filedescriptor){};
+client::client(int filedescriptor):client_fd(filedescriptor), passAccepted(false),registered(false){};
 
 
 void client::set_client_fd(int filedescriptor)
@@ -46,3 +46,62 @@ int client::get_client_fd()
 {
     return client_fd;
 };
+
+InputBuffer &client::get_inputBuffer()
+{
+    return inputBuffer;
+};
+
+// Identity
+
+void client::setNickname(const std::string& nick)
+{
+    nickname = nick;
+}
+
+void client::setUsername(const std::string& user)
+{
+    username = user;
+}
+
+void client::getNickname(std::string& nick) const
+{
+    nick = nickname;
+}
+
+void client::getUsername(std::string& user) const
+{
+    user = username;
+}
+
+// Auth state
+
+void client::setPassAccepted(bool accepted)
+{
+    passAccepted = accepted;
+}
+
+bool client::isPassAccepted() const
+{
+    return passAccepted;
+}
+
+void client::setRegistered(bool reg)
+{
+    registered = reg;
+}
+
+bool client::isRegistered() const
+{
+    return registered;
+}
+
+bool client::isReadyToRegister() const
+{
+    if (passAccepted == false)
+        return false;
+    if (nickname.empty() || username.empty())
+        return false;
+    return true;
+}
+

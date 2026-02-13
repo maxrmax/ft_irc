@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/31 22:03:45 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:35:55 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,12 @@ class Client
         // use class InputBuffer to make it like a conveyor belt. 
         // Append recv() raw bytes
         // cut of front bytes on finding \r\n
+        std::string nickname;
+        std::string username;
+        
+        bool        passAccepted;
+        bool        registered;
+        
         InputBuffer inputBuffer;
   
         public:
@@ -40,6 +46,21 @@ class Client
             // std::string get_message_received();
             // std::string get_message_put_together();
             InputBuffer &get_inputBuffer();
-            
+
             void put_message_together();
+
+            // Identity
+            void setNickname(const std::string& nick);
+            void setUsername(const std::string& user);
+
+            void getNickname(std::string& nick) const;
+            void getUsername(std::string& user) const;
+
+            // Auth state
+            void setPassAccepted(bool accepted);
+            bool getPassAccepted() const;
+
+            void setRegistered(bool reg);
+            bool getRegistered() const;
+            bool isReadyToRegister() const;
 };

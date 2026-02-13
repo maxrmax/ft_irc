@@ -22,7 +22,7 @@ public:
     ~CommandDispatcher();
 
     void dispatch(Server& server,
-                  Client& client,
+                  ClientUser& client,
                   const ParsedCommand& cmd);
 
 private:

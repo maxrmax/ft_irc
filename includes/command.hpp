@@ -15,13 +15,13 @@
 #include "Parser.hpp"
 
 class Server;
-class Client;
+class ClientUser;
 
 class Command {
 public:
     virtual ~Command() {}
     virtual void execute(Server& server,
-                         Client& client,
+                         ClientUser& client,
                          const ParsedCommand& cmd) = 0;
 };
 #endif // COMMAND_HPP

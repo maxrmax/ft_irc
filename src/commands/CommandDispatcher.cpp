@@ -36,7 +36,7 @@ CommandDispatcher::~CommandDispatcher()
 }
 
 void CommandDispatcher::dispatch(Server& server,
-                                 Client& client,
+                                 ClientUser& client,
                                  const ParsedCommand& cmd)
 {
     std::map<std::string, Command*>::iterator it;

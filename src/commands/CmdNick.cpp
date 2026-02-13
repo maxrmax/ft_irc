@@ -11,12 +11,12 @@
 /* ************************************************************************** */
 
 #include "../../includes/cmdNick.hpp"
-#include "../../includes/Client.hpp"
+#include "../../includes/ClientUser.hpp"
 
-void CmdNick::execute(Server&, Client& client, const ParsedCommand& cmd)
+void CmdNick::execute(Server&, ClientUser& clientUser, const ParsedCommand& cmd)
 {
     if (cmd.params.empty())
         return;
-// TODO: check for valid nicknames + add error handling + add to client.cpp
-    // client.setNick(cmd.params[0]);
+// TODO: check for valid nicknames + add error handling + add to clientUser.cpp
+    // clientUser.setNick(cmd.params[0]);
 }

@@ -14,10 +14,15 @@ How to run our IRC server
 
 How to run irssi client locally, on same machine
 irssi
-/connect 127.0.0.1<port>
+/connect 127.0.0.1 <port>
 
 How to run irssi client within LAN, any machine at school
 ip a
 //look for inet xxx.xxx.xxx.xxx
 irssi
 /connect <xxxx.xxxx.xxxx.xxxx> <port>
+
+
+How to run irssi client from another 42HN school computer
+irssi
+/connect <workstation like 2-E-4> <port>

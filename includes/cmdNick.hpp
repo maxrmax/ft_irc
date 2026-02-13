@@ -17,7 +17,7 @@
 class CmdNick : public Command {
 public:
     void execute(Server& server,
-                 Client& client,
+                 ClientUser& client,
                  const ParsedCommand& cmd);
 };
 #endif // CMDNICK_HPP

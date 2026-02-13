@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/OutputBuffer.hpp"
-#include "../../includes/ircserv.hpp" 
+#include "../../../includes/OutputBuffer.hpp"
+#include "../../../includes/ircserv.hpp" 
 #include <stdexcept>
 
 OutputBuffer::~OutputBuffer() {}

@@ -44,3 +44,66 @@ OutputBuffer &ClientUser::get_outputBuffer()
 {
     return (outputBuffer);
 };
+
+// Identity
+
+void ClientUser::setNickname(const std::string& nick)
+{
+    nickname = nick;
+};
+
+void ClientUser::setUsername(const std::string& user)
+{
+    username = user;
+}
+
+// void client::getNickname(std::string& nick) const
+// {
+//     nick = nickname;
+// }
+
+// void client::getUsername(std::string& user) const
+// {
+//     user = username;
+// }
+
+std::string ClientUser::getNickname() const
+{
+    return nickname;
+}
+
+std::string ClientUser::getUsername() const
+{
+    return username;
+}
+
+// Auth state
+
+void ClientUser::setPassAccepted(bool accepted)
+{
+    passAccepted = accepted;
+}
+
+bool ClientUser::isPassAccepted() const
+{
+    return passAccepted;
+}
+
+void ClientUser::setRegistered(bool reg)
+{
+    registered = reg;
+}
+
+bool ClientUser::isRegistered() const
+{
+    return registered;
+}
+
+bool ClientUser::isReadyToRegister() const
+{
+    if (passAccepted == false)
+        return false;
+    if (nickname.empty() || username.empty())
+        return false;
+    return true;
+}

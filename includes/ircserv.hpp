@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/13 17:13:18 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 12:12:19 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,9 @@
 #include <unordered_map>
 
 #include "ClientUser.hpp"
-// #include "CmdJoin.hpp"
 #include "cmdNick.hpp"
-// #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
-// #include "inputBuffer.hpp"
 #include "irc_packet.hpp"
-// #include "OutputBuffer.hpp"
 #include "poll.hpp"
 #include "server.hpp"
 

@@ -34,10 +34,11 @@ CommandDispatcher::~CommandDispatcher()
         it++;
     }
 }
-
-void CommandDispatcher::dispatch(Server& server,
-                                 ClientUser& client,
-                                 const ParsedCommand& cmd)
+// dispatch command to the right command class
+// server knows all clients, channels, etc.
+// server calls handleClientInput()
+//calls dispatcher.dispatch() with the parsed command
+void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
     std::map<std::string, Command*>::iterator it;
 
@@ -48,5 +49,5 @@ void CommandDispatcher::dispatch(Server& server,
     if (it == _commands.end())
         return;
 
-    it->second->execute(server, client, cmd);
+    it->second->execute(server, clientUser, cmd);
 }

@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/02/13 16:00:27 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/02/17 12:13:43 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,6 @@ FLAGS	= 	-Wall -Wextra -Werror
 NAME	= 	ircserv
 
 # directories
-SRC_DIR	=	source/
 OBJ_DIR	=	obj/
 INC_DIR	=	includes/
 

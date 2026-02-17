@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 23:39:37 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 13:01:04 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,3 +91,8 @@ int Server::get_server_ready(int port)
     std::cout << "Listening on port " << server_port << "." << std::endl;
     return 0;
 }
+
+CommandDispatcher &Server::get_dispatcher()
+{
+    return (dispatcher);
+};

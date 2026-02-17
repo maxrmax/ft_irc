@@ -21,6 +21,7 @@ CommandDispatcher::CommandDispatcher()
     _commands["NICK"] = new CmdNick();
     // _commands["USER"] = new CmdUser();
     // _commands["JOIN"] = new CmdJoin();
+    _commands["CAP"]    = new CmdCap();
 }
 
 CommandDispatcher::~CommandDispatcher()
@@ -46,8 +47,15 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
         return;
 
     it = _commands.find(cmd.command);
-    if (it == _commands.end())
+    if (it == _commands.end())    
+    {
+        //nickname or all
+        std::string target = clientUser.hasNick() ? clientUser.getNickname() : "*";
+        std::string msgToSend = ":server 421 " + target + " :Unknown command\r\n";
+        clientUser.get_outputBuffer().append(msgToSend);
         return;
+    }
+
 
     it->second->execute(server, clientUser, cmd);
 }

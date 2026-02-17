@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/27 21:58:02 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 13:00:59 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Server
         //man 7 ip explains the IPv4 address
         sockaddr_in server_address;
 
-        CommandDispatcher _dispatcher;
+        CommandDispatcher dispatcher;
         
     
     public:
@@ -51,4 +51,5 @@ class Server
         sockaddr_in get_server_address();
         
         int         get_server_ready(int port);
+        CommandDispatcher   &get_dispatcher();
 };

@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 12:12:19 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:10:10 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@
 
 #include "ClientUser.hpp"
 #include "cmdNick.hpp"
+#include "CmdCap.hpp"
 #include "commandDispatcher.hpp"
+#include "inputHandling.hpp"
 #include "irc_packet.hpp"
 #include "poll.hpp"
 #include "server.hpp"

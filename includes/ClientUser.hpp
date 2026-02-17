@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 12:46:02 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 13:31:25 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ class ClientUser
             // void getUsername(std::string& user) const;
             std::string getNickname() const;
             std::string getUsername() const;
+            bool    hasNick() const;
 
             // Auth state
             void setPassAccepted(bool accepted);

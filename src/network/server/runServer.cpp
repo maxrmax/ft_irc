@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 12:36:28 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:27:29 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,27 +20,28 @@
 //simple first send message
 static int sendMsg(ClientUser &clientUser)
 {
-    static int sent = 0;
-    //client.nick
-    std::string nick = "MyNick";
-    // std::string msgToBeSend = "MyFirstSendMessage " + nick + " 815Server\r\n";
-    nick = "Learning to build step by step is the smartest approach. Start with simple structures, see them work, then gradually layer complexity. This applies to code, logic, and even life. Hard-coded messages in a buffer are fine for now. You understand flow, poll, and send. Later, refactor, handle partial sends, and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.510";
-    // std::string msgToBeSend = nick + "\r\n";
-    if (sent == 0)
-    // if (client.get_outputBuffer().get_buffer().length() > 0)
-    {
-        clientUser.get_outputBuffer().append(nick);
-    }
+    // static int sent = 0;
+    // //client.nick
+    // std::string nick = "MyNick";
+    // // std::string msgToBeSend = "MyFirstSendMessage " + nick + " 815Server\r\n";
+    // nick = "Learning to build step by step is the smartest approach. Start with simple structures, see them work, then gradually layer complexity. This applies to code, logic, and even life. Hard-coded messages in a buffer are fine for now. You understand flow, poll, and send. Later, refactor, handle partial sends, and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.510";
+    // // std::string msgToBeSend = nick + "\r\n";
+    // if (sent == 0)
+    // // if (client.get_outputBuffer().get_buffer().length() > 0)
+    // {
+    //     clientUser.get_outputBuffer().append(nick);
+    // }
     
     //recv() pull bytes from kernel
     //send()push bytes to kernel
     //Copy exactly length bytes from my memory into the kernel’s send buffer for this socket.
     //c_str returns a pointer to the string
     
-    // if (sent == 0)
+    //// if (sent == 0)
     if (clientUser.get_outputBuffer().get_buffer().length() > 0)
     {
-        std::cout << "out BEFORE send: " << clientUser.get_outputBuffer().get_buffer() << std::endl << "sent " << sent << std::endl;
+        // std::cout << "out BEFORE send: " << clientUser.get_outputBuffer().get_buffer() << std::endl << "sent " << sent << std::endl;
+        // std::cout << "out BEFORE send: " << clientUser.get_outputBuffer().get_buffer() << std::endl << std::endl;
         // {size_t send_len = send(client.get_client_fd(), msgToBeSend.c_str(), msgToBeSend.size(), 0);
         // {size_t send_len = send(client.get_client_fd(), client.get_outputBuffer().popLine().c_str(), nick.size(), 0);
         size_t send_len = send(clientUser.get_ClientUser_fd(), clientUser.get_outputBuffer().get_buffer().c_str(), clientUser.get_outputBuffer().get_buffer().size(), 0);
@@ -77,10 +78,10 @@ static int sendMsg(ClientUser &clientUser)
         }
         else
         {
-            sent =1;
+            // sent =1;
             clientUser.get_outputBuffer().popLine();
         }
-    std::cout << "out after send: " << clientUser.get_outputBuffer().get_buffer() << std::endl;
+        // std::cout << "out after send: " << clientUser.get_outputBuffer().get_buffer() << std::endl;
     }
     return 0;
 }
@@ -160,7 +161,7 @@ int clientUsers_waiting(Server &irc_server, std::vector<pollfd> &poll_fd, std::u
 }
 
 
-int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int, ClientUser> &poll_client__mapping_via_fd)
+int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
 {
     // int polled_fd = poll_fd[fd].fd;
 
@@ -179,32 +180,27 @@ int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int
     if (read_len > 0)
     {
         msg[read_len] = '\0';
-        std::cout << "current Buffer:     " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
-        //put received message together 
-        // poll_client__mapping_via_fd[poll_fd[fd].fd].put_message_together();
+        // std::cout << "current Buffer:     " << poll_clientUser__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
+        
         //appened to InputBuffer
-        ClientUser clientUser = poll_client__mapping_via_fd[poll_fd[fd].fd]; //shorten this spagethi! We know, I am clever.
         // poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().append(msg);
+          //make clientUser another name for poll_clientUser__mapping_via_fd[poll_fd[fd].fd] and horten this spagethi! We know, I am clever.
+        ClientUser &clientUser = poll_clientUser__mapping_via_fd[poll_fd[fd].fd]; 
         clientUser.get_inputBuffer().append(msg);
     
-
         // std::cout << "Received: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together() << std::endl;
         // std::cout << "recv appended to current Buffer: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
-        std::cout << "recv appended to current Buffer: " << clientUser.get_inputBuffer().get_buffer() << std::endl;
+        // std::cout << "recv appended to current Buffer: " << clientUser.get_inputBuffer().get_buffer() << std::endl;
         
-        //parse msg for command
-        // ParsedCommand cmd = Parser::parseLine(poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together());
-        // while (poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().hasLine())
-        while (clientUser.get_inputBuffer().hasLine())
-        {
-            // std::cout << __LINE__ << ": \n" << std::endl;
-
-            // ParsedCommand cmd = Parser::parseLine(poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().popLine());
-            ParsedCommand cmd = Parser::parseLine(clientUser.get_inputBuffer().popLine());
-            printCommand(cmd);
-            //compare if command exists of ours
-            // exec cmd
-        }
+    //     handle inputBuffer and execute commands
+    //     outside of receive message as the inputBuffer is saved inside each ClientUser    
+    //     //parse msg for command
+    //     while (clientUser.get_inputBuffer().hasLine())
+    //     {
+    //         ParsedCommand cmd = Parser::parseLine(clientUser.get_inputBuffer().popLine());
+    //         printCommand(cmd);
+    //         CommandDispatcher::dispatch(irc_server)
+    //     }
     }
     else 
     {   
@@ -242,6 +238,7 @@ int process_ready_fd(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, s
         {
             return -1;
         }
+        handleClientInput(poll_clientUser__mapping_via_fd[poll_fd[fd].fd], irc_server);
     }
     return 0;
 }
@@ -252,7 +249,7 @@ static int process_fd_ready_for_sending(Server &irc_server, std::vector<pollfd> 
     if (poll_fd[fd].fd != irc_server.get_server_fd())
     {
         //set client to client object that has been mapped to this fd 
-        ClientUser clientUser = poll_clientUser__mapping_via_fd[poll_fd[fd].fd];
+        ClientUser &clientUser = poll_clientUser__mapping_via_fd[poll_fd[fd].fd];
         if (sendMsg(clientUser) < 0)
         {
             return -1;

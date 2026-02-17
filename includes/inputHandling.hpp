@@ -1,22 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   isDigit.cpp                                        :+:      :+:    :+:   */
+/*   inputHandling.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/16 01:54:36 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 12:51:31 by nsloniow         ###   ########.fr       */
+/*   Created: 2026/02/17 12:53:40 by nsloniow          #+#    #+#             */
+/*   Updated: 2026/02/17 12:53:49 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/ircserv.hpp"
+//inputHandling.hpp
+#include "ircserv.hpp"
 
-//is a string all digits
-bool is_digits_only(const std::string &string)
-{
-    //std::all_of checks that all characters in the string satisfy a condition.
-    //::isdigit returns true if a character is a digit.
-    // The !s.empty() prevents empty strings from returning true.
-    return !string.empty() && std::all_of(string.begin(), string.end(), ::isdigit);
-}
+void handleClientInput(ClientUser &clientUser, Server &irc_server);

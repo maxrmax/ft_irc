@@ -77,6 +77,11 @@ std::string ClientUser::getUsername() const
     return username;
 }
 
+bool ClientUser::hasNick() const
+{
+    return (!nickname.empty());
+};
+
 // Auth state
 
 void ClientUser::setPassAccepted(bool accepted)

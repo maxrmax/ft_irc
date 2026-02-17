@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/02/17 12:35:53 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/02/17 15:10:37 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,10 @@ INC_DIR	=	includes/
 
 SRC		= 	src/main.cpp \
 			src/checker/isDigit.cpp \
+			src/commands/CmdCap.cpp \
 			src/commands/CmdNick.cpp \
 			src/commands/CommandDispatcher.cpp \
+			src/commands/handleClientInput.cpp \
 			src/network/client_user/ClientUser.cpp \
 			src/network/client_user/InputBuffer.cpp \
 			src/network/client_user/OuputBuffer.cpp \

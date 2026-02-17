@@ -1,22 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   isDigit.cpp                                        :+:      :+:    :+:   */
+/*   handleClientInput.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/16 01:54:36 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 12:51:31 by nsloniow         ###   ########.fr       */
+/*   Created: 2026/02/17 12:57:30 by nsloniow          #+#    #+#             */
+/*   Updated: 2026/02/17 15:29:10 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+//handleClientInput.cpp
+
 #include "../../includes/ircserv.hpp"
 
-//is a string all digits
-bool is_digits_only(const std::string &string)
+void handleClientInput(ClientUser &clientUser, Server &irc_server)
 {
-    //std::all_of checks that all characters in the string satisfy a condition.
-    //::isdigit returns true if a character is a digit.
-    // The !s.empty() prevents empty strings from returning true.
-    return !string.empty() && std::all_of(string.begin(), string.end(), ::isdigit);
+    while (clientUser.get_inputBuffer().hasLine())
+    {
+        //parse msg for command
+        ParsedCommand cmd = Parser::parseLine(clientUser.get_inputBuffer().popLine());
+        // printCommand(cmd);
+        irc_server.get_dispatcher().dispatch(irc_server, clientUser, cmd);
+    }
 }

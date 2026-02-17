@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/02/17 12:13:43 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/02/17 12:35:53 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,9 @@ SRC		= 	src/main.cpp \
 			
 OBJ		= 	$(SRC:.cpp=.o)
 
+%.o : %.cpp
+	$(CC) $(STD) $(FLAGS) -c $< -o $@
+	
 all		:	$(NAME)
 $(NAME)	:	$(OBJ)
 		 	$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)

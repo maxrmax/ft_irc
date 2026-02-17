@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/13 17:35:59 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 12:36:28 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ int clientUsers_waiting(Server &irc_server, std::vector<pollfd> &poll_fd, std::u
 
 int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int, ClientUser> &poll_client__mapping_via_fd)
 {
-    int polled_fd = poll_fd[fd].fd;
+    // int polled_fd = poll_fd[fd].fd;
 
     //check if fd is REALLY ready, POLLIN set to 1
     // std::cout << "revents=" << poll_fd[i].revents << " POLLIN=" << POLLIN << std::endl;

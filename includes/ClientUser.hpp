@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 12:20:12 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/17 12:46:02 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@
 class ClientUser
 {
     private:
-        int         ClientUser_fd;
+        int             ClientUser_fd;
         // use class InputBuffer to make it like a conveyor belt. 
         // Append recv() raw bytes
+        InputBuffer     inputBuffer;
         // cut of front bytes on finding \r\n
-        InputBuffer inputBuffer;
-        OutputBuffer outputBuffer;
+        OutputBuffer    outputBuffer;
         
         std::string nick_name;
         std::string user_name;
@@ -42,12 +42,14 @@ class ClientUser
             ~ClientUser();
             ClientUser();
             ClientUser(int filedescriptor);
+            ClientUser(const ClientUser&) = default;
+            ClientUser& operator=(const ClientUser&) = default;
 
             void set_ClientUser_fd(int filedescriptor);
             int  get_ClientUser_fd();
 
-            InputBuffer &get_inputBuffer();
-            OutputBuffer &get_outputBuffer();
+            InputBuffer     &get_inputBuffer();
+            OutputBuffer    &get_outputBuffer();
 
             // Identity
             void setNickname(const std::string& nick);

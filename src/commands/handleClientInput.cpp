@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 12:57:30 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 15:29:10 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/18 03:57:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void handleClientInput(ClientUser &clientUser, Server &irc_server)
     {
         //parse msg for command
         ParsedCommand cmd = Parser::parseLine(clientUser.get_inputBuffer().popLine());
-        // printCommand(cmd);
+        printCommand(cmd);
         irc_server.get_dispatcher().dispatch(irc_server, clientUser, cmd);
     }
 }

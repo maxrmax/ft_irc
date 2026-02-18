@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 15:27:29 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/18 06:01:40 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,55 +20,17 @@
 //simple first send message
 static int sendMsg(ClientUser &clientUser)
 {
-    // static int sent = 0;
-    // //client.nick
-    // std::string nick = "MyNick";
-    // // std::string msgToBeSend = "MyFirstSendMessage " + nick + " 815Server\r\n";
-    // nick = "Learning to build step by step is the smartest approach. Start with simple structures, see them work, then gradually layer complexity. This applies to code, logic, and even life. Hard-coded messages in a buffer are fine for now. You understand flow, poll, and send. Later, refactor, handle partial sends, and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.and optimize. Stepwise mastery beats rushing. Every small victory compounds knowledge and confidence.510";
-    // // std::string msgToBeSend = nick + "\r\n";
-    // if (sent == 0)
-    // // if (client.get_outputBuffer().get_buffer().length() > 0)
-    // {
-    //     clientUser.get_outputBuffer().append(nick);
-    // }
-    
     //recv() pull bytes from kernel
-    //send()push bytes to kernel
-    //Copy exactly length bytes from my memory into the kernel’s send buffer for this socket.
-    //c_str returns a pointer to the string
+    //send() push bytes to kernel
     
-    //// if (sent == 0)
     if (clientUser.get_outputBuffer().get_buffer().length() > 0)
     {
-        // std::cout << "out BEFORE send: " << clientUser.get_outputBuffer().get_buffer() << std::endl << "sent " << sent << std::endl;
         // std::cout << "out BEFORE send: " << clientUser.get_outputBuffer().get_buffer() << std::endl << std::endl;
-        // {size_t send_len = send(client.get_client_fd(), msgToBeSend.c_str(), msgToBeSend.size(), 0);
-        // {size_t send_len = send(client.get_client_fd(), client.get_outputBuffer().popLine().c_str(), nick.size(), 0);
         size_t send_len = send(clientUser.get_ClientUser_fd(), clientUser.get_outputBuffer().get_buffer().c_str(), clientUser.get_outputBuffer().get_buffer().size(), 0);
         if (send_len < 0)
         {
             if (errno == EAGAIN)
             {
-                //send() refuses to put more buytes to that fds kernel output
-                // It does not throw, explode, or crash.
-                // It simply returns: -1, errno = EAGAIN  (or EWOULDBLOCK)
-                // The kernel cannot accept more bytes for this socket right now.
-                // No bytes were copied.
-                // kernel cannot accept more, because that socket’s send buffer is full.
-                // Every socket has a fixed-size send buffer.
-                // Typical sizes: ~64 KB, ~128 KB, depends on OS
-                // Usually never notice this when sending small messages.
-                // But if: Client is slow, Network slow, we spam output
-                //
-                // Each layer minding its own business.
-                // IRC Layer        → lines, commands, \r\n
-                // TCP Layer        → byte stream
-                // Kernel Buffer    → bytes
-                // send()/recv()    → bytes
-                //
-                // Kernel networking stack actually Sends Data to Network
-                // It decides when packets go out, how many bytes per packet,
-                // Retransmissions, Congestion control
                 std::cout << "Socket fd not ready to send yet.\n";
             }
             else
@@ -78,7 +40,6 @@ static int sendMsg(ClientUser &clientUser)
         }
         else
         {
-            // sent =1;
             clientUser.get_outputBuffer().popLine();
         }
         // std::cout << "out after send: " << clientUser.get_outputBuffer().get_buffer() << std::endl;
@@ -102,11 +63,6 @@ int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unor
         // non-blocking needs check on errno so it keeps looping until we finish our loop 
         if (errno == EAGAIN)
         {
-            // No more clients waiting to be accept()ed; return to poll loop
-            // accept() would block — no more pending connections; closing accept loop, return to poll loop             
-            //break closes the nearest loop               
-            //we go back and out of that loop we came from
-            //break;
             return -2;
         }
         else
@@ -121,19 +77,12 @@ int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unor
     //append client fd to poll list
     pollfd   temp;
     temp.fd         = client_accept_fd;
-    // &   → bitwise AND
-    // |   → bitwise OR
-    // ^   → bitwise XOR
     temp.events     = POLLIN | POLLOUT;
     temp.revents    = 0;
     poll_fd.push_back(temp);
     
     //create Client object
     ClientUser client_created(client_accept_fd);
-    //map fd in pollfd to fd in client_created
-    //unordered map jumps to item by index and is faster than (sorted) map
-    // The map owns the Client
-    // The Client lives inside the map
     poll_client__mapping_via_fd[client_accept_fd] = client_created;
     //we do not create client here
 
@@ -266,14 +215,8 @@ int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map
         //if not fd is ready
         if (poll__fd_ready__amount < 0)
         {
-            // non-blocking needs check on errno so it keeps looping until we finish our loop 
-            //return -1 can be eitherstd::unordered_map<int, Client> &poll_client__mapping_via_fd
             if (errno == EAGAIN)
             {
-                //No client ready right now, just skip and continue loop
-                //Skips the rest of the current iteration of the closest loop and starts the next iteration immediately.
-                //Jump to end of loop, which now is outside of this function, so instead of continue, we return 0, as all is good 
-                // continue;
                 return 0;
             }
             else
@@ -286,13 +229,8 @@ int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map
         
         for (size_t fd = 0; fd < poll_fd.size(); fd++)
         {
-            //if (poll_fd[i].revents == POLLIN) no work as 
-            //Bitmask in revents 0000, POLLIN least bit set, bitwise AND: 0001 POLLIN & 0101 in revent for IN and OUT ready = 1 && 1, which is > 0, so it is true
-            //& we check if it is set as well
-            //&0001
             if (poll_fd[fd].revents & POLLIN)
             {
-                // std::cout << "Poll fd ready: "  << poll_fd[fd].fd << std::endl;
                 if (process_ready_fd(irc_server, poll_fd, fd, poll_clientUser__mapping_via_fd) < 0)
                 {
                     return -1;
@@ -300,11 +238,8 @@ int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map
                 poll_fd[fd].revents = 0;
             }
 
-            //check if fd is ready for sending, going out
-            //& 0100 => if revent=0101, starting with least bit 1 && 0 = 0, 0 && 0 = 0, 1 && 1 = 1, 0 && 0 = 0 => 0010 > 0 => true
             if (poll_fd[fd].revents & POLLOUT)
             {
-                // std::cout << "Poll fd ready for sending: "  << poll_fd[fd].fd << std::endl;
                 if (process_fd_ready_for_sending(irc_server, poll_fd, fd, poll_clientUser__mapping_via_fd) < 0)
                 {
                     return -1;
@@ -354,15 +289,17 @@ int runServer(Server &irc_server)
     temp.revents    = 0;
     poll_fd.push_back(temp);
 
-    //create maping for (unique index) fd to Client object 
-    //unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
-    //int is the index which is equal to client_accepted_fd
-    //Client is the type we map to.
+    //put into class server
+    // //create maping for (unique index) fd to Client object 
+    // //unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
+    // //int is the index which is equal to client_accepted_fd
+    // //Client is the type we map to.
     std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
     
     while (true)
     {
        if (runPoll(irc_server, poll_fd, poll_clientUser__mapping_via_fd) == -1)
+    //    if (runPoll(irc_server, poll_fd) == -1)
             // return -1;
             break;
     }

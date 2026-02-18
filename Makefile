@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/02/17 15:10:37 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/02/17 22:57:40 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ INC_DIR	=	includes/
 
 SRC		= 	src/main.cpp \
 			src/checker/isDigit.cpp \
+			src/checker/isSpecial.cpp \
 			src/commands/CmdCap.cpp \
 			src/commands/CmdNick.cpp \
 			src/commands/CommandDispatcher.cpp \

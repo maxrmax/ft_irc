@@ -6,12 +6,11 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 15:10:10 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/18 05:56:11 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-
 
 #include <algorithm>
 #include <iostream>
@@ -28,10 +27,11 @@
 #include "server.hpp"
 
 //IRC standard protocol max message length 512
- static const size_t IRC_MAX_LINE = 510; // excluding \r\n
+static const size_t IRC_MAX_LINE = 510; // excluding \r\n
 
 //isDigit.cpp
 bool    is_digits_only(const std::string &string);
+bool    isspecial(int i);
 
 //main.cpp
 int     check_arguments(int argc, char **argv);

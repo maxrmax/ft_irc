@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 13:01:04 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/18 05:57:22 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,52 @@ int Server::get_server_ready(int port)
     return 0;
 }
 
+// void Server::clean_up()
+// {
+//     //auto &pair figures out the type automatically
+//     // for (auto &pair : poll_client__mapping_via_fd)
+//     for (auto &[fd, client] : poll_clientUser__mapping_via_fd)
+//     {
+//         // Client destructor will close fd
+//         // or explicitly close here if you remove it from destructor
+//         if (fd != -1)
+//         {
+//             if (close(fd) == 0)
+//             {    
+//                 std::cout << "Client filedescriptor closed for a good nights sleep." << std::endl;
+//             }
+//             else 
+//             {
+//                 std::cout << "Client filedescriptor could not be closed." << std::endl;
+//             }
+//         }       
+//     }
+//     poll_clientUser__mapping_via_fd.clear(); // triggers destructors
+// }
+
 CommandDispatcher &Server::get_dispatcher()
 {
     return (dispatcher);
+};
+
+bool Server::NickIsAlreadyRegistered(std::string nick) const
+{
+    if (std::find(nicknames.begin(), nicknames.end(), nick) != nicknames.end())
+        return true;
+    return false;
+}
+
+void Server::Nicknames_storing(std::string nick)
+{
+    nicknames.push_back(nick);
+};
+
+void Server::NicknamesHistory_storing(std::string nickNew, std::string nickOld)
+{
+    nicknames_history[nickNew].push_back(nickOld);
+};
+
+void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
+{
+    nick_clientUser[clientUser.getNickname()] = &clientUser;
 };

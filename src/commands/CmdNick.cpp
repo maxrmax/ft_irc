@@ -68,6 +68,7 @@ void CmdNick::execute(Server& server, ClientUser& clientUser, const ParsedComman
     {
         // 433     ERR_NICKNAMEINUSE
         clientUser.get_outputBuffer().append(":server 433 * " + cmd.params[0] + " :Nickname is already in use\r\n");
+        return;
     }
 
     //store nickname
@@ -80,6 +81,7 @@ void CmdNick::execute(Server& server, ClientUser& clientUser, const ParsedComman
         server.NicknamesHistory_storing(clientUser.getNickname(), previouseNickname);
         
         //nickname changed → broadcast
+        // TODO: broadcast to all clients that have registered nickname, not just the one that changed nickname
     //     for (auto &[fd, registered_ClientUser] : server. )
     //     {
     //         if (clientUser == registe)

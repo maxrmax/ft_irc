@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ClientUserUser.cpp                                         :+:      :+:    :+:   */
+/*   ClientUser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/12 21:00:41 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/19 01:19:24 by ngoyat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,11 @@ void ClientUser::setUsername(const std::string& user)
     username = user;
 }
 
+void ClientUser::setRealname(const std::string& real)
+{
+    realname = real;
+}
+
 // void client::getNickname(std::string& nick) const
 // {
 //     nick = nickname;
@@ -77,10 +82,16 @@ std::string ClientUser::getUsername() const
     return username;
 }
 
+// std::string ClientUser::getRealname() const
+// {
+//     return realname;
+// }
+
 bool ClientUser::hasNick() const
 {
     return (!nickname.empty());
 };
+
 
 // Auth state
 

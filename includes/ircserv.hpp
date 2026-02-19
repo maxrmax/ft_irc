@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ircserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/18 05:56:11 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/19 01:47:39 by ngoyat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "ClientUser.hpp"
 #include "cmdNick.hpp"
 #include "CmdCap.hpp"
+#include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"
 #include "irc_packet.hpp"

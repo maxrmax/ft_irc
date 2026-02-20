@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
+#    By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/02/17 22:57:40 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/02/20 16:13:19 by ngoyat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC		= 	src/main.cpp \
 			src/checker/isSpecial.cpp \
 			src/commands/CmdCap.cpp \
 			src/commands/CmdNick.cpp \
+			src/commands/CmdUser.cpp \
 			src/commands/CommandDispatcher.cpp \
 			src/commands/handleClientInput.cpp \
 			src/network/client_user/ClientUser.cpp \

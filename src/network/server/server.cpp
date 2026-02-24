@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/18 05:57:22 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/24 10:24:12 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ int Server::get_server_fd()
 {
     return server_fd;
 };
-
+std::string Server::get_server_password()
+{
+    return server_password;
+};
 sockaddr_in Server::get_server_address()
 {
     return server_address;

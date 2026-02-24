@@ -11,10 +11,8 @@
 /* ************************************************************************** */
 
 //ClientUser.cpp
-// #include "../../includes/ClientUser.hpp"
-// #include "../../includes/OutputBuffer.hpp"
-#include "../../../includes/ircserv.hpp"
 
+#include "../../../includes/ircserv.hpp"
 
 ClientUser::~ClientUser()
 {
@@ -31,7 +29,6 @@ void ClientUser::set_ClientUser_fd(int filedescriptor)
 {
     ClientUser_fd = filedescriptor;
 };
-
 int ClientUser::get_ClientUser_fd()
 {
     return ClientUser_fd;
@@ -55,6 +52,10 @@ void ClientUser::setNickname(const std::string& nick)
 void ClientUser::setUsername(const std::string& user)
 {
     username = user;
+}
+void ClientUser::setRealname(const std::string& real)
+{
+    realname = real;
 }
 
 // void client::getNickname(std::string& nick) const

@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   irc_packet.hpp                                     :+:      :+:    :+:   */
+/*   CmdUser.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/03 12:01:42 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/01/03 12:03:36 by nsloniow         ###   ########.fr       */
+/*   Created: 2026/02/19 01:29:04 by ngoyat            #+#    #+#             */
+/*   Updated: 2026/02/24 10:36:16 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef CMDUSER_HPP
+#define CMDUSER_HPP
 
-class irc_packet
+#include "command.hpp"
+
+class CmdUser : public Command
 {
-    private:
-        char    user;
-        char    command;
-        int     command_int;
-        char    message;
-
-    public:
-        ~irc_packet();
-        irc_packet();
-        void set(char t_user, char t_command, char t_message);
+public:
+    void execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd);
 };
+
+#endif

@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/18 06:00:14 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/24 10:23:08 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ class Server
     private:
         int         server_fd;
         int         server_port;
+        std::string server_password;
         //INternet not incomming
         //man 7 ip explains the IPv4 address
         sockaddr_in server_address;
@@ -59,6 +60,7 @@ class Server
         Server(int filedescriptor, int port);
 
         int         get_server_fd();
+        std::string get_server_password();
         sockaddr_in get_server_address();
         
         int                 get_server_ready(int port);

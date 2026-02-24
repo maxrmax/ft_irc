@@ -18,10 +18,11 @@
 
 CommandDispatcher::CommandDispatcher()
 {
+    _commands["CAP"]  = new CmdCap();
     _commands["NICK"] = new CmdNick();
-    // _commands["USER"] = new CmdUser();
+    _commands["PASS"] = new CmdPass();
     // _commands["JOIN"] = new CmdJoin();
-    _commands["CAP"]    = new CmdCap();
+    _commands["USER"] = new CmdUser();
 }
 
 CommandDispatcher::~CommandDispatcher()

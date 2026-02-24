@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 13:28:19 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/24 22:18:51 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,5 @@ class ClientUser
             // bool getRegistered() const;
             bool            isRegistered() const;
             bool            isReadyToRegister() const;
+            // void            registernick(Server &server);
 };

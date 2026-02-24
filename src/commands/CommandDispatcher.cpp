@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+//CommandDispatcher.cpp
+
 // #include "../../includes/commandDispatcher.hpp"
 // #include "../../includes/cmdNick.hpp"
 // #include "../../includes/CmdUser.hpp"
@@ -45,14 +47,16 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
     std::map<std::string, Command*>::iterator it;
 
     if (cmd.command.empty())
+    {
+        clientUser.get_outputBuffer().append(":server 421  :No Command\r\n");
         return;
-
+    }
     it = _commands.find(cmd.command);
     if (it == _commands.end())    
     {
         //nickname or all
         std::string target = clientUser.hasNick() ? clientUser.getNickname() : "*";
-        std::string msgToSend = ":server 421 " + target + " :Unknown command\r\n";
+        std::string msgToSend = ":server 421 " + target + " :" + cmd.command + " Unknown command\r\n";
         clientUser.get_outputBuffer().append(msgToSend);
         return;
     }

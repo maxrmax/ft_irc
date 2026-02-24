@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 20:55:55 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 10:33:01 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/24 17:01:21 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,16 @@ void CmdPass::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (cmd.params.empty())
     {
         //ERR_NEEDMOREPARAMS
-        clientUser.get_outputBuffer().append("461 PASS :Not enough parameters\r\n"); 
-        return
+        clientUser.get_outputBuffer().append("461 PASS : " + cmd.command + " enough parameters\r\n"); 
+        return;
     }
+    //char serverPassword = server.get_server_password();
+    // printf("%s %d server_password %s\n", __FILE__, __LINE__, serverPassword);
+    // std::cout << __FILE__ << __LINE__ << std::endl << " server_password " <<server.get_server_password() << std::endl;
     if (cmd.params[0] != server.get_server_password())
     {
         // ERR_NEEDMOREPARAMS
-        clientUser.get_outputBuffer().append(": server 461 :Not enough parameters\r\n");
+        clientUser.get_outputBuffer().append(": server 461 : " + cmd.command + "Not enough parameters\r\n");
         return;
     }
     else
@@ -38,10 +41,13 @@ void CmdPass::execute(Server &server, ClientUser &clientUser, const ParsedComman
             if (!server.NickIsAlreadyRegistered(clientUser.getNickname()))
             {
                 server.Nicknames_storing(clientUser.getNickname());
-                clientUser.setPassAccepted();
+                // std::cout << std::endl << __FILE__ << __LINE__ << "PassAccepted before " << clientUser.isPassAccepted() << std::endl;
+                clientUser.setPassAccepted(true);
+                // std::cout << std::endl << __FILE__ << __LINE__ << "PassAccepted after  " << clientUser.isPassAccepted() << std::endl;
             }
         }
     }
+    server.printRegisteredNicks();
 }
 
 

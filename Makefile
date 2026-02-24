@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/02/17 22:57:40 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/02/24 12:20:11 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,8 +14,8 @@
 
 CC 		= 	c++
 STD		= 	-std=c++17
-# FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
-FLAGS	= 	-Wall -Wextra -Werror
+FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
+# FLAGS	= 	-Wall -Wextra -Werror
 NAME	= 	ircserv
 
 # directories
@@ -27,6 +27,8 @@ SRC		= 	src/main.cpp \
 			src/checker/isSpecial.cpp \
 			src/commands/CmdCap.cpp \
 			src/commands/CmdNick.cpp \
+			src/commands/CmdPass.cpp \
+			src/commands/CmdUser.cpp \
 			src/commands/CommandDispatcher.cpp \
 			src/commands/handleClientInput.cpp \
 			src/network/client_user/ClientUser.cpp \
@@ -35,7 +37,6 @@ SRC		= 	src/main.cpp \
 			src/network/message.cpp \
 			src/network/server/runServer.cpp \
 			src/network/server/server.cpp \
-			src/packet/irc_packet.cpp \
             src/parser/Parser.cpp \
 			
 OBJ		= 	$(SRC:.cpp=.o)

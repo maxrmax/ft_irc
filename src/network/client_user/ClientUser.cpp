@@ -20,9 +20,9 @@ ClientUser::~ClientUser()
     //errno
 };
 
-ClientUser::ClientUser():ClientUser_fd(-1){};
+ClientUser::ClientUser():ClientUser_fd(-1), registered(0){};
 
-ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor){};
+ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(0){};
 
 
 void ClientUser::set_ClientUser_fd(int filedescriptor)

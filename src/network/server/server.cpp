@@ -6,13 +6,12 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 10:24:12 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/24 17:02:17 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // #include "../../../includes/server.hpp"
 #include "../../../includes/ircserv.hpp"
-
 
 Server::~Server()
 {
@@ -33,10 +32,9 @@ Server::~Server()
     //errno
 };
 
-Server::Server():server_fd(-1), server_port(-1){};
+Server::Server():server_fd(-1), server_port(-1), server_password(""){};
 
-Server::Server(int filedescriptor, int port):server_fd(filedescriptor), server_port(port){};
-
+Server::Server(int filedescriptor, int port, std::string password):server_fd(filedescriptor), server_port(port), server_password(password){};
 int Server::get_server_fd()
 {
     return server_fd;
@@ -50,7 +48,7 @@ sockaddr_in Server::get_server_address()
     return server_address;
 };
 
-int Server::get_server_ready(int port)
+int Server::get_server_ready(int port, std::string password)
 {
     //cat /etc/protocols -> TCP
     //fd = socket(IPv4, in stream for TCP, protocol # for TCP)
@@ -68,6 +66,7 @@ int Server::get_server_ready(int port)
     
     // server_port = PORT_LISTEN;
     server_port = port;
+    server_password = password;
     //setting address informatiom
     std::memset(&server_address, 0, sizeof(server_address));    //setting memory to 0 to not have garbage
     server_address.sin_addr.s_addr  = INADDR_ANY;               //liste on all interfaces, Accept connections on all IPv4 addresses of this machine.
@@ -144,3 +143,12 @@ void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
 {
     nick_clientUser[clientUser.getNickname()] = &clientUser;
 };
+
+void Server::printRegisteredNicks()
+{
+    std::cout << "Registered nicknames: ";
+    for (std::vector<std::string>::const_iterator it = nicknames.begin(); it != nicknames.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+}

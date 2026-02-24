@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/OutputBuffer.hpp"
+// #include "../../../includes/OutputBuffer.hpp"
 #include "../../../includes/ircserv.hpp" 
-#include <stdexcept>
+// #include <stdexcept>
 
 OutputBuffer::~OutputBuffer() {}
 OutputBuffer::OutputBuffer() {}
@@ -28,26 +28,26 @@ void OutputBuffer::append(const std::string& data)
 //     return _buffer.find("\r\n") != std::string::npos;
 // }
 
-std::string OutputBuffer::popLine()
-{
-    size_t pos = buffer.find("\r\n");
-    if (pos == std::string::npos)
-        return "";
+// std::string OutputBuffer::popLine()
+// {
+//     size_t pos = buffer.find("\r\n");
+//     if (pos == std::string::npos)
+//         return "";
 
 
-    if (pos > IRC_MAX_LINE)
-    {
-        // Discard invalid line
-        buffer.erase(0, pos + 2);
-        return "ERROR :Line too long";
-    }
+//     if (pos > IRC_MAX_LINE)
+//     {
+//         // Discard invalid line
+//         buffer.erase(0, pos + 2);
+//         return "ERROR :Line too long";
+//     }
 
-    std::string line = buffer.substr(0, pos);
-    buffer.erase(0, pos + 2);
-    return line;
-}
+//     std::string line = buffer.substr(0, pos);
+//     buffer.erase(0, pos + 2);
+//     return line;
+// }
 
-const std::string &OutputBuffer::get_buffer() const
+std::string &OutputBuffer::get_buffer()
 {
     return buffer;
 }

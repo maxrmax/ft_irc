@@ -87,17 +87,18 @@ void CmdNick::execute(Server& server, ClientUser& clientUser, const ParsedComman
     //     }        
     }
 
-    if (clientUser.isReadyToRegister() && !clientUser.getNickname().empty() && !clientUser.getUsername().empty() && clientUser.isRegistered() == false)
+    // if (clientUser.isReadyToRegister() && !clientUser.getNickname().empty() && !clientUser.getUsername().empty() && clientUser.isRegistered() == false)
+    if (clientUser.isReadyToRegister() && !clientUser.isRegistered())
     {
-        server.Nick_ClientUser_mapping(clientUser);
         clientUser.setRegistered(true);
+        server.Nick_ClientUser_mapping(clientUser);
         // send welcome message 001
         clientUser.get_outputBuffer().append(":server 001 " + clientUser.getNickname() + 
-            " :Welcome to ircserver " + clientUser.getNickname() + "!" + clientUser.getUsername() + "@ircserver\r\n");
+            " :Welcome to ircserver NICK" + clientUser.getNickname() + "!" + clientUser.getUsername() + "@ircserver\r\n");
         return;
         // ERR_ALREADYREGISTRED
     }
-
+    server.printRegisteredNicks();
 
 // TODO: check for valid nicknames + add error handling + add to client.cpp
     // client.setNick(cmd.params[0]);

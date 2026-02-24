@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 10:23:08 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/02/24 17:06:51 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,14 @@ class Server
     public:
         ~Server();
         Server();
-        Server(int filedescriptor, int port);
+        Server(int filedescriptor, int port, std::string password);
 
-        int         get_server_fd();
-        std::string get_server_password();
-        sockaddr_in get_server_address();
+        int                 get_server_fd();
+        std::string         get_server_password();
+        sockaddr_in         get_server_address();
+        void                printRegisteredNicks();
         
-        int                 get_server_ready(int port);
+        int                 get_server_ready(int portt, std::string password);
         // void                clean_up();
 
         CommandDispatcher   &get_dispatcher();

@@ -20,8 +20,9 @@ CommandDispatcher::CommandDispatcher()
 {
     _commands["NICK"] = new CmdNick();
     _commands["USER"] = new CmdUser();
-    // _commands["JOIN"] = new CmdJoin();
+    _commands["JOIN"] = new CmdJoin();
     _commands["CAP"]    = new CmdCap();
+    _commands["PRIVMSG"] = new CmdPrivmsg();
 }
 
 CommandDispatcher::~CommandDispatcher()

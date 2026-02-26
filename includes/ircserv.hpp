@@ -16,11 +16,16 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <map>
+#include <set>
 
 #include "ClientUser.hpp"
 #include "cmdNick.hpp"
 #include "CmdCap.hpp"
 #include "CmdUser.hpp"
+#include "CmdPrivmsg.hpp"
+#include "CmdJoin.hpp"
+#include "Channel.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"
 #include "irc_packet.hpp"

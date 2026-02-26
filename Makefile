@@ -26,7 +26,9 @@ SRC		= 	src/main.cpp \
 			src/checker/isDigit.cpp \
 			src/checker/isSpecial.cpp \
 			src/commands/CmdCap.cpp \
+			src/commands/CmdJoin.cpp \
 			src/commands/CmdNick.cpp \
+			src/commands/CmdPrivmsg.cpp \
 			src/commands/CmdUser.cpp \
 			src/commands/CommandDispatcher.cpp \
 			src/commands/handleClientInput.cpp \
@@ -34,7 +36,9 @@ SRC		= 	src/main.cpp \
 			src/network/client_user/InputBuffer.cpp \
 			src/network/client_user/OuputBuffer.cpp \
 			src/network/message.cpp \
+			src/network/channel/Channel.cpp \
 			src/network/server/runServer.cpp \
+			src/network/server/Server_channels.cpp \
 			src/network/server/server.cpp \
 			src/packet/irc_packet.cpp \
             src/parser/Parser.cpp \

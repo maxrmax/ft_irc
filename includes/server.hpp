@@ -51,8 +51,11 @@ class Server
         // std::vector <std::string, std::string> nicknames_history;
         std::unordered_map <std::string, std::vector <std::string>> nicknames_history;
         std::unordered_map <std::string, ClientUser*> nick_clientUser;
-        
-    
+        std::unordered_map<std::string, Channel>    _channels;
+        // Maps fd → ClientUser* for broadcast routing
+        // Populate via registerClientFd() when a client connects.
+        std::unordered_map<int, ClientUser*>        _clients;
+
     public:
         ~Server();
         Server();
@@ -69,4 +72,19 @@ class Server
         void                Nicknames_storing(std::string nick);
         void                NicknamesHistory_storing(std::string nicknew, std::string nickOld);
         void                Nick_ClientUser_mapping(ClientUser &clientUser);
+
+        // Channel
+        bool        channelExists(const std::string& name) const;
+        Channel&    getOrCreateChannel(const std::string& name, ClientUser& founder);
+        Channel&    getChannel(const std::string& name);
+        void        broadcastToChannel(const std::string& channelName, const std::string& msg);
+        void        broadcastToChannelExcept(const std::string& channelName, const std::string& msg, int excludeFd);
+        std::string getChannelMemberNicks(const std::string& channelName) const;
+
+        // Client fd registry (call from runServer when accepting/closing clients)
+        void        registerClientFd(int fd, ClientUser* client);
+        void        unregisterClientFd(int fd);
+
+        // Nick → ClientUser lookup (already exists as nick_clientUser map, just expose it)
+        ClientUser* getClientByNick(const std::string& nick);
 };

@@ -26,7 +26,7 @@ static int sendMsg(ClientUser &clientUser)
     if (clientUser.get_outputBuffer().get_buffer().length() > 0)
     {
         // std::cout << "out BEFORE send: " << clientUser.get_outputBuffer().get_buffer() << std::endl << std::endl;
-        size_t send_len = send(clientUser.get_ClientUser_fd(), clientUser.get_outputBuffer().get_buffer().c_str(), clientUser.get_outputBuffer().get_buffer().size(), 0);
+        ssize_t send_len = send(clientUser.get_ClientUser_fd(), clientUser.get_outputBuffer().get_buffer().c_str(), clientUser.get_outputBuffer().get_buffer().size(), 0);
         if (send_len < 0)
         {
             if (errno == EAGAIN)
@@ -47,7 +47,7 @@ static int sendMsg(ClientUser &clientUser)
     return 0;
 }
 
-int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map<int, ClientUser> &poll_client__mapping_via_fd)
+int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
 {
     //create sockets for our client/user, get fd and some more stuff
     // init server_address as it is a pointer
@@ -83,7 +83,8 @@ int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unor
     
     //create Client object
     ClientUser client_created(client_accept_fd);
-    poll_client__mapping_via_fd[client_accept_fd] = client_created;
+    poll_clientUser__mapping_via_fd[client_accept_fd] = client_created;
+    irc_server.registerClientFd(client_accept_fd, &poll_clientUser__mapping_via_fd[client_accept_fd]);
     //we do not create client here
 
     return 0;
@@ -110,7 +111,7 @@ int clientUsers_waiting(Server &irc_server, std::vector<pollfd> &poll_fd, std::u
 }
 
 
-int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
+int receive_message(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
 {
     // int polled_fd = poll_fd[fd].fd;
 
@@ -155,7 +156,11 @@ int receive_message(std::vector<pollfd> &poll_fd, int fd, std::unordered_map<int
     {   
         if (read_len == 0)
         {
-            // std::cout << "Client closed connection" << std::endl;
+            irc_server.unregisterClientFd(poll_fd[fd].fd);
+            std::cout << "Client disconnected fd = " << poll_fd[fd].fd << std::endl;
+            poll_clientUser__mapping_via_fd.erase(poll_fd[fd].fd);
+            close(poll_fd[fd].fd);
+            poll_fd.erase(poll_fd.begin() + fd);
         }
         else // read_len < 0
         {
@@ -183,7 +188,7 @@ int process_ready_fd(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, s
     }
     else
     {
-        if (receive_message(poll_fd, fd, poll_clientUser__mapping_via_fd) < 0)
+        if (receive_message(irc_server, poll_fd, fd, poll_clientUser__mapping_via_fd) < 0)
         {
             return -1;
         }

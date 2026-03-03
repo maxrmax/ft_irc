@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     
     //get server ready
     Server  irc_server;
-    if (irc_server.get_server_ready(std::stoi(argv[1])) == -1)
+    if (irc_server.get_server_ready(std::stoi(argv[1]), argv[2]) == -1)
         return -1;
     std::cout << "Server created. fd = " << irc_server.get_server_fd() << std::endl;
 

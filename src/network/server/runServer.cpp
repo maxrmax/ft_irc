@@ -6,27 +6,22 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/18 06:01:40 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/03 19:00:07 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // runServer.cpp
 
-// #include "../../includes/poll.hpp"
-// #include "../../includes/server.hpp"
 #include "../../../includes/ircserv.hpp"
 
 
 //simple first send message
 static int sendMsg(ClientUser &clientUser)
-{
-    //recv() pull bytes from kernel
-    //send() push bytes to kernel
-    
+{    
     if (clientUser.get_outputBuffer().get_buffer().length() > 0)
     {
-        // std::cout << "out BEFORE send: " << clientUser.get_outputBuffer().get_buffer() << std::endl << std::endl;
         ssize_t send_len = send(clientUser.get_ClientUser_fd(), clientUser.get_outputBuffer().get_buffer().c_str(), clientUser.get_outputBuffer().get_buffer().size(), 0);
+        // printf("%s %d send_len %zd\n", __FILE__, __LINE__, send_len);
         if (send_len < 0)
         {
             if (errno == EAGAIN)
@@ -40,7 +35,10 @@ static int sendMsg(ClientUser &clientUser)
         }
         else
         {
-            clientUser.get_outputBuffer().popLine();
+            // printf("%s %d outBuff BEFORE pop %s\n", __FILE__, __LINE__, clientUser.get_outputBuffer().get_buffer().c_str());
+            // clientUser.get_outputBuffer().popLine();
+            clientUser.get_outputBuffer().get_buffer().erase(0, send_len);
+            // printf("%s %d outBuff AFTER  pop %s\n", __FILE__, __LINE__, clientUser.get_outputBuffer().get_buffer().c_str());
         }
         // std::cout << "out after send: " << clientUser.get_outputBuffer().get_buffer() << std::endl;
     }
@@ -120,16 +118,12 @@ int receive_message(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, st
 
     char   msg[1024]; 
     int    read_len  = recv(poll_fd[fd].fd,msg, sizeof(msg)-1,0);
-    msg[read_len] = '\0';
-    // std::cout << poll_fd[fd].fd << " received: " << msg << std::endl;
-
-    // save message in message_received for that client, mapped via fd
-    // poll_client__mapping_via_fd[poll_fd[fd].fd].set_message_received(msg);
-    //use class InputBuffer instead of msg received and msg put together
+    // msg[read_len] = '\0';
     
     if (read_len > 0)
     {
         msg[read_len] = '\0';
+        // std::cout << poll_fd[fd].fd << " received: " << msg << std::endl;
         // std::cout << "current Buffer:     " << poll_clientUser__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
         
         //appened to InputBuffer
@@ -141,16 +135,6 @@ int receive_message(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, st
         // std::cout << "Received: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together() << std::endl;
         // std::cout << "recv appended to current Buffer: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
         // std::cout << "recv appended to current Buffer: " << clientUser.get_inputBuffer().get_buffer() << std::endl;
-        
-    //     handle inputBuffer and execute commands
-    //     outside of receive message as the inputBuffer is saved inside each ClientUser    
-    //     //parse msg for command
-    //     while (clientUser.get_inputBuffer().hasLine())
-    //     {
-    //         ParsedCommand cmd = Parser::parseLine(clientUser.get_inputBuffer().popLine());
-    //         printCommand(cmd);
-    //         CommandDispatcher::dispatch(irc_server)
-    //     }
     }
     else 
     {   

@@ -3,18 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/19 01:19:24 by ngoyat           ###   ########.fr       */
+/*   Updated: 2026/03/03 18:59:35 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //ClientUser.cpp
-// #include "../../includes/ClientUser.hpp"
-// #include "../../includes/OutputBuffer.hpp"
-#include "../../../includes/ircserv.hpp"
 
+#include "../../../includes/ircserv.hpp"
 
 ClientUser::~ClientUser()
 {
@@ -22,16 +20,15 @@ ClientUser::~ClientUser()
     //errno
 };
 
-ClientUser::ClientUser():ClientUser_fd(-1){};
+ClientUser::ClientUser():ClientUser_fd(-1), registered(0){};
 
-ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor){};
+ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(0){};
 
 
 void ClientUser::set_ClientUser_fd(int filedescriptor)
 {
     ClientUser_fd = filedescriptor;
 };
-
 int ClientUser::get_ClientUser_fd()
 {
     return ClientUser_fd;
@@ -56,7 +53,6 @@ void ClientUser::setUsername(const std::string& user)
 {
     username = user;
 }
-
 void ClientUser::setRealname(const std::string& real)
 {
     realname = real;
@@ -123,3 +119,27 @@ bool ClientUser::isReadyToRegister() const
         return false;
     return true;
 }
+
+// void ClientUser::registerNick(Server &server)
+// {
+//       // Check if ready to register after setting username and realname
+//     // if (clientUser.isReadyToRegister() &&
+//     //     !clientUser.getNickname().empty() &&
+//     //     !clientUser.getUsername().empty() &&
+//     //     !clientUser.isRegistered())
+//     if (isReadyToRegister() && !isRegistered())
+//     {
+// 		// Register the client with the server
+//         // std::cout << __FILE__ << __LINE__ << "setRegistered before" << clientUser.isRegistered() << std::endl;
+//         setRegistered(true);
+//         server.Nick_ClientUser_mapping(clientUser);
+//         // std::cout << __FILE__ << __LINE__ << "setRegistered after " << clientUser.isRegistered() << std::endl;
+
+//         clientUser.get_outputBuffer().append(
+//             ":server 001 " + clientUser.getNickname() +
+//             " :Welcome to ircserver" +
+//             clientUser.getNickname() + "!" +
+//             clientUser.getUsername() + "@ircserver\r\n");
+//     }
+//     server.printRegisteredNicks();
+// }

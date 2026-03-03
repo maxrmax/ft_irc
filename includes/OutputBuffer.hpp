@@ -9,6 +9,8 @@
 /*   Updated: 2026/02/05 13:14:22 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+//OutputBuffer.hpp
 #pragma once
 
 #include <string>
@@ -23,12 +25,11 @@ class OutputBuffer
         ~OutputBuffer();
         OutputBuffer();
         
-        
-        const std::string   &get_buffer() const;
+        std::string &get_buffer();
 
-        void                append(const std::string& data);
-        // bool                hasLine() const;
-        std::string         popLine();
+        void        append(const std::string& data);
+        // bool     hasLine() const;
+        std::string popLine();
 
 
 };

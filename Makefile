@@ -3,19 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+         #
+#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/02/20 16:13:19 by ngoyat           ###   ########.fr        #
+#    Updated: 2026/03/03 19:00:18 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-
-
 CC 		= 	c++
 STD		= 	-std=c++17
-# FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
-FLAGS	= 	-Wall -Wextra -Werror
+FLAGS	= 	-Wall -Wextra -Werror -g -fsanitize=address
+# FLAGS	= 	-Wall -Wextra -Werror
 NAME	= 	ircserv
 
 # directories
@@ -28,6 +26,7 @@ SRC		= 	src/main.cpp \
 			src/commands/CmdCap.cpp \
 			src/commands/CmdJoin.cpp \
 			src/commands/CmdNick.cpp \
+			src/commands/CmdPass.cpp \
 			src/commands/CmdPrivmsg.cpp \
 			src/commands/CmdUser.cpp \
 			src/commands/CommandDispatcher.cpp \
@@ -40,8 +39,7 @@ SRC		= 	src/main.cpp \
 			src/network/server/runServer.cpp \
 			src/network/server/Server_channels.cpp \
 			src/network/server/server.cpp \
-			src/packet/irc_packet.cpp \
-            src/parser/Parser.cpp \
+            src/parser/Parser.cpp 
 			
 OBJ		= 	$(SRC:.cpp=.o)
 

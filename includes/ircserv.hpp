@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ircserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/19 01:47:39 by ngoyat           ###   ########.fr       */
+/*   Updated: 2026/03/03 18:51:51 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,15 @@
 #include <set>
 
 #include "ClientUser.hpp"
-#include "cmdNick.hpp"
 #include "CmdCap.hpp"
-#include "CmdUser.hpp"
 #include "CmdPrivmsg.hpp"
 #include "CmdJoin.hpp"
 #include "Channel.hpp"
+#include "cmdNick.hpp"
+#include "CmdPass.hpp"
+#include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"
-#include "irc_packet.hpp"
 #include "poll.hpp"
 #include "server.hpp"
 

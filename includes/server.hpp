@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 17:06:51 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/04 18:35:16 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,21 @@
 //saver than define a macro is to do a const
 //this is in its very own scope for each programm this header is included
 //it is not a global variable which would be extern <global variable name>
-const int   ADDRESS_FAMILY  =   AF_INET;
-const int   PORT_LISTEN     =   6667;  
-
+inline constexpr int    ADDRESS_FAMILY  =   AF_INET;
+inline constexpr int    PORT_LISTEN     =   6667;  
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * mring:
+ *      it is a global variable (const int has internal linkage, implicit static)
+ *      it still is a global variable, after the change, just optimized
+ *      extern is used inside a file that tries to access this variables
+ * Changes:
+ *      const int to inline constexpr int
+ * constexpr:
+ *      compile-time evaluation, stronger guarantee than const
+ * inline:
+ *      one shared instance across all translation units
+ *      without inline each .cpp that includes this header would get a copy
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class Server
 {

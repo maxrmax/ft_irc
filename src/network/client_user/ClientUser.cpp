@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/03 18:59:35 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/04 18:43:50 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ ClientUser::~ClientUser()
     //errno
 };
 
-ClientUser::ClientUser():ClientUser_fd(-1), registered(0){};
+ClientUser::ClientUser():ClientUser_fd(-1), registered(false), passAccepted(false){};
 
-ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(0){};
+ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(false), passAccepted(false){};
 
 
 void ClientUser::set_ClientUser_fd(int filedescriptor)

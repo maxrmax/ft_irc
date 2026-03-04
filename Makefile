@@ -6,13 +6,13 @@
 #    By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/04 17:14:15 by mring            ###   ########.fr        #
+#    Updated: 2026/03/04 18:37:16 by mring            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC 		= 			c++
 STD		= 			-std=c++17
-FLAGS	= 			-Wall -Wextra -Werror -g -fsanitize=address
+FLAGS	= 			-Wall -Wextra -Werror #-g -fsanitize=address
 NAME	= 			ircserv
 
 # directories

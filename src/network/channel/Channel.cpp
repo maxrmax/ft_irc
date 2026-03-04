@@ -1,4 +1,3 @@
-
 #include "../../../includes/ircserv.hpp"
 
 Channel::Channel() : _operator_fd(-1) {}

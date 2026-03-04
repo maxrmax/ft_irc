@@ -1,0 +1,6 @@
+**.pdf
+**/obj
+**.o
+.vscode/*
+!.vscode/settings.json
+ircserv

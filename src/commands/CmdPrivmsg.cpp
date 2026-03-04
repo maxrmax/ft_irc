@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPrivmsg.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/03 19:25:47 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/04 17:04:32 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
     {
         clientUser.get_outputBuffer().append(
             ":server 451 * :You have not registered\r\n");
-        return;RFC 1459
+        return;
     }
 
     // PRIVMSG <target> :<text>  → params[0] = target, params[1] = text

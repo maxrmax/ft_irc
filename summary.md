@@ -273,7 +273,6 @@ From `research.md` and the eval sheet, nothing in the list below passes evaluati
 - [ ] Welcome sequence after registration: `001`, `002`, `003`, `004`, MOTD (`375`, `372`, `376` or `422`), LUSER (`251`, `252`, `254`, `255`)
 - [ ] Broadcast nick changes to other connected clients
 - [ ] `ERR_NOTREGISTERED (451)` for any command before registration (only JOIN and PRIVMSG currently check this)
-- [ ] `MODE` for users (invisible `+i`, etc.) — lower priority
 
 ---
 
@@ -350,7 +349,7 @@ startup
 | `src/commands/CmdJoin.cpp` | nsloniow | JOIN with multi-channel, 331/332/353/366 |
 | `src/commands/CmdPrivmsg.cpp` | nsloniow / mring | PRIVMSG to channel or nick |
 | `src/checker/isDigit.cpp` | nsloniow | Port number validation |
-| `src/checker/isSpecial.cpp` | nsloniow | Nick special char check (**inverted logic bug**) |
+| `src/checker/isSpecial.cpp` | nsloniow / mring| Nick special char check (**inverted logic bug**) / fixed |
 | `src/network/message.cpp` | — | Empty file |
 | `readings/bircd/` | 42 school | C reference server, read-only |
 | `readings/subject_stuff.txt` | team | Early notes on subject |
@@ -390,7 +389,7 @@ PASS mypas<Ctrl+D>sword<Enter>
 
 1. **Fix `isspecial()` bug** — quickest fix, breaks nick validation right now.
 2. **Add `CmdPing`/`CmdPong`** — irssi will not stay connected without this.
-3. **Fix `OutputBuffer::append()` double `\r\n`** — clients will see garbled output.
+3. **Fix `OutputBuffer::append()` double `\r\n`** — clients will see garbled output.outputbuffer:;append()
 4. **Fix pointer invalidation** — use `std::map` or move the client map into `Server`.
 5. **Add `PART` and `QUIT`** — needed for basic channel usage.
 6. **Add missing mandatory commands** — `TOPIC`, `INVITE`, `KICK`, `MODE`.

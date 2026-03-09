@@ -6,7 +6,7 @@
 #    By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/04 18:37:16 by mring            ###   ########.fr        #
+#    Updated: 2026/03/09 19:45:33 by mring            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ SRC		= 			src/main.cpp \
 					src/checker/isSpecial.cpp \
 					src/commands/CmdCap.cpp \
 					src/commands/CmdJoin.cpp \
+					src/commands/CmdMode.cpp \
 					src/commands/CmdNick.cpp \
 					src/commands/CmdPass.cpp \
 					src/commands/CmdPrivmsg.cpp \

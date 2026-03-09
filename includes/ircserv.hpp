@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ircserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/03 18:51:51 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/09 19:54:48 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include "CmdPrivmsg.hpp"
 #include "CmdJoin.hpp"
 #include "Channel.hpp"
+#include "cmdMode.hpp"
 #include "cmdNick.hpp"
 #include "CmdPass.hpp"
 #include "CmdUser.hpp"

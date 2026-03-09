@@ -34,7 +34,7 @@ CommandDispatcher::CommandDispatcher()
     // _commands["TOPIC"]      = new CmdTopic();
     // _commands["INVITE"]      = new CmdInvite();
     // _commands["KICK"]      = new CmdKick();
-    // _commands["MODE"]      = new CmdMode();
+    _commands["MODE"]      = new CmdMode();
 }
 
 CommandDispatcher::~CommandDispatcher()

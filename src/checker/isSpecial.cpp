@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   isSpecial.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 22:52:02 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/17 22:56:06 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/07 10:30:30 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,6 @@ bool isspecial(int i)
 {
     if (i == '-' || i == '[' || i == ']' || i == '`' || i == '^' || i == '{' 
         || i == '}' || i == '\\' )
-        return false;
-    return true;
+        return true;
+    return false;
 }

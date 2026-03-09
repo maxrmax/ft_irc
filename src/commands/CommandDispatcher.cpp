@@ -26,6 +26,15 @@ CommandDispatcher::CommandDispatcher()
     _commands["PASS"]       = new CmdPass();
     _commands["PRIVMSG"]    = new CmdPrivmsg();
     _commands["USER"]       = new CmdUser();
+    // _commands["PART"]       = new CmdPart();
+    // _commands["QUIT"]       = new CmdQuit();
+    // _commands["PING"]       = new CmdPing();
+    // _commands["PONG"]       = new CmdPong();
+    // _commands["NOTICE"]     = new CmdNotice();
+    // _commands["TOPIC"]      = new CmdTopic();
+    // _commands["INVITE"]      = new CmdInvite();
+    // _commands["KICK"]      = new CmdKick();
+    // _commands["MODE"]      = new CmdMode();
 }
 
 CommandDispatcher::~CommandDispatcher()
@@ -39,6 +48,7 @@ CommandDispatcher::~CommandDispatcher()
         it++;
     }
 }
+
 // dispatch command to the right command class
 // server knows all clients, channels, etc.
 // server calls handleClientInput()

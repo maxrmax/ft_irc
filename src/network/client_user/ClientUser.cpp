@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/04 18:43:50 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/09 21:00:01 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ ClientUser::~ClientUser()
     //errno
 };
 
-ClientUser::ClientUser():ClientUser_fd(-1), registered(false), passAccepted(false){};
+ClientUser::ClientUser():ClientUser_fd(-1), registered(false), passAccepted(false), toDisconnect(false){};
 
-ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(false), passAccepted(false){};
+ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(false), passAccepted(false), toDisconnect(false){};
 
 
 void ClientUser::set_ClientUser_fd(int filedescriptor)
@@ -118,6 +118,19 @@ bool ClientUser::isReadyToRegister() const
     if (nickname.empty() || username.empty())
         return false;
     return true;
+}
+
+void ClientUser::setToDisconnect(bool disconnect)
+{
+    // WIP TODO
+    // proper disconnection logic
+    toDisconnect = disconnect;
+}
+
+bool ClientUser::isToDisconnect() const
+{
+    // WIP TODO
+    return toDisconnect;
 }
 
 // void ClientUser::registerNick(Server &server)

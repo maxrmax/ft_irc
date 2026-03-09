@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdUser.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 01:22:33 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/03 18:55:04 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/09 20:43:59 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void CmdUser::execute(Server& server, ClientUser& clientUser, const ParsedComman
 		// Register the client with the server
         server.Nick_ClientUser_mapping(clientUser);
         clientUser.setRegistered(true);
+        server.printRegisteredNicks();
 
         clientUser.get_outputBuffer().append(
             ":server 001 " + clientUser.getNickname() +

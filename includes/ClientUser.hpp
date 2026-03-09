@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUser.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/03 18:50:27 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/09 21:00:07 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class ClientUser
         
         bool            registered;
         bool            passAccepted;
+        bool            toDisconnect;
         
   
         public:
@@ -69,5 +70,9 @@ class ClientUser
             // bool getRegistered() const;
             bool            isRegistered() const;
             bool            isReadyToRegister() const;
+            // WIP TODO
+            void            setToDisconnect(bool disconnect);
+            bool            isToDisconnect() const;
+
             // void            registernick(Server &server);
 };

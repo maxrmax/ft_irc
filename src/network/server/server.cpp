@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 17:02:17 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/09 20:27:30 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int Server::get_server_ready(int port, std::string password)
     // listen
     //backlog is the queu for the kernel 0 - 128 mostly. It will be caped by kernel if lower
     //bottleneck is accept()
-    if (listen(server_fd, 1) < 0)
+    if (listen(server_fd, 1) < 0) // might want to change to SOMAXCONN or ~10 later to not drop connection attempts
     {
         std::cout << "Listen failed." << std::endl;
         return -1;
@@ -131,7 +131,8 @@ bool Server::NickIsAlreadyRegistered(std::string nick) const
 
 void Server::Nicknames_storing(std::string nick)
 {
-    nicknames.push_back(nick);
+    if (!NickIsAlreadyRegistered(nick))
+        nicknames.push_back(nick);
 };
 
 void Server::NicknamesHistory_storing(std::string nickNew, std::string nickOld)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdUser.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 01:22:33 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/10 14:57:55 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/10 21:50:33 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void CmdUser::execute(Server &server, ClientUser &clientUser, const ParsedComman
 
     clientUser.setUsername(username);
     clientUser.setRealname(realname);
+    clientUser.setHostname(cmd.params[2]);
 
     // Check if ready to register after setting nickname and username
     // USER firstname hostname servername :Real Name

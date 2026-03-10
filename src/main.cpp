@@ -11,17 +11,14 @@
 /* ************************************************************************** */
 
 #include "../includes/ircserv.hpp"
-// #include <iostream>
-// #include "Parser.hpp"
 
-// static void printCommand(const ParsedCommand& cmd)
 void printCommand(const ParsedCommand& cmd)
 {
     size_t i;
 
     if (cmd.command.empty())
     {
-        std::cout << "[invalid]\n";
+        std::cout << "[empty command]\n";
         return;
     }
 
@@ -81,7 +78,6 @@ int main(int argc, char **argv)
         return -1;
     std::cout << "Server created. fd = " << irc_server.get_server_fd() << std::endl;
 
-    //run server
     return(runServer(irc_server));
     
     // //delete what I alloced with new

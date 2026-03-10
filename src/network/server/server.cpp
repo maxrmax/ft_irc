@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 13:23:27 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/10 14:57:35 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,13 +155,15 @@ void Server::printRegisteredNicks()
 {
     std::cout << "Registered nicknames: ";
     /* loooook at this, it's the difference of C++98 and C++17
-     * for (std::unordered_map<std::string, ClientUser*>::const_iterator it = nick_clientUser.begin();
      *
      * the old one we had with the vector
      * for (std::vector<std::string>::const_iterator it = nicknames.begin(); it != nicknames.end(); ++it)
      *
+     * C++98
+     * for (std::unordered_map<std::string, ClientUser*>::const_iterator it = nick_clientUser.begin();
+     *
      * and the C++11 and C++17 simplification
-     * non modifiable, reference to each element - not a copy
+     * const (non modifiable), auto& (reference - not a copy)
      * binds nick to pair.first, client to pair.second
      * ": <container>" to iterate
      * could do [nick, _] by convention but its not enforced

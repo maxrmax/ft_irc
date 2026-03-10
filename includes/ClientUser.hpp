@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/09 21:00:07 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/10 15:15:27 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@ class ClientUser
         InputBuffer     inputBuffer;
         OutputBuffer    outputBuffer;
         
-        std::string     nick_name;
-        std::string     user_name;
         std::string     nickname;
         std::string     username;
         std::string     realname;
@@ -55,24 +53,20 @@ class ClientUser
             void            setUsername(const std::string& user);
             void            setRealname(const std::string& real);
 
-            // void getNickname(std::string& nick) const;
-            // void getUsername(std::string& user) const;
             std::string     getNickname() const;
             std::string     getUsername() const;
+            std::string     getRealname() const;
             bool            hasNick() const;
 
             // Auth state
             void            setPassAccepted(bool accepted);
-            // bool getPassAccepted() const;
             bool            isPassAccepted() const;
 
             void            setRegistered(bool reg);
-            // bool getRegistered() const;
             bool            isRegistered() const;
             bool            isReadyToRegister() const;
+
             // WIP TODO
             void            setToDisconnect(bool disconnect);
             bool            isToDisconnect() const;
-
-            // void            registernick(Server &server);
 };

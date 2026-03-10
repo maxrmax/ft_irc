@@ -10,8 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+//server.cpp
+
+// #include <algorithm>
 // #include "../../../includes/server.hpp"
 #include "../../../includes/ircserv.hpp"
+
 
 Server::~Server()
 {
@@ -138,6 +142,18 @@ bool Server::NickIsAlreadyRegistered(std::string nick) const
 // {
 //     if (!NickIsAlreadyRegistered(nick))
 //         nicknames.push_back(nick);
+// };
+
+// void Server::Nicknames_storing(std::string nick)
+// {
+//     //vector into set as it is easier to erase by string
+//     //so push_back no work anymore
+//     nicknames.insert(nick);
+// };
+
+// void Server::NicknameUnregister(std::string nick)
+// {
+//     nicknames.erase(nick);
 // };
 
 void Server::NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser)

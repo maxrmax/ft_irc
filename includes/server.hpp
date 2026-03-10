@@ -95,6 +95,8 @@ class Server
         bool                NickIsAlreadyRegistered(std::string nick) const;
         // void                Nicknames_storing(std::string nick); //depracated
         void                NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
+        // void                Nicknames_storing(std::string nick);
+        // void                NicknameUnregister(std::string nick);
         void                Nick_ClientUser_mapping(ClientUser &clientUser);
 
         // Channel

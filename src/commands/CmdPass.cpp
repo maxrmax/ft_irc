@@ -20,7 +20,7 @@ void CmdPass::execute(Server &server, ClientUser &clientUser, const ParsedComman
 {
     if (cmd.params.empty())
     {
-        // ERR_NEEDMOREPARAMS
+        // ERR_NEEDMOREPARAMS -- ERR_PASSWDMISMATCH is for OPER command, not pass
         clientUser.get_outputBuffer().append("461 PASS : " + cmd.command + " Not enough parameters\r\n");
         return;
     }
@@ -36,3 +36,18 @@ void CmdPass::execute(Server &server, ClientUser &clientUser, const ParsedComman
     }
     clientUser.setPassAccepted(true);
 }
+//     if (clientUser.isReadyToRegister() && !clientUser.isRegistered())
+//     {
+//         // Register the client with the server
+//         server.Nick_ClientUser_mapping(clientUser);
+//         clientUser.setRegistered(true);
+
+//         clientUser.get_outputBuffer().append(
+//             ":server 001 " + clientUser.getNickname() +
+//             " :Welcome to ircserver " +
+//             clientUser.getNickname() + "!" +
+//             clientUser.getUsername() + "@ircserver\r\n");
+//     }
+
+//     // server.printRegisteredNicks();
+// }

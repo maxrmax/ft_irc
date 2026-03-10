@@ -27,6 +27,7 @@
 #include "CmdMode.hpp"
 #include "CmdNick.hpp"
 #include "CmdPass.hpp"
+#include "CmdPing.hpp"
 #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"

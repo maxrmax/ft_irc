@@ -140,8 +140,9 @@ int receive_message(Server &irc_server, std::vector<pollfd> &poll_fd, int fd, st
     {   
         if (read_len == 0)
         {
-            irc_server.unregisterClientFd(poll_fd[fd].fd);
             std::cout << "Client disconnected fd = " << poll_fd[fd].fd << std::endl;
+            irc_server.unregisterClientFd(poll_fd[fd].fd);
+            // irc_server.NicknameUnregister(poll_clientUser__mapping_via_fd[poll_fd[fd].fd].getNickname());
             poll_clientUser__mapping_via_fd.erase(poll_fd[fd].fd);
             close(poll_fd[fd].fd);
             poll_fd.erase(poll_fd.begin() + fd);

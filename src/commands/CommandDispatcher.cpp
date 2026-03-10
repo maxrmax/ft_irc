@@ -24,11 +24,11 @@ CommandDispatcher::CommandDispatcher()
     _commands["JOIN"]       = new CmdJoin();
     _commands["NICK"]       = new CmdNick();
     _commands["PASS"]       = new CmdPass();
+    _commands["PING"]       = new CmdPing();
     _commands["PRIVMSG"]    = new CmdPrivmsg();
     _commands["USER"]       = new CmdUser();
     // _commands["PART"]       = new CmdPart();
     // _commands["QUIT"]       = new CmdQuit();
-    // _commands["PING"]       = new CmdPing();
     // _commands["PONG"]       = new CmdPong();
     // _commands["NOTICE"]     = new CmdNotice();
     // _commands["TOPIC"]      = new CmdTopic();

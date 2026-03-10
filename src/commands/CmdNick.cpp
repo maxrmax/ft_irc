@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   CmdNick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:05:53 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/01/30 12:05:53 by ngoyat           ###   ########.fr       */
+/*   Updated: 2026/03/09 12:51:43 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/cmdNick.hpp"
+//CmdNick.cpp
+#include "../../includes/CmdNick.hpp"
 #include "../../includes/ClientUser.hpp"
 
 // IRC rules - RFC 1459 §2.3.1
@@ -87,19 +88,21 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
         //     }
     }
 
-    // // if (clientUser.isReadyToRegister() && !clientUser.getNickname().empty() && !clientUser.getUsername().empty() && clientUser.isRegistered() == false)
-    // if (clientUser.isReadyToRegister() && !clientUser.isRegistered())
-    // {
-    //     clientUser.setRegistered(true);
-    //     server.Nick_ClientUser_mapping(clientUser);
-    //     // send welcome message 001
-    //     clientUser.get_outputBuffer().append(":server 001 " + clientUser.getNickname() +
-    //         " :Welcome to ircserver NICK" + clientUser.getNickname() + "!" + clientUser.getUsername() + "@ircserver\r\n");
-    //     return;
-    //     // ERR_ALREADYREGISTRED
-    // }
-    // server.printRegisteredNicks();
-    // clientUser.registernick(server);
-    // TODO: check for valid nicknames + add error handling + add to client.cpp
+    // Check if ready to register after setting username and realname
+    if (clientUser.isReadyToRegister() && !clientUser.isRegistered())
+    {
+        // std::cout << __FILE__ << __LINE__ << " NICK execute" << std::endl;
+		// Register the client with the server
+        server.Nick_ClientUser_mapping(clientUser);
+        clientUser.setRegistered(true);
+
+        clientUser.get_outputBuffer().append(
+            ":server 001 " + clientUser.getNickname() +
+            " :Welcome to ircserver " +
+            clientUser.getNickname() + "!" +
+            clientUser.getUsername() + "@ircserver\r\n");
+    }
+
+// TODO: check for valid nicknames + add error handling + add to client.cpp
     // client.setNick(cmd.params[0]);
 }

@@ -56,24 +56,3 @@ void CmdUser::execute(Server &server, ClientUser &clientUser, const ParsedComman
             clientUser.getUsername() + "@ircserver\r\n");
     }
 }
-// // Check if ready to register after setting username and realname
-// // if (clientUser.isReadyToRegister() &&
-// //     !clientUser.getNickname().empty() &&
-// //     !clientUser.getUsername().empty() &&
-// //     !clientUser.isRegistered())
-// if (clientUser.isReadyToRegister() && !clientUser.isRegistered())
-// {
-// 	// Register the client with the server
-//     // std::cout << __FILE__ << __LINE__ << "setRegistered before" << clientUser.isRegistered() << std::endl;
-//     clientUser.setRegistered(true);
-//     server.Nick_ClientUser_mapping(clientUser);
-//     // std::cout << __FILE__ << __LINE__ << "setRegistered after " << clientUser.isRegistered() << std::endl;
-
-//     clientUser.get_outputBuffer().append(
-//         ":server 001 " + clientUser.getNickname() +
-//         " :Welcome to ircserver USER " +
-//         clientUser.getNickname() + "!" +
-//         clientUser.getUsername() + "@ircserver\r\n");
-// }
-// server.printRegisteredNicks();
-// clientUser.registerNick(;)

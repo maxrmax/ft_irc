@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/04 18:35:16 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/10 12:42:28 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,17 @@ class Server
         //Client is the type we map to.
         // std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
         
-        std::vector <std::string> nicknames;
-        // std::vector <std::string, std::string> nicknames_history;
-        std::unordered_map <std::string, std::vector <std::string>> nicknames_history;
+        /* redundant, nick_clientUser already contains all nicks
+         * from O(n) (linear) to O(1) (constant)
+        */// std::vector <std::string> nicknames;
+        
+        /* using unordered_map and vector for nicknames_history;
+         * interesting
+         * changed to ClientUser* to correctly reference the old_nick
+         * towards the correct client in case of nickname changes
+         // std::vector <std::string, std::string> nicknames_history;
+        *///std::unordered_map <std::string, ClientUser*> nicknames_history;
+        std::unordered_map <std::string, ClientUser*> nicknames_history;
         std::unordered_map <std::string, ClientUser*> nick_clientUser;
         std::unordered_map<std::string, Channel>    _channels;
         // Maps fd → ClientUser* for broadcast routing
@@ -84,8 +92,8 @@ class Server
 
         CommandDispatcher   &get_dispatcher();
         bool                NickIsAlreadyRegistered(std::string nick) const;
-        void                Nicknames_storing(std::string nick);
-        void                NicknamesHistory_storing(std::string nicknew, std::string nickOld);
+        // void                Nicknames_storing(std::string nick); //depracated
+        void                NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
         void                Nick_ClientUser_mapping(ClientUser &clientUser);
 
         // Channel

@@ -101,6 +101,14 @@ void Server::registerClientFd(int fd, ClientUser* client)
 // Call this when a client disconnects
 void Server::unregisterClientFd(int fd)
 {
+    // cleanup of entire client
+    auto clientIt = _clients.find(fd);
+    if (clientIt != _clients.end())
+    {
+        std::string nick = clientIt->second->getNickname();
+        nick_clientUser.erase(nick);
+    }
+
     _clients.erase(fd);
 
     // Remove from all channels they were in

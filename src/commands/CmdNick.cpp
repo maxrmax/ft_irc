@@ -44,22 +44,15 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
 {
     if (cmd.params.empty())
     {
-        // NONICKNAMEGIVEN)
-        clientUser.get_outputBuffer().append(":server 431 * " + cmd.command + ":No nickname given\r\n");
+        // 431     ERR_NONICKNAMEGIVEN
+        clientUser.get_outputBuffer().append(":server 431 * " + cmd.command + " :No nickname given\r\n");
         return;
     }
 
     // validate nickname
     if (!NickIsValid(cmd.params[0]))
     {
-        // max 9 char
-        // no space 9, 32,
-        // hostname of the client
-        //  std::cout << "nick size: " << cmd.params[0].size() << std::endl;
-        //  for (size_t i = 0; i < cmd.params[0].size(); i++)
-        //      std::cout << (int)cmd.params[0][i] << cmd.params[0][i] << std::endl;
-
-        // ERR_ERRONEUSNICKNAME)
+        // 432     ERR_ERRONEUSNICKNAME
         clientUser.get_outputBuffer().append(":server 432 * " + cmd.params[0] + " :Erroneus nickname\r\n");
         return;
     }
@@ -73,12 +66,17 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
 
     // store nickname
     std::string previouseNickname = clientUser.getNickname();
+    // set nickname for current clientUser
     clientUser.setNickname(cmd.params[0]);
-    server.Nicknames_storing(cmd.params[0]);
+    // add clientUser to server mapping (isn't it already?)
+    server.Nick_ClientUser_mapping(clientUser);
 
-    if (previouseNickname == clientUser.getNickname())
+    /* if previousNickname is different to the current nickname
+     * reference previousNickname to the current client
+    */  
+    if (previouseNickname != clientUser.getNickname())
     {
-        server.NicknamesHistory_storing(clientUser.getNickname(), previouseNickname);
+        server.NicknamesHistory_storing(previouseNickname, clientUser);
 
         // nickname changed → broadcast
         //  TODO: broadcast to all clients that have registered nickname, not just the one that changed nickname

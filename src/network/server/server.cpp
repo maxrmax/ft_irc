@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/09 20:27:30 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/10 13:23:27 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,20 +124,26 @@ CommandDispatcher &Server::get_dispatcher()
 
 bool Server::NickIsAlreadyRegistered(std::string nick) const
 {
-    if (std::find(nicknames.begin(), nicknames.end(), nick) != nicknames.end())
-        return true;
-    return false;
+    // could be without "> 0" as count returns 0 or 1 in unordered_map anyway
+    // this is just better practice
+    return nick_clientUser.count(nick) > 0;
+    // old vector way
+    // if (std::find(nicknames.begin(), nicknames.end(), nick) != nicknames.end())
+        // return true;
+    // return false;
 }
 
-void Server::Nicknames_storing(std::string nick)
-{
-    if (!NickIsAlreadyRegistered(nick))
-        nicknames.push_back(nick);
-};
+// deprecated because of vector replacement
+// void Server::Nicknames_storing(std::string nick)
+// {
+//     if (!NickIsAlreadyRegistered(nick))
+//         nicknames.push_back(nick);
+// };
 
-void Server::NicknamesHistory_storing(std::string nickNew, std::string nickOld)
+void Server::NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser)
 {
-    nicknames_history[nickNew].push_back(nickOld);
+    nicknames_history[previouseNickname] = &clientUser;
+    //nicknames_history[nickNew].push_back(nickOld);
 };
 
 void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
@@ -148,8 +154,19 @@ void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
 void Server::printRegisteredNicks()
 {
     std::cout << "Registered nicknames: ";
-    for (std::vector<std::string>::const_iterator it = nicknames.begin(); it != nicknames.end(); ++it) {
-        std::cout << *it << " ";
-    }
+    /* loooook at this, it's the difference of C++98 and C++17
+     * for (std::unordered_map<std::string, ClientUser*>::const_iterator it = nick_clientUser.begin();
+     *
+     * the old one we had with the vector
+     * for (std::vector<std::string>::const_iterator it = nicknames.begin(); it != nicknames.end(); ++it)
+     *
+     * and the C++11 and C++17 simplification
+     * non modifiable, reference to each element - not a copy
+     * binds nick to pair.first, client to pair.second
+     * ": <container>" to iterate
+     * could do [nick, _] by convention but its not enforced
+     */
+    for (const auto& [nick, client] : nick_clientUser)
+        std::cout << nick << " ";
     std::cout << std::endl;
 }

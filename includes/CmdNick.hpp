@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CMDNICK_HPP
-#define CMDNICK_HPP
+#pragma once
+
 #include "command.hpp"
 
-class CmdNick : public Command {
+class CmdNick : public Command
+{
 public:
-    void execute(Server& server,
-                 ClientUser& client,
-                 const ParsedCommand& cmd);
+    void execute(Server &server,
+                 ClientUser &client,
+                 const ParsedCommand &cmd);
 };
-#endif // CMDNICK_HPP

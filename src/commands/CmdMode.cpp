@@ -1,16 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   CmdMode.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/09 18:57:10 by mring             #+#    #+#             */
-/*   Updated: 2026/03/09 18:57:10 by mring            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../includes/cmdMode.hpp"
+#include "../../includes/ircserv.hpp"
 
 // TODO: implement MODE according to RFC 1459
 // necessary modes to implement:
@@ -27,27 +15,77 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
 
     // needed args:
     // server._channel // unordered_map, learn to check it.
-    // 
+    //
 
-    /*
-    first check set flags:
-    +i for invite permissions (else drop silently)
-    +t needs chanop permission to change topic
-    
-    // check if ^ is even needed or if we just jump into op check
+    // first check set flags:
+    // +i for invite permissions (else drop silently)
+    // +t needs chanop permission to change topic
 
-    after that: check per use case:
-    if op:
-    +l [N]/-l
-    +o/-o nickname
-    +k <passwd>/-k
-    +t/-t
-    +i/-i
+    // // check if ^ is even needed or if we just jump into op check
 
-    else
-        return (error?);
-    */
+    // after that: check per use case:
+    // if op:
+    // +l [N]/-l
+    // +o/-o nickname
+    // +k <passwd>/-k
+    // +t/-t
+    // +i/-i
 
+    // else
+    //     return (error?);
+
+    /* MODE <args> ends up here
+     * Usage: MODE <channel> {flag} <limit> <user>
+     * All Examples: (we don't need to handle &channels (server connected channels))
+     * MODE #channel +l 20      -> sets users limit for #channel to 20
+     * MODE #channel -l <20>    -> unlimited users (and ignores <20>)
+     * need to implement a default for userlimit
+     * MODE #channel +o Blake   -> Blake gets operator for #channel
+     * MODE #channel -o Yang    -> Revoke Yangs operator for #channel
+     * MODE #channel +k pass    -> set #channel key to pass
+     * MODE #channel -k         -> remove key of #channel
+     * MODE #channel +t         -> only ops can set topic
+     * MODE #channel -t         -> everyone can set topic
+     * MODE #channel +i         -> #channel is now invite only, only ops can invite
+     * MODE #channel -i         -> #channel can now be joined by anyone
+     */
+    // check if enough parameters are given
+    if (cmd.params.size() < 2)
+    {
+        clientUser.get_outputBuffer().append(
+            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
+        return;
+    }
+    // check if the channel even exists
+    if (!server.channelExists(cmd.params[1]))
+    {
+        clientUser.get_outputBuffer().append(
+            ":server 403 " + clientUser.getNickname() + " " + cmd.params[1] + " MODE :No such channel\r\n");
+        return;
+    }
+    // get channel name
+    Channel &ch = server.getChannel(cmd.params[1]);
+    // check if channel even has the caller as member
+    if (!ch.hasMember(clientUser.get_ClientUser_fd()))
+    {
+        clientUser.get_outputBuffer().append(
+            ":server 442 " + clientUser.getNickname() + " " + cmd.params[1] + " :You're not on that channel\r\n");
+        return;
+    }
+    // check if caller is op too
+    if (!ch.isOperator(clientUser.get_ClientUser_fd()))
+    {
+        clientUser.get_outputBuffer().append(
+            ":server 482 " + clientUser.getNickname() + " " + cmd.params[1] + " :You're not channel operator\r\n");
+        return;
+    }
+    // NOW we can do the flag logic.
+    //
+    // +i / -i -> bool
+    // +t / -t -> bool
+    // +l / -l -> unsigned int (we would never read int_max, param parsing)
+    // +k / -k -> string (parsing)
+    // +o / -o -> lookup (nick)
 }
 
 /*
@@ -95,7 +133,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
            Use of Channel Modes:
 
 MODE #Finnish +i                ; Makes #Finnish channel 'invite-only'.
-           
+
 MODE #Finnish +o Kilroy         ; Gives 'chanop' privileges to Kilroy on
                                 channel #Finnish.
 

@@ -1,20 +1,44 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/03 19:49:40 by nsloniow          #+#    #+#             */
+/*   Updated: 2026/03/10 17:08:07 by mring            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../includes/ircserv.hpp"
 
-Channel::Channel() : _operator_fd(-1) {}
+Channel::Channel() : _name(""), _topic("") {}
 
-Channel::Channel(const std::string& name, ClientUser& founder)
-    : _name(name), _operator_fd(founder.get_ClientUser_fd())
+Channel::Channel(const std::string &name, ClientUser &founder)
+    : _name(name)
 {
     _member_fds.insert(founder.get_ClientUser_fd());
+    _operator_fds.insert(founder.get_ClientUser_fd());
 }
 
 Channel::~Channel() {}
 
-const std::string& Channel::getName() const { return _name; }
-const std::string& Channel::getTopic() const { return _topic; }
-void Channel::setTopic(const std::string& topic) { _topic = topic; }
+const std::string &Channel::getName() const
+{
+    return _name;
+}
 
-void Channel::addMember(ClientUser& client)
+void Channel::setTopic(const std::string &topic)
+{
+    _topic = topic;
+}
+
+const std::string &Channel::getTopic() const
+{
+    return _topic;
+}
+
+void Channel::addMember(ClientUser &client)
 {
     _member_fds.insert(client.get_ClientUser_fd());
 }
@@ -29,12 +53,18 @@ bool Channel::hasMember(int fd) const
     return _member_fds.count(fd) > 0;
 }
 
-bool Channel::isOperator(int fd) const
+void Channel::setOperator(int fd)
 {
-    return _operator_fd == fd;
+    _operator_fds.insert(fd);
 }
 
-const std::set<int>& Channel::getMembers() const
+bool Channel::isOperator(int fd) const
+{
+
+    return _operator_fds.count(fd) > 0;
+}
+
+const std::set<int> &Channel::getMembers() const
 {
     return _member_fds;
 }

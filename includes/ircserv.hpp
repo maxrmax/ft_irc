@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/09 19:54:48 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/10 16:52:09 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 #include "CmdPrivmsg.hpp"
 #include "CmdJoin.hpp"
 #include "Channel.hpp"
-#include "cmdMode.hpp"
-#include "cmdNick.hpp"
+#include "CmdMode.hpp"
+#include "CmdNick.hpp"
 #include "CmdPass.hpp"
 #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"

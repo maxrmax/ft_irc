@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 12:42:28 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/10 17:29:43 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,20 +54,21 @@ class Server
 
         CommandDispatcher dispatcher;
 
-        //create maping for (unique index) fd to Client object 
-        //unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
-        //int is the index which is equal to client_accepted_fd
-        //Client is the type we map to.
-        // std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
+        /* create maping for (unique index) fd to Client object 
+         * unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
+         * int is the index which is equal to client_accepted_fd
+         * Client is the type we map to.
+         * std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
+         * TODO: refactor of poll_clientUser__mapping_via_fd -> here
+        */// std::unordered_map<int, ClientUser*>        _clientStorage;
         
         /* redundant, nick_clientUser already contains all nicks
          * from O(n) (linear) to O(1) (constant)
         */// std::vector <std::string> nicknames;
         
         /* using unordered_map and vector for nicknames_history;
-         * interesting
-         * changed to ClientUser* to correctly reference the old_nick
-         * towards the correct client in case of nickname changes
+         * changed to ClientUser* to correctly reference the old_nick towards
+         * the correct client in case of nickname changes
          // std::vector <std::string, std::string> nicknames_history;
         *///std::unordered_map <std::string, ClientUser*> nicknames_history;
         std::unordered_map <std::string, ClientUser*> nicknames_history;

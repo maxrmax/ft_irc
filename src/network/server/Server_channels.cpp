@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server_channels.cpp                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/26 14:07:08 by ngoyat            #+#    #+#             */
+/*   Updated: 2026/03/10 16:45:57 by mring            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../../includes/ircserv.hpp"
 
@@ -107,11 +117,14 @@ void Server::unregisterClientFd(int fd)
     {
         std::string nick = clientIt->second->getNickname();
         nick_clientUser.erase(nick);
+        nicknames_history[nick] = nullptr;
     }
-
-    _clients.erase(fd);
 
     // Remove from all channels they were in
     for (auto& [name, channel] : _channels)
         channel.removeMember(fd);
+        
+    _clients.erase(fd);
+    // unused until refactor
+    // _clientStorage.erase(fd);
 }

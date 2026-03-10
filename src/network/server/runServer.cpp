@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   runServer.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/03 19:00:07 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/10 16:46:09 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,7 @@ int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map
         {
             if (poll_fd[fd].revents & POLLIN)
             {
+                // reading data from client(s)
                 if (process_ready_fd(irc_server, poll_fd, fd, poll_clientUser__mapping_via_fd) < 0)
                 {
                     return -1;

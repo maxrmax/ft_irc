@@ -3,22 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPass.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 20:50:35 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 10:33:43 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/10 17:29:07 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//CmdPass.hpp
 #pragma once
 
 #include "command.hpp"
 
-class CmdPass :public Command
+class CmdPass : public Command
 {
-    public:
-        void execute(Server &server,
-                        ClientUser &clientUser,
-                        const ParsedCommand &cmd);
+public:
+    void execute(Server &server,
+                 ClientUser &clientUser,
+                 const ParsedCommand &cmd);
 };

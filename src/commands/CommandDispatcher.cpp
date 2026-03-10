@@ -24,6 +24,7 @@ CommandDispatcher::CommandDispatcher()
     _commands["JOIN"]       = new CmdJoin();
     _commands["NICK"]       = new CmdNick();
     _commands["PASS"]       = new CmdPass();
+    _commands["PING"]       = new CmdPing();
     _commands["PRIVMSG"]    = new CmdPrivmsg();
     _commands["USER"]       = new CmdUser();
 }

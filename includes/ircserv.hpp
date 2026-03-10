@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/03 18:51:51 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/09 18:59:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include "Channel.hpp"
 #include "cmdNick.hpp"
 #include "CmdPass.hpp"
+#include "CmdPing.hpp"
 #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"

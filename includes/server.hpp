@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 17:06:51 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/09 19:15:51 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ class Server
         //Client is the type we map to.
         // std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
         
-        std::vector <std::string> nicknames;
+        // std::vector <std::string> nicknames;
+        std::set <std::string> nicknames;
         // std::vector <std::string, std::string> nicknames_history;
         std::unordered_map <std::string, std::vector <std::string>> nicknames_history;
         std::unordered_map <std::string, ClientUser*> nick_clientUser;
@@ -74,6 +75,7 @@ class Server
         bool                NickIsAlreadyRegistered(std::string nick) const;
         void                Nicknames_storing(std::string nick);
         void                NicknamesHistory_storing(std::string nicknew, std::string nickOld);
+        void                NicknameUnregister(std::string nick);
         void                Nick_ClientUser_mapping(ClientUser &clientUser);
 
         // Channel

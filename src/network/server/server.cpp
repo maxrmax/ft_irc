@@ -6,12 +6,16 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/02/24 17:02:17 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/10 11:49:04 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+//server.cpp
+
+// #include <algorithm>
 // #include "../../../includes/server.hpp"
 #include "../../../includes/ircserv.hpp"
+
 
 Server::~Server()
 {
@@ -131,7 +135,14 @@ bool Server::NickIsAlreadyRegistered(std::string nick) const
 
 void Server::Nicknames_storing(std::string nick)
 {
-    nicknames.push_back(nick);
+    //vector into set as it is easier to erase by string
+    //so push_back no work anymore
+    nicknames.insert(nick);
+};
+
+void Server::NicknameUnregister(std::string nick)
+{
+    nicknames.erase(nick);
 };
 
 void Server::NicknamesHistory_storing(std::string nickNew, std::string nickOld)
@@ -147,8 +158,7 @@ void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
 void Server::printRegisteredNicks()
 {
     std::cout << "Registered nicknames: ";
-    for (std::vector<std::string>::const_iterator it = nicknames.begin(); it != nicknames.end(); ++it) {
-        std::cout << *it << " ";
-    }
+    for (std::set <std::string>::const_iterator i = nicknames.begin(); i != nicknames.end(); i++) 
+        std::cout << *i << " ";
     std::cout << std::endl;
 }

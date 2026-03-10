@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/03 19:00:18 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/03/09 19:10:58 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC		= 	src/main.cpp \
 			src/commands/CmdJoin.cpp \
 			src/commands/CmdNick.cpp \
 			src/commands/CmdPass.cpp \
+			src/commands/CmdPing.cpp \
 			src/commands/CmdPrivmsg.cpp \
 			src/commands/CmdUser.cpp \
 			src/commands/CommandDispatcher.cpp \

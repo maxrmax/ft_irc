@@ -10,12 +10,84 @@
 // l - set the user limit to channel;
 void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedCommand &cmd)
 {
-    // When parsing MODE messages, it is recommended that the entire message
-    // be parsed first and then the changes which resulted then passed on.
+    // check if enough parameters are given
+    if (cmd.params.size() < 2)
+    {   // ERR_NEEDMOREPARAMS 461
+        clientUser.get_outputBuffer().append(
+            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
+        return;
+    }
+    // user mode catch 
+    // not required by 42 subject, ignoring silently
+    if (cmd.params[0][0] != '#')
+        return;
+    // check if the channel even exists
+    if (!server.channelExists(cmd.params[0]))
+    {   // ERR_NOSUCHCHANNEL
+        clientUser.get_outputBuffer().append(
+            ":server 403 " + clientUser.getNickname() + " " + cmd.params[1] + " MODE :No such channel\r\n");
+        return;
+    }
+    // get channel name
+    Channel &ch = server.getChannel(cmd.params[0]);
+    // check if channel has the caller as member
+    if (!ch.hasMember(clientUser.get_ClientUser_fd()))
+    {   // ERR_NOTONCHANNEL
+        clientUser.get_outputBuffer().append(
+            ":server 442 " + clientUser.getNickname() + " " + cmd.params[1] + " :You're not on that channel\r\n");
+        return;
+    }
+    // check if caller is op
+    if (!ch.isOperator(clientUser.get_ClientUser_fd()))
+    {   // ERR_CHANOPRIVSNEEDED
+        clientUser.get_outputBuffer().append(
+            ":server 482 " + clientUser.getNickname() + " " + ch.getName() + " :You're not channel operator\r\n");
+        return;
+    }
 
-    // needed args:
-    // server._channel // unordered_map, learn to check it.
-    //
+    // time to handle the flag:
+    // 501     ERR_UMODEUNKNOWNFLAG     ":Unknown MODE flag"
+    // +i / -i -> bool
+    // +t / -t -> bool
+    // +l / -l -> unsigned int (we would never read int_max, param parsing)
+    // +k / -k -> string (parsing)
+    // +o / -o -> lookup (nick)
+
+    char sign = cmd.params[1][0];
+    char flag = cmd.params[1][1];
+    // 
+    switch (flag)
+    {
+        case 'i':
+            ch.setInviteOnly(sign);
+            break;
+        case 't':
+            //sign
+            break;
+        case 'l':
+            //sign
+            break;
+        case 'k':
+            //sign
+            break;
+        case 'o':
+            //sign
+            break;
+    }
+    // {   // 501 ERR_UMODEUNKNOWNFLAG
+    //     clientUser.get_outputBuffer().append(
+    //         ":server 501 " + clientUser.getNickname() + " " + cmd.params[1] + " :Unknown MODE flag\r\n");
+    //     return;
+    // }
+    /*
+        324 RPL_CHANNELMODEIS
+        401 ERR_NOSUCHNICK          (no such nick/channel)
+        467 ERR_KEYSET              (key already set)
+        472 ERR_UNKNOWNMODE         unkown MODE <CMD>
+        501 ERR_UMODEUNKNOWNFLAG    unknown MODE <CMD> <FLAG>
+
+    */
+
 
     // first check set flags:
     // +i for invite permissions (else drop silently)
@@ -48,44 +120,9 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
      * MODE #channel -t         -> everyone can set topic
      * MODE #channel +i         -> #channel is now invite only, only ops can invite
      * MODE #channel -i         -> #channel can now be joined by anyone
+     * [-1]    [0]   [1]  [2]
      */
-    // check if enough parameters are given
-    if (cmd.params.size() < 2)
-    {
-        clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
-        return;
-    }
-    // check if the channel even exists
-    if (!server.channelExists(cmd.params[1]))
-    {
-        clientUser.get_outputBuffer().append(
-            ":server 403 " + clientUser.getNickname() + " " + cmd.params[1] + " MODE :No such channel\r\n");
-        return;
-    }
-    // get channel name
-    Channel &ch = server.getChannel(cmd.params[1]);
-    // check if channel even has the caller as member
-    if (!ch.hasMember(clientUser.get_ClientUser_fd()))
-    {
-        clientUser.get_outputBuffer().append(
-            ":server 442 " + clientUser.getNickname() + " " + cmd.params[1] + " :You're not on that channel\r\n");
-        return;
-    }
-    // check if caller is op too
-    if (!ch.isOperator(clientUser.get_ClientUser_fd()))
-    {
-        clientUser.get_outputBuffer().append(
-            ":server 482 " + clientUser.getNickname() + " " + cmd.params[1] + " :You're not channel operator\r\n");
-        return;
-    }
-    // NOW we can do the flag logic.
-    //
-    // +i / -i -> bool
-    // +t / -t -> bool
-    // +l / -l -> unsigned int (we would never read int_max, param parsing)
-    // +k / -k -> string (parsing)
-    // +o / -o -> lookup (nick)
+
 }
 
 /*

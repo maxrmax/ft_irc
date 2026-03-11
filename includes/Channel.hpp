@@ -26,6 +26,14 @@ private:
     std::string                 _topic;         // channel topic
     std::set<int>               _member_fds;    // fds of all members
     std::unordered_set<int>     _operator_fds;  // fds of channel operator (first to join/+o)
+    bool                        _invite_only;
+
+    // +t / -t -> bool
+    bool                        topic_by_op_only;
+    // +l / -l -> unsigned int (we would never read int_max, param parsing)
+    unsigned int                userlimit;
+    // +k / -k -> string (parsing)
+    std::string                 channel_key;
 
 public:
     Channel();
@@ -34,9 +42,11 @@ public:
 
     const std::string   &getName() const;
     const std::string   &getTopic() const;
+    void                setInviteOnly(char sign);
+
     void                setTopic(const std::string& topic);
 
-    void                addMember(ClientUser& client);
+    bool                addMember(ClientUser& client);
     void                removeMember(int fd);
     bool                hasMember(int fd) const;
     void                setOperator(int fd);

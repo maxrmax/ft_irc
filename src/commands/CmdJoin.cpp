@@ -82,9 +82,15 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         if (channel.hasMember(clientUser.get_ClientUser_fd()))
             continue;
 
-        // Add member
-        channel.addMember(clientUser);
-
+        // Add member, checking _invite_only flag
+        if (!channel.addMember(clientUser))
+        {   // ERR_INVITEONLYCHAN (473)
+            clientUser.get_outputBuffer().append(
+                ":server 473 " + clientUser.getNickname() + " " + channelName +
+                " :Cannot join channel (+i)\r\n");
+            return;
+        }
+        
         // Build the JOIN prefix: :nick!user@host
         std::string prefix = ":" + clientUser.getNickname() + "!" +
                              clientUser.getUsername() + "@ircserver";

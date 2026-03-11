@@ -28,6 +28,14 @@ const std::string &Channel::getName() const
     return _name;
 }
 
+void Channel::setInviteOnly(char sign)
+{
+    if (sign == '+')
+        _invite_only = true;
+    else if (sign == '-')
+        _invite_only = false;
+}
+
 void Channel::setTopic(const std::string &topic)
 {
     _topic = topic;
@@ -38,9 +46,12 @@ const std::string &Channel::getTopic() const
     return _topic;
 }
 
-void Channel::addMember(ClientUser &client)
+bool Channel::addMember(ClientUser &client)
 {
+    if (_invite_only == true)
+        return false;
     _member_fds.insert(client.get_ClientUser_fd());
+    return true;
 }
 
 void Channel::removeMember(int fd)

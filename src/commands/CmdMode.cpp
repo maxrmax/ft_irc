@@ -1,5 +1,16 @@
 #include "../../includes/ircserv.hpp"
 
+static bool parameterCheck(const ParsedCommand &cmd)
+{
+    // if we have less than 2 parameters (MODE #channel) no flag -> true
+    if (cmd.params.size() < 2 || cmd.params[1].size() < 2)
+        return true; // true = not enough parameters
+    // if [1][1] is +-o OR +k OR +l and [2] is empty -> true
+    if ((cmd.params[1][1] == 'o' || ((cmd.params[1][1] == 'k' || cmd.params[1][1] == 'l') && cmd.params[1][0] == '+')) && cmd.params.size() < 3)
+        return true;
+    return false; // enough parameters
+}
+
 // TODO: implement MODE according to RFC 1459
 // necessary modes to implement:
 // i, t, k, o, l
@@ -10,13 +21,6 @@
 // l - set the user limit to channel;
 void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedCommand &cmd)
 {
-    // check if enough parameters are given
-    if (cmd.params.size() < 2)
-    {   // ERR_NEEDMOREPARAMS 461
-        clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
-        return;
-    }
     // user mode catch 
     // not required by 42 subject, ignoring silently
     if (cmd.params[0][0] != '#')
@@ -25,23 +29,42 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (!server.channelExists(cmd.params[0]))
     {   // ERR_NOSUCHCHANNEL
         clientUser.get_outputBuffer().append(
-            ":server 403 " + clientUser.getNickname() + " " + cmd.params[1] + " MODE :No such channel\r\n");
+            ":server 403 " + clientUser.getNickname() + " " + cmd.params[0] + " MODE :No such channel\r\n");
         return;
     }
     // get channel name
     Channel &ch = server.getChannel(cmd.params[0]);
+    // query - no flags given, only channel name // MODE <channel>
+    if (cmd.params.size() == 1)
+    {
+        std::string                 modes = "+";
+        if (ch.isInviteOnly())      modes += "i";
+        if (ch.getTopicFlag())      modes += "t";
+        if (!ch.getKey().empty())   modes += "k";
+        if (ch.getUserLimit())      modes += "l";
+        clientUser.get_outputBuffer().append(
+            ":server 324 " + clientUser.getNickname() + " " + cmd.params[0] + " " + modes + "\r\n");
+        return;
+    }
+    // check if enough parameters are given
+    if (parameterCheck(cmd))
+    {   // ERR_NEEDMOREPARAMS 461
+        clientUser.get_outputBuffer().append(
+            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
+        return;
+    }
     // check if channel has the caller as member
     if (!ch.hasMember(clientUser.get_ClientUser_fd()))
     {   // ERR_NOTONCHANNEL
         clientUser.get_outputBuffer().append(
-            ":server 442 " + clientUser.getNickname() + " " + cmd.params[1] + " :You're not on that channel\r\n");
+            ":server 442 " + clientUser.getNickname() + " " + cmd.params[0] + " :You're not on that channel\r\n");
         return;
     }
     // check if caller is op
     if (!ch.isOperator(clientUser.get_ClientUser_fd()))
     {   // ERR_CHANOPRIVSNEEDED
         clientUser.get_outputBuffer().append(
-            ":server 482 " + clientUser.getNickname() + " " + ch.getName() + " :You're not channel operator\r\n");
+            ":server 482 " + clientUser.getNickname() + " " + cmd.params[0] + " :You're not channel operator\r\n");
         return;
     }
 
@@ -58,6 +81,10 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     // 
     switch (flag)
     {
+        default:
+            clientUser.get_outputBuffer().append(
+                ":server 472 " + clientUser.getNickname() + " " + flag + " :Unknown MODE flag\r\n");
+            break;
         case 'i':
             ch.setInviteOnly(sign);
             break;
@@ -65,64 +92,46 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
             ch.setTopicFlag(sign);
             break;
         case 'l':
-            //sign
+            if (sign == '+')
+                ch.setUserLimit(cmd.params[2]);
+            else if (sign == '-')
+                ch.setUserLimit("");
             break;
         case 'k':
-            //sign
+            
+            if (sign == '+')
+            {
+                if (!ch.getKey().empty())
+                {
+                    // 467 ERR_KEYSET
+                    clientUser.get_outputBuffer().append(
+                        ":server 467 " + clientUser.getNickname() + " " + cmd.params[0] +
+                        " :Channel key already set\r\n");
+                    return;
+                }           
+                ch.setKey(cmd.params[2]);
+            }
+            else if (sign == '-')
+                ch.setKey("");
             break;
         case 'o':
-            //sign
+        {
+            ClientUser* recipient = server.getClientByNick(cmd.params[2]);
+            if (!recipient)
+            {
+                // 401 ERR_NOSUCHNICK
+                clientUser.get_outputBuffer().append(
+                    ":server 401 " + clientUser.getNickname() + " " + cmd.params[2] +
+                    " :No such nick\r\n");
+                return;
+            }
+            if (sign == '+')
+                ch.setOperator(recipient->get_ClientUser_fd());
+            else if (sign == '-')
+                ch.unsetOperator(recipient->get_ClientUser_fd());
             break;
+        }
     }
-    // {   // 501 ERR_UMODEUNKNOWNFLAG
-    //     clientUser.get_outputBuffer().append(
-    //         ":server 501 " + clientUser.getNickname() + " " + cmd.params[1] + " :Unknown MODE flag\r\n");
-    //     return;
-    // }
-    /*
-        324 RPL_CHANNELMODEIS
-        401 ERR_NOSUCHNICK          (no such nick/channel)
-        467 ERR_KEYSET              (key already set)
-        472 ERR_UNKNOWNMODE         unkown MODE <CMD>
-        501 ERR_UMODEUNKNOWNFLAG    unknown MODE <CMD> <FLAG>
-
-    */
-
-
-    // first check set flags:
-    // +i for invite permissions (else drop silently)
-    // +t needs chanop permission to change topic
-
-    // // check if ^ is even needed or if we just jump into op check
-
-    // after that: check per use case:
-    // if op:
-    // +l [N]/-l
-    // +o/-o nickname
-    // +k <passwd>/-k
-    // +t/-t
-    // +i/-i
-
-    // else
-    //     return (error?);
-
-    /* MODE <args> ends up here
-     * Usage: MODE <channel> {flag} <limit> <user>
-     * All Examples: (we don't need to handle &channels (server connected channels))
-     * MODE #channel +l 20      -> sets users limit for #channel to 20
-     * MODE #channel -l <20>    -> unlimited users (and ignores <20>)
-     * need to implement a default for userlimit
-     * MODE #channel +o Blake   -> Blake gets operator for #channel
-     * MODE #channel -o Yang    -> Revoke Yangs operator for #channel
-     * MODE #channel +k pass    -> set #channel key to pass
-     * MODE #channel -k         -> remove key of #channel
-     * MODE #channel +t         -> only ops can set topic
-     * MODE #channel -t         -> everyone can set topic
-     * MODE #channel +i         -> #channel is now invite only, only ops can invite
-     * MODE #channel -i         -> #channel can now be joined by anyone
-     * [-1]    [0]   [1]  [2]
-     */
-
 }
 
 /*

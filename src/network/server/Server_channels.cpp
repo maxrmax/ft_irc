@@ -19,10 +19,10 @@ bool Server::channelExists(const std::string& name) const
     return _channels.count(name) > 0;
 }
 
-Channel& Server::getOrCreateChannel(const std::string& name, ClientUser& founder)
+Channel& Server::createChannel(const std::string& name, ClientUser& clientUser)
 {
     if (_channels.count(name) == 0)
-        _channels[name] = Channel(name, founder);
+        _channels[name] = Channel(name, clientUser);
     return _channels[name];
 }
 

@@ -82,8 +82,8 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         if (channel.hasMember(clientUser.get_ClientUser_fd()))
             continue;
 
-        // Add member, checking _invite_only flag
-        if (!channel.addMember(clientUser))
+        // Add member, checking _inviteFlag
+        if (channel.checkInviteOnly() == true)
         {   // ERR_INVITEONLYCHAN (473)
             clientUser.get_outputBuffer().append(
                 ":server 473 " + clientUser.getNickname() + " " + channelName +

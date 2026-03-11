@@ -26,10 +26,9 @@ private:
     std::string                 _topic;         // channel topic
     std::set<int>               _member_fds;    // fds of all members
     std::unordered_set<int>     _operator_fds;  // fds of channel operator (first to join/+o)
-    bool                        _invite_only;
+    bool                        _inviteFlag;
+    bool                        _topicFlag;
 
-    // +t / -t -> bool
-    bool                        topic_by_op_only;
     // +l / -l -> unsigned int (we would never read int_max, param parsing)
     unsigned int                userlimit;
     // +k / -k -> string (parsing)
@@ -42,22 +41,19 @@ public:
 
     const std::string   &getName() const;
     const std::string   &getTopic() const;
-    void                setInviteOnly(char sign);
+    const std::set<int> &getMembers() const;
 
     void                setTopic(const std::string& topic);
+    void                setTopicFlag(char sign);
+    bool                checkTopicFlag();
 
-    bool                addMember(ClientUser& client);
+    void                setInviteOnly(char sign);
+    bool                checkInviteOnly();
+
+    void                addMember(int fd);
     void                removeMember(int fd);
     bool                hasMember(int fd) const;
+
     void                setOperator(int fd);
     bool                isOperator(int fd) const;
-    
-
-    const std::set<int> &getMembers() const;
-    // isn't getMembers() used to get the entire list?
-    // below can be deleted?
-    // Returns comma-separated nick list for RPL_NAMREPLY
-    // consider passing clientUser* lookup function instead
-    // or resolving nicks at the server level before calling getMemberList
-    // std::string         getMemberList(const std::unordered_map<int, ClientUser>& clients) const;
 };

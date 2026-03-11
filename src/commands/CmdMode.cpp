@@ -62,7 +62,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
             ch.setInviteOnly(sign);
             break;
         case 't':
-            //sign
+            ch.setTopicFlag(sign);
             break;
         case 'l':
             //sign

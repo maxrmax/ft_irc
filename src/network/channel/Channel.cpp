@@ -28,12 +28,9 @@ const std::string &Channel::getName() const
     return _name;
 }
 
-void Channel::setInviteOnly(char sign)
+const std::string &Channel::getTopic() const
 {
-    if (sign == '+')
-        _invite_only = true;
-    else if (sign == '-')
-        _invite_only = false;
+    return _topic;
 }
 
 void Channel::setTopic(const std::string &topic)
@@ -41,17 +38,37 @@ void Channel::setTopic(const std::string &topic)
     _topic = topic;
 }
 
-const std::string &Channel::getTopic() const
+void Channel::setTopicFlag(char sign)
 {
-    return _topic;
+    if (sign == '+')
+        _topicFlag = true;
+    else if (sign == '-')
+        _topicFlag = false;
 }
 
-bool Channel::addMember(ClientUser &client)
+// to be used with CmdTopic later
+bool Channel::checkTopicFlag()
 {
-    if (_invite_only == true)
-        return false;
-    _member_fds.insert(client.get_ClientUser_fd());
-    return true;
+    return _topicFlag;
+}
+
+void Channel::setInviteOnly(char sign)
+{
+    if (sign == '+')
+        _inviteFlag = true;
+    else if (sign == '-')
+        _inviteFlag = false;
+}
+
+bool Channel::checkInviteOnly()
+{
+    return _inviteFlag;
+}
+
+// CmdInvite to do flag_check control
+void Channel::addMember(int fd)
+{
+    _member_fds.insert(fd);
 }
 
 void Channel::removeMember(int fd)

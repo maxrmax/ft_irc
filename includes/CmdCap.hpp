@@ -13,13 +13,10 @@
 //CmdCap.hpp
 
 #pragma once
-
 #include "command.hpp"
 
 class CmdCap : public Command 
 {
     public:
-        void execute(Server &server,
-                     ClientUser &client,
-                    const ParsedCommand &cmd) override;
+        void execute(Server& server, ClientUser& client, const ParsedCommand& cmd);
 };

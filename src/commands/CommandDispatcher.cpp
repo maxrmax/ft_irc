@@ -20,21 +20,21 @@
 
 CommandDispatcher::CommandDispatcher()
 {
-    _commands["CAP"]        = new CmdCap();         // server capabilities, ususally sent automatically on irssi
-    _commands["JOIN"]       = new CmdJoin();        // join a channel. if channel doesn't exist -> create it and become op
-    _commands["NICK"]       = new CmdNick();        // change nickname to a currently non registered nickname -> save history reference
-    _commands["PASS"]       = new CmdPass();        // password for the server to connect to. necessary to be able to interact with the server beyond read only information.
-    _commands["PING"]       = new CmdPing();        // keep alive method between client-server
-    _commands["PRIVMSG"]    = new CmdPrivmsg();     // send private messages between connected clients on a server. Can be channels! PRIVMSG <#channel>,<nick> <text to be sent> -> all users of #channel AND nick would receive the message!   
-    _commands["USER"]       = new CmdUser();        // used to register: USER <username> <hostname> <servername> <realname> // HOSTNAME AND SERVERNAME ARE IGNORED! (by default) // need to figure out an alternate for Privmsg!
-    // _commands["PART"]       = new CmdPart();     // disconnect from a channel: PART #channel1,#channel2,#channel3
-    // _commands["QUIT"]       = new CmdQuit();     // gracefully disconnect from a server with instant cleanup
-    // _commands["PONG"]       = new CmdPong();     // keep alive method between client-server
-    // _commands["NOTICE"]     = new CmdNotice();   // send notice to 
-    // _commands["TOPIC"]      = new CmdTopic();    // needs to check if +t is set (op only) then check if op
-    // _commands["INVITE"]      = new CmdInvite();  // can invite any user to any channel (even non existing). If channel has +i flag, needs op. INVITE <nickname> <#channel>
-    // _commands["KICK"]      = new CmdKick();      // needs op - forcefully part user from channel. KICK <#channel> <nickname> <comment>
-    _commands["MODE"]      = new CmdMode();         // channel settings (needs operator)
+    _commands["CAP"]        = new CmdCap();
+    _commands["JOIN"]       = new CmdJoin();
+    _commands["NICK"]       = new CmdNick();
+    _commands["PASS"]       = new CmdPass();
+    _commands["PING"]       = new CmdPing();
+    _commands["PRIVMSG"]    = new CmdPrivmsg();
+    _commands["USER"]       = new CmdUser();
+    // _commands["PART"]       = new CmdPart();
+    // _commands["QUIT"]       = new CmdQuit();
+    // _commands["PONG"]       = new CmdPong();
+    // _commands["NOTICE"]     = new CmdNotice();
+    // _commands["TOPIC"]      = new CmdTopic();
+    // _commands["INVITE"]      = new CmdInvite();
+    // _commands["KICK"]      = new CmdKick();
+    _commands["MODE"]      = new CmdMode();
 }
 
 CommandDispatcher::~CommandDispatcher()
@@ -59,8 +59,7 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
 
     if (cmd.command.empty())
     {
-        std::string target = clientUser.hasNick() ? clientUser.getNickname() : "*";
-        clientUser.get_outputBuffer().append(":server 421 " + target + " :No Command\r\n");
+        clientUser.get_outputBuffer().append(":server 421  :No Command\r\n");
         return;
     }
 
@@ -80,11 +79,11 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
 
     it = _commands.find(cmd.command);
     
-    if (it == _commands.end())
+    if (it == _commands.end())    
     {
         //nickname or all
         std::string target = clientUser.hasNick() ? clientUser.getNickname() : "*";
-        std::string msgToSend = ":server 421 " + target + " " + cmd.command + " :Unknown command\r\n";
+        std::string msgToSend = ":server 421 " + target + " :" + cmd.command + " Unknown command\r\n";
         clientUser.get_outputBuffer().append(msgToSend);
         return;
     }

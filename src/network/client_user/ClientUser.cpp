@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 21:59:02 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/12 12:40:15 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,14 @@ void ClientUser::setRealname(const std::string& real)
     realname = real;
 }
 
-void ClientUser::setHostname(const std::string& host)
-{
-    hostname = host;
-}
-
 std::string ClientUser::getRealname() const
 {
     return realname;
+}
+
+void ClientUser::setHostname(const std::string& host)
+{
+    hostname = host;
 }
 
 std::string ClientUser::getHostname() const

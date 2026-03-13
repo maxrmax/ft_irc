@@ -3,16 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   runServer.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 16:46:09 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/13 11:36:20 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // runServer.cpp
 
 #include "../../../includes/ircserv.hpp"
+#include <arpa/inet.h> 
+
+extern volatile sig_atomic_t g_shutdown;
 
 
 //simple first send message
@@ -52,9 +55,9 @@ int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unor
     // init socklen as it is a pointer here
     // socklen_t server_address_length = sizeof(server_address);
     // socklen_t server_address_length = sizeof(irc_server.get_server_address());
-    socklen_t   server_address_length = sizeof(irc_server.get_server_address());
-    sockaddr_in server_address_in = irc_server.get_server_address();
-    int client_accept_fd = accept(irc_server.get_server_fd(), (struct sockaddr *)&server_address_in, &server_address_length);
+    socklen_t   client_address_length = sizeof(irc_server.get_server_address());
+    sockaddr_in client_address_in = irc_server.get_server_address();
+    int client_accept_fd = accept(irc_server.get_server_fd(), (struct sockaddr *)&client_address_in, &client_address_length);
 
     if ( client_accept_fd < 0)
     {
@@ -75,12 +78,20 @@ int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unor
     //append client fd to poll list
     pollfd   temp;
     temp.fd         = client_accept_fd;
+    //melting star prevention, as poll is constantly woken up by check for POLLOUT
+    //and thus 100% cpu usage
+    //we will enable POLLOUT when we put something in the OutputBuffer
     temp.events     = POLLIN | POLLOUT;
+    // temp.events     = POLLIN;
     temp.revents    = 0;
     poll_fd.push_back(temp);
     
     //create Client object
     ClientUser client_created(client_accept_fd);
+    //ip is 32bit int, not human readable
+    //IPv4 address from network byte order (a binary struct in_addr) to a dotted-decimal string 
+    client_created.setIp(inet_ntoa(client_address_in.sin_addr));
+
     poll_clientUser__mapping_via_fd[client_accept_fd] = client_created;
     irc_server.registerClientFd(client_accept_fd, &poll_clientUser__mapping_via_fd[client_accept_fd]);
     //we do not create client here
@@ -287,13 +298,15 @@ int runServer(Server &irc_server)
     // //Client is the type we map to.
     std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
     
-    while (true)
+    while (!g_shutdown)
     {
        if (runPoll(irc_server, poll_fd, poll_clientUser__mapping_via_fd) == -1)
     //    if (runPoll(irc_server, poll_fd) == -1)
             // return -1;
             break;
     }
+    std::cout << "\n" << "Graceful shutdown" << std::endl;
     clean_up(poll_clientUser__mapping_via_fd);
     return 0;
 }
+

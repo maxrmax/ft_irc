@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/13 11:32:22 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/13 14:01:26 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,17 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
         return;
     }
 
+
+    //private message to individual clients
+    //get all targets, which are parameter[0], delimineter ','
+    std::vector <std::string> targets;
+    std::string delimineter = ",";
+    for(int targets_cnt = 0; targets_cnt < targets.size(); targets_cnt++)
+    {
+        int position = target.find(delimineter);
+        targets[targets_cnt] = target.substr(0, position);
+    }
+    
     // ── Private message to a nick ────────────────────────────────────────────
     ClientUser* recipient = server.getClientByNick(target);
     if (!recipient)

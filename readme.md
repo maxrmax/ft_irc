@@ -32,3 +32,5 @@ To see a direct message send from 1 client to 1 other client
 /query <nickname of client to get message from>
 at client, who sends message
 /msg <nickname of client to send message to> <message text>
+get out of query window
+/unquery

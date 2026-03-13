@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 15:15:29 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/13 11:33:11 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,16 @@ void ClientUser::setRealname(const std::string& real)
 std::string ClientUser::getRealname() const
 {
     return realname;
+}
+
+void ClientUser::setIp(const std::string& ip_str)
+{
+    ip = ip_str;
+}
+
+std::string ClientUser::getIp() const
+{
+    return ip;
 }
 
 // nick check?

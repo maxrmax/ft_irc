@@ -3,21 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPrivmsg.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/04 17:04:32 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/13 14:01:26 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+//CmdPrivmsg.cpp
 
 
 // IRC PRIVMSG command
 // Syntax: PRIVMSG <target> :<message>
 // Target can be a #channel or a nickname
 
-
-#include "../../includes/CmdPrivmsg.hpp"
-#include "../../includes/ClientUser.hpp"
+// #include "../../includes/CmdPrivmsg.hpp"
+// #include "../../includes/ClientUser.hpp"
+#include "../../includes/ircserv.hpp"
 
 void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
@@ -47,8 +49,14 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
         return;
     }
 
-    std::string prefix = ":" + clientUser.getNickname() + "!" +
-                         clientUser.getUsername() + "@ircserver";
+    //start nsloniow2603121042
+    //instead of using string "ircserver", we use ip, provided by client 
+    //on command USER with 2nd parameter
+    // std::string prefix = ":" + clientUser.getNickname() + "!" +
+    //                      clientUser.getUsername() + "@ircserver";
+    std::string prefix = ":" + clientUser.getNickname() + "!" + clientUser.getUsername() +
+             "@" + clientUser.getIp();                          
+    //end nsloniow2603121042
     std::string msgOut = prefix + " PRIVMSG " + target + " :" + text + "\r\n";
 
     // ── Channel message ──────────────────────────────────────────────────────
@@ -77,6 +85,17 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
         return;
     }
 
+
+    //private message to individual clients
+    //get all targets, which are parameter[0], delimineter ','
+    std::vector <std::string> targets;
+    std::string delimineter = ",";
+    for(int targets_cnt = 0; targets_cnt < targets.size(); targets_cnt++)
+    {
+        int position = target.find(delimineter);
+        targets[targets_cnt] = target.substr(0, position);
+    }
+    
     // ── Private message to a nick ────────────────────────────────────────────
     ClientUser* recipient = server.getClientByNick(target);
     if (!recipient)
@@ -87,6 +106,8 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
             " :No such nick\r\n");
         return;
     }
-
+    
     recipient->get_outputBuffer().append(msgOut);
+    
+    std::cout << server.getClientByNick(cmd.params[0])->get_outputBuffer().get_buffer() << std::endl;
 }

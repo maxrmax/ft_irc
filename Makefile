@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+         #
+#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/09 19:45:33 by mring            ###   ########.fr        #
+#    Updated: 2026/03/13 11:36:36 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,6 @@ SRC		= 			src/main.cpp \
 					src/network/client_user/ClientUser.cpp \
 					src/network/client_user/InputBuffer.cpp \
 					src/network/client_user/OuputBuffer.cpp \
-					src/network/message.cpp \
 					src/network/channel/Channel.cpp \
 					src/network/server/runServer.cpp \
 					src/network/server/Server_channels.cpp \
@@ -70,7 +69,7 @@ re:					fclean all
 run:				all
 					./ircserv 6667 start
 
-valgrind:			all
+valgrind:			re
 					valgrind --leak-check=full --track-origins=yes ./ircserv 6668 start
 
 .PHONY: all clean fclean re

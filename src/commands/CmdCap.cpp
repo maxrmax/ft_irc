@@ -16,7 +16,7 @@
 #include "../../includes/ClientUser.hpp"
 
 //LiSt which CAPabilities do you support
-void CmdCap::execute(Server&, ClientUser& clientUser, const ParsedCommand& cmd)
+void CmdCap::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
     // std::cout << "caps\n" ;
     if (!cmd.params.empty() && cmd.params[0] == "LS")
@@ -30,5 +30,6 @@ void CmdCap::execute(Server&, ClientUser& clientUser, const ParsedCommand& cmd)
         //is empty as we do not support anything
         std::string outputMsg = ":server CAP * LS :\r\n";
         clientUser.get_outputBuffer().append(outputMsg);
+        // poll_fd[i].events |= POLLOUT;
     }
 };

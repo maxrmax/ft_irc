@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 21:58:44 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/13 10:56:10 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ class ClientUser
         std::string     nickname;
         std::string     username;
         std::string     realname;
-        std::string     hostname;
+        std::string     ip;
         
         
         bool            registered;
@@ -54,12 +54,12 @@ class ClientUser
             void            setNickname(const std::string& nick);
             void            setUsername(const std::string& user);
             void            setRealname(const std::string& real);
-            void            setHostname(const std::string& host);
+            void            setIp(const std::string& host);
 
             std::string     getNickname() const;
             std::string     getUsername() const;
             std::string     getRealname() const;
-            std::string     getHostname() const;
+            std::string     getIp() const;
             bool            hasNick() const;
 
             // Auth state

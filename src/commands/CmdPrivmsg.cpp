@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/12 12:37:15 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/13 11:32:22 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,12 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
     }
 
     //start nsloniow2603121042
-    //instead of using string "ircserver", we use hostname, provided by client 
+    //instead of using string "ircserver", we use ip, provided by client 
     //on command USER with 2nd parameter
     // std::string prefix = ":" + clientUser.getNickname() + "!" +
     //                      clientUser.getUsername() + "@ircserver";
     std::string prefix = ":" + clientUser.getNickname() + "!" + clientUser.getUsername() +
-             "@" + clientUser.getHostname();                          
+             "@" + clientUser.getIp();                          
     //end nsloniow2603121042
     std::string msgOut = prefix + " PRIVMSG " + target + " :" + text + "\r\n";
 

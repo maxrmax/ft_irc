@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/12 12:40:15 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/13 11:33:11 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,14 +76,14 @@ std::string ClientUser::getRealname() const
     return realname;
 }
 
-void ClientUser::setHostname(const std::string& host)
+void ClientUser::setIp(const std::string& ip_str)
 {
-    hostname = host;
+    ip = ip_str;
 }
 
-std::string ClientUser::getHostname() const
+std::string ClientUser::getIp() const
 {
-    return hostname;
+    return ip;
 }
 
 // nick check?

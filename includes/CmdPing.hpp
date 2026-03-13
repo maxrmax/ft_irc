@@ -18,5 +18,7 @@
 class CmdPing : public Command 
 {
     public:
-        void execute(Server& server, ClientUser& client, const ParsedCommand& cmd);
+        void execute(Server &server,
+                     ClientUser &client,
+                     const ParsedCommand &cmd) override;
 };

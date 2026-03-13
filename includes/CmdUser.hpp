@@ -18,7 +18,9 @@
 class CmdUser : public Command
 {
 public:
-    void execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd);
+    void execute(Server &server,
+                 ClientUser &clientUser,
+                 const ParsedCommand &cmd) override;
 };
 
 #endif

@@ -101,7 +101,7 @@ class Server
 
         // Channel
         bool        channelExists(const std::string& name) const;
-        Channel&    getOrCreateChannel(const std::string& name, ClientUser& founder);
+        Channel&    createChannel(const std::string& name, ClientUser& founder);
         Channel&    getChannel(const std::string& name);
         void        broadcastToChannel(const std::string& channelName, const std::string& msg);
         void        broadcastToChannelExcept(const std::string& channelName, const std::string& msg, int excludeFd);

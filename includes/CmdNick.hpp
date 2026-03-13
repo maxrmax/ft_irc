@@ -19,5 +19,5 @@ class CmdNick : public Command
 public:
     void execute(Server &server,
                  ClientUser &client,
-                 const ParsedCommand &cmd);
+                 const ParsedCommand &cmd) override;
 };

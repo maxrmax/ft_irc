@@ -12,7 +12,50 @@
 
 #include "../includes/ircserv.hpp"
 
-void printCommand(const ParsedCommand& cmd)
+//volatile:
+// tells the compiler this variable can be changed anytime
+// without this the compiler could optimize while (!g_shutdown) to while (true)
+//sig_atomic_t:
+// Guaranteed atomic read/write.
+// A normal int could theoretically be written byte by byte
+// if the signal interferes, the loop reads a partially written value.
+volatile sig_atomic_t g_shutdown = 0;
+
+static void signal_handler(int signum)
+{
+    (void)signum;   // wir brauchen den Signalnamen nicht – alle machen dasselbe
+    g_shutdown = 1;
+}
+
+static void setup_signals(void)
+{
+    struct sigaction sa;
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;            // kein SA_RESTART!
+
+    sigaction(SIGINT,  &sa, NULL);  // Ctrl+C
+    sigaction(SIGTERM, &sa, NULL);  // kill <pid> / systemd stop
+
+    // SIGTSTP = Ctrl+Z (Terminal Stop)
+    // Wir ignorieren es, damit der Server nicht einfach im Hintergrund
+    // hängt und Clients verbunden bleiben
+    // SIGTSTP wird meistens von der shell abgefangen
+    signal(SIGTSTP, SIG_IGN);
+
+    // SIGPIPE: Tritt auf wenn wir send() an einen Client aufrufen,
+    // der seine Verbindung bereits geschlossen hat.
+    // Standardverhalten: Prozess wird sofort beendet (crash!).
+    // Mit SIG_IGN: send() gibt stattdessen -1 mit errno = EPIPE zurück,
+    // was wir normal behandeln können.
+    signal(SIGPIPE, SIG_IGN);
+
+    // Ctrl+D sendet EOF auf stdin. 
+    // Da unser Server keine stdin liest,
+    // passiert einfach gar nichts kein Handling nötig.
+}
+
+void printCommand(const ParsedCommand& cmd, const ClientUser& clientUser)
 {
     size_t i;
 
@@ -22,6 +65,7 @@ void printCommand(const ParsedCommand& cmd)
         return;
     }
 
+    std::cout << "User:    [" << clientUser.getUsername() << "]\n";
     std::cout << "Command: [" << cmd.command << "]\n";
     std::cout << "Params:\n";
 
@@ -71,7 +115,7 @@ int main(int argc, char **argv)
     //are arguments valid
     if (check_arguments(argc, argv) == -1)
         return (-1);
-    
+    setup_signals();
     //get server ready
     Server  irc_server;
     if (irc_server.get_server_ready(std::stoi(argv[1]), argv[2]) == -1)

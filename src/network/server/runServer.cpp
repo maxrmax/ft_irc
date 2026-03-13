@@ -15,6 +15,9 @@
 #include "../../../includes/ircserv.hpp"
 #include <arpa/inet.h> 
 
+extern volatile sig_atomic_t g_shutdown;
+
+
 //simple first send message
 static int sendMsg(ClientUser &clientUser)
 {    
@@ -295,13 +298,15 @@ int runServer(Server &irc_server)
     // //Client is the type we map to.
     std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
     
-    while (true)
+    while (!g_shutdown)
     {
        if (runPoll(irc_server, poll_fd, poll_clientUser__mapping_via_fd) == -1)
     //    if (runPoll(irc_server, poll_fd) == -1)
             // return -1;
             break;
     }
+    std::cout << "\n" << "Graceful shutdown" << std::endl;
     clean_up(poll_clientUser__mapping_via_fd);
     return 0;
 }
+

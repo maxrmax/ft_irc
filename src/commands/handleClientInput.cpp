@@ -20,7 +20,7 @@ void handleClientInput(ClientUser &clientUser, Server &irc_server)
     {
         //parse msg for command
         ParsedCommand cmd = Parser::parseLine(clientUser.get_inputBuffer().popLine());
-        printCommand(cmd);
+        printCommand(cmd, clientUser);
         irc_server.get_dispatcher().dispatch(irc_server, clientUser, cmd);
     }
 }

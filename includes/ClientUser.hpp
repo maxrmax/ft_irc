@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUser.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 20:06:12 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 15:15:27 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/13 10:56:10 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ class ClientUser
         std::string     nickname;
         std::string     username;
         std::string     realname;
+        std::string     ip;
+        
         
         bool            registered;
         bool            passAccepted;
@@ -52,10 +54,12 @@ class ClientUser
             void            setNickname(const std::string& nick);
             void            setUsername(const std::string& user);
             void            setRealname(const std::string& real);
+            void            setIp(const std::string& host);
 
             std::string     getNickname() const;
             std::string     getUsername() const;
             std::string     getRealname() const;
+            std::string     getIp() const;
             bool            hasNick() const;
 
             // Auth state

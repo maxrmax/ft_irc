@@ -32,6 +32,34 @@ static bool channelNameIsValid(const std::string& name)
     return true;
 }
 
+static std::vector<std::string> split_elements(const std::string &input)
+{
+    std::vector<std::string> elements;
+    size_t start = 0;
+    /* loop flow
+     * while true:
+     * find the next comma position in the input string
+     * if: comma is not found in the remaining string
+     * push_back the element from the position start
+     * 
+     * create a substr from start until the next position (comma-start)
+     * and push it onto the elements vectorstack (#ch1,#ch2,#ch3 -> [0]=#ch1 [1]=#ch2 [2]=#ch3)
+     * key1,,key3 -> [0]=key1 [1]="" [2]=key3?
+    */
+    while (true)
+    {
+        size_t comma = input.find(',', start);
+        if (comma == std::string::npos)
+        {
+            elements.push_back(input.substr(start));
+            return elements;
+        }
+        elements.push_back(input.substr(start, comma - start));
+        start = comma + 1;
+    }
+    return elements;
+}
+
 void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
     // Must be registered to JOIN
@@ -42,6 +70,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         return;
     }
 
+    // if the params are empty
     if (cmd.params.empty())
     {
         clientUser.get_outputBuffer().append(
@@ -52,38 +81,17 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
     ////////////////////////////////////////////////
     // IRC allows joining multiple channels: JOIN #a,#b,#c key1,key2,key3
     // We split on commas
-    std::string channelParam = cmd.params[0];
-    std::vector<std::string> channelNames;
-    {
-        size_t start = 0;
-        size_t comma;
-        while ((comma = channelParam.find(',', start)) != std::string::npos)
-        {
-            channelNames.push_back(channelParam.substr(start, comma - start));
-            start = comma + 1;
-        }
-        channelNames.push_back(channelParam.substr(start));
-    }
-    // same for keys
-    std::string keyParam = cmd.params[1];
-    std::vector<std::string> keys;
-    {
-        size_t start = 0;
-        size_t comma;
-        while ((comma = keyParam.find(',', start)) != std::string::npos)
-        {
-            keys.push_back(keyParam.substr(start, comma - start));
-            start = comma + 1;
-        }
-        keys.push_back(keyParam.substr(start));
-    }
+    std::vector<std::string> channelNames = split_elements(cmd.params[0]);
+    std::vector<std::string> keys = std::vector<std::string>();
+    if (cmd.params.size() > 1 && !cmd.params[1].empty())
+        keys = split_elements(cmd.params[1]);
 
     // build channel + key vector list after split
     std::vector<std::pair<std::string, std::string>> channels;
     for (size_t i = 0; i < channelNames.size(); i++)
     {
-        std::string key = (i < keys.size()) ? keys[i] : "";
-        channels.push_back({channelNames[i], key});
+        std::string providedKey = (i < keys.size()) ? keys[i] : "";
+        channels.push_back({channelNames[i], providedKey});
     }
     ////////////////////////////////////////////////
 
@@ -124,8 +132,10 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         }
 
         // TODO: add into for loop above for multiple channel checking.
-        // check if channel is invite only
-        if ((cmd.params[1] != channel.getKey()) && !channel.getKey().empty())
+        // if the key IS NOT the same as the key set in the channel
+        // AND key IS NOT empty
+        // false = pkey != channelkey && channelkey is empty
+        if ((providededKey != channel.getKey()) && !channel.getKey().empty())
         {   // ERR_BADCHANNELKEY (475)
             clientUser.get_outputBuffer().append(
                 ":server 475 " + clientUser.getNickname() + " " + channelName +

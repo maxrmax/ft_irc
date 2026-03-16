@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:06:10 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 11:42:52 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 12:11:21 by mring            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,13 +22,13 @@ CommandDispatcher::CommandDispatcher()
     _commands["PING"]       = new CmdPing();        // keep alive method between client-server
     _commands["PRIVMSG"]    = new CmdPrivmsg();     // send private messages between connected clients on a server. Can be channels! PRIVMSG <#channel>,<nick> <text to be sent> -> all users of #channel AND nick would receive the message!   
     _commands["USER"]       = new CmdUser();        // used to register: USER <username> <hostname> <servername> <realname> // HOSTNAME AND SERVERNAME ARE IGNORED! (by default) // need to figure out an alternate for Privmsg!
-    // _commands["PART"]       = new CmdPart();     // disconnect from a channel: PART #channel1,#channel2,#channel3
+    // _commands["PART"]       = new CmdPart();        // disconnect from a channel: PART #channel1,#channel2,#channel3
     // _commands["QUIT"]       = new CmdQuit();     // gracefully disconnect from a server with instant cleanup
     // _commands["PONG"]       = new CmdPong();     // keep alive method between client-server
     // _commands["NOTICE"]     = new CmdNotice();   // send notice to 
     // _commands["TOPIC"]      = new CmdTopic();    // needs to check if +t is set (op only) then check if op
-    // _commands["INVITE"]      = new CmdInvite();  // can invite any user to any channel (even non existing). If channel has +i flag, needs op. INVITE <nickname> <#channel>
-    // _commands["KICK"]      = new CmdKick();      // needs op - forcefully part user from channel. KICK <#channel> <nickname> <comment>
+    // _commands["INVITE"]     = new CmdInvite();   // can invite any user to any channel (even non existing). If channel has +i flag, needs op. INVITE <nickname> <#channel>
+    _commands["KICK"]      = new CmdKick();         // needs op - forcefully part user from channel. KICK <#channel> <nickname> <comment>
     _commands["MODE"]      = new CmdMode();         // channel settings (needs operator)
 }
 

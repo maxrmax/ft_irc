@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/16 14:09:42 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 15:02:27 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 #include "CmdPart.hpp"
 #include "CmdPing.hpp"
 #include "CmdPrivmsg.hpp"
+#include "CmdQuit.hpp"
 #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"

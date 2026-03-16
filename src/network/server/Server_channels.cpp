@@ -6,13 +6,29 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 14:07:08 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 14:17:22 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 18:09:28 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/ircserv.hpp"
 
 // ── Channel management ────────────────────────────────────────────────────────
+
+std::vector<std::string> Server::getChannelsOfClientFd(int fd)
+{
+    // goal: get a list of all channels this user is part of
+    std::vector<std::string> result;
+
+    for (const auto& entry : _channels)
+    {
+        const std::string& channelName = entry.first;
+        const Channel& channel = entry.second;
+
+        if (channel.hasMember(fd))
+            result.push_back(channelName);
+    }
+    return result;
+}
 
 bool Server::channelExists(const std::string& name) const
 {
@@ -99,6 +115,14 @@ std::string Server::getChannelMemberNicks(const std::string& channelName) const
 
 // ── Client lookup ─────────────────────────────────────────────────────────────
 
+ClientUser* Server::getClientByFd(int fd)
+{
+    auto it = _clients.find(fd);
+    if (it == _clients.end())
+        return nullptr;
+    return it->second;
+}
+
 ClientUser* Server::getClientByNick(const std::string& nick)
 {
     auto it = nick_clientUser.find(nick);
@@ -125,12 +149,14 @@ void Server::unregisterClientFd(int fd)
         nicknames_history[nick] = nullptr;
     }
 
-    // Remove from all channels they were in
-    // TODO channel cleanup
-    for (auto& [name, channel] : _channels)
+    std::vector<std::string> channelList = getChannelsOfClientFd(fd);
+    for (const auto& channelName : channelList)
+    {
+        Channel& channel = getChannel(channelName);
         channel.removeMember(fd);
+        if (channel.getMembers().empty())
+            removeChannel(channelName);
+    }
         
     _clients.erase(fd);
-    // unused until refactor
-    // _clientStorage.erase(fd);
 }

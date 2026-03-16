@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 14:07:08 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/10 16:45:57 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 14:17:22 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ Channel& Server::createChannel(const std::string& name, ClientUser& clientUser)
 Channel& Server::getChannel(const std::string& name)
 {
     return _channels.at(name);
+}
+
+void Server::removeChannel(const std::string& name)
+{
+    _channels.erase(name);
 }
 
 // Broadcast a raw message to ALL members of a channel
@@ -121,6 +126,7 @@ void Server::unregisterClientFd(int fd)
     }
 
     // Remove from all channels they were in
+    // TODO channel cleanup
     for (auto& [name, channel] : _channels)
         channel.removeMember(fd);
         

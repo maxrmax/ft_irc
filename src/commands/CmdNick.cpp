@@ -1,18 +1,17 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CmdNick.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:05:53 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/09 12:51:43 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/16 11:42:22 by mring            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 //CmdNick.cpp
-#include "../../includes/CmdNick.hpp"
-#include "../../includes/ClientUser.hpp"
+#include "../../includes/ircserv.hpp"
 
 // IRC rules - RFC 1459 §2.3.1
 //  First char:  letter only [A-Za-z]
@@ -106,3 +105,10 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
 // TODO: check for valid nicknames + add error handling + add to client.cpp
     // client.setNick(cmd.params[0]);
 }
+
+/*
+431 ERR_NONICKNAMEGIVEN
+432 ERR_ERRONEUSNICKNAME
+433 ERR_NICKNAMEINUSE
+436 ERR_NICKCOLLISION
+*/

@@ -6,16 +6,16 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:49:40 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 17:08:07 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 14:19:01 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/ircserv.hpp"
 
-Channel::Channel() : _name(""), _topic(""), _topicFlag(false), _inviteFlag(false), _userLimit(0) {}
+Channel::Channel() : _name(""), _topic(""), _topicFlag(false), _inviteFlag(false), _userLimit(0), _key("") {}
 
 Channel::Channel(const std::string &name, ClientUser &founder)
-    : _name(name)
+    : _name(name), _topic(""), _topicFlag(false), _inviteFlag(false), _userLimit(0), _key("") 
 {
     _member_fds.insert(founder.get_ClientUser_fd());
     _operator_fds.insert(founder.get_ClientUser_fd());
@@ -65,6 +65,8 @@ void Channel::addMember(int fd)
 void Channel::removeMember(int fd)
 {
     _member_fds.erase(fd);
+    if (isOperator(fd))
+        unsetOperator(fd);
 }
 
 bool Channel::hasMember(int fd) const

@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CmdJoin.cpp                                        :+:      :+:    :+:   */
@@ -6,15 +6,14 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 14:06:25 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/10 15:26:37 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 11:42:10 by mring            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 // IRC JOIN command
 // Syntax: JOIN <#channel>[,<#channel2>,...] [<key>[,<key2>,...]]
 
-#include "../../includes/CmdJoin.hpp"
-#include "../../includes/ClientUser.hpp"
+#include "../../includes/ircserv.hpp"
 
 // Channel names must start with '#' and contain no spaces, NUL, BEL, or commas
 static bool channelNameIsValid(const std::string& name)

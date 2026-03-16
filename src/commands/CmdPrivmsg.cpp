@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CmdPrivmsg.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/13 14:01:26 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/16 11:42:42 by mring            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 //CmdPrivmsg.cpp
 
@@ -17,8 +17,6 @@
 // Syntax: PRIVMSG <target> :<message>
 // Target can be a #channel or a nickname
 
-// #include "../../includes/CmdPrivmsg.hpp"
-// #include "../../includes/ClientUser.hpp"
 #include "../../includes/ircserv.hpp"
 
 void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)

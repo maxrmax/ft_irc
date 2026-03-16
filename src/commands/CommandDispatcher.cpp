@@ -1,21 +1,16 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CommandDispatcher.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ngoyat <ngoyat@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:06:10 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/01/30 12:06:10 by ngoyat           ###   ########.fr       */
+/*   Updated: 2026/03/16 11:42:52 by mring            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 // CommandDispatcher.cpp
-
-// #include "../../includes/commandDispatcher.hpp"
-// #include "../../includes/cmdNick.hpp"
-// #include "../../includes/CmdUser.hpp"
-// #include "../../includes/CmdJoin.hpp"
 #include "../../includes/ircserv.hpp"
 
 CommandDispatcher::CommandDispatcher()

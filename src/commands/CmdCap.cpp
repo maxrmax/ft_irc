@@ -12,8 +12,7 @@
 
 //CmdCap.cpp
 
-#include "../../includes/CmdCap.hpp"
-#include "../../includes/ClientUser.hpp"
+#include "../../includes/ircserv.hpp"
 
 //LiSt which CAPabilities do you support
 void CmdCap::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)

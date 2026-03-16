@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CmdJoin.cpp                                        :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 14:06:25 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 11:42:10 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 13:33:45 by mring            ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 // IRC JOIN command
 // Syntax: JOIN <#channel>[,<#channel2>,...] [<key>[,<key2>,...]]
@@ -189,3 +189,19 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             " :End of /NAMES list\r\n");
     }
 }
+
+
+/*
+331 RPL_NOTOPIC
+332 RPL_TOPIC
+353 RPL_NAMREPLY
+366 RPL_ENDOFNAMES	
+
+403 ERR_NOSUCHCHANNEL
+405 ERR_TOOMANYCHANNELS
+471 ERR_CHANNELISFULL
+473 ERR_INVITEONLYCHAN
+474 ERR_BANNEDFROMCHAN
+475 ERR_BADCHANNELKEY
+476 ERR_BADCHANMASK
+*/

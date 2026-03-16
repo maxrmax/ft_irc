@@ -22,7 +22,7 @@ CommandDispatcher::CommandDispatcher()
     _commands["PING"]       = new CmdPing();        // keep alive method between client-server
     _commands["PRIVMSG"]    = new CmdPrivmsg();     // send private messages between connected clients on a server. Can be channels! PRIVMSG <#channel>,<nick> <text to be sent> -> all users of #channel AND nick would receive the message!   
     _commands["USER"]       = new CmdUser();        // used to register: USER <username> <hostname> <servername> <realname> // HOSTNAME AND SERVERNAME ARE IGNORED! (by default) // need to figure out an alternate for Privmsg!
-    // _commands["PART"]       = new CmdPart();        // disconnect from a channel: PART #channel1,#channel2,#channel3
+    _commands["PART"]       = new CmdPart();        // disconnect from a channel: PART #channel1,#channel2,#channel3
     // _commands["QUIT"]       = new CmdQuit();     // gracefully disconnect from a server with instant cleanup
     // _commands["PONG"]       = new CmdPong();     // keep alive method between client-server
     // _commands["NOTICE"]     = new CmdNotice();   // send notice to 

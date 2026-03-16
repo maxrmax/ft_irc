@@ -51,6 +51,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
     // KICK(cmd) #ch(param[0]) user(param[1]) 
     if (cmd.params.empty() || cmd.params.size() < 2)
     {
+        // ERR_NEEDMOREPARAMS (461)
         clientUser.get_outputBuffer().append(
             ":server 461 " + clientUser.getNickname() + " KICK :Not enough parameters\r\n");
         return;
@@ -71,7 +72,8 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
 
     for (const auto &[channelName, username] : channels)
     {
-        if (!channelNameIsValid(channelName))
+
+        if (!channelNameIsValid(channelName) || !server.channelExists(channelName))
         {
             // ERR_NOSUCHCHANNEL (403) reused for invalid name here
             clientUser.get_outputBuffer().append(
@@ -102,8 +104,41 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             continue;
         }
 
-        // TODO
-        // actual force part lol
+        ClientUser* target = server.getClientByNick(username);
+        if (!target)
+        {
+            // ERR_NOSUCHNICK 401
+            clientUser.get_outputBuffer().append(
+                ":server 401 " + clientUser.getNickname() + " " + username +
+                " :No such nick\r\n");
+            continue;
+        }
 
+        if (!channel.hasMember(target->get_ClientUser_fd()))
+        {
+            // ERR_USERNOTINCHANNEL 441
+            clientUser.get_outputBuffer().append(
+                ":server 441 " + clientUser.getNickname() + " " + username + " " + channelName +
+                " :They aren't on that channel\r\n");
+            continue;
+        }
+
+        std::string reason = "kicked";
+        if (cmd.params.size() > 2 && !cmd.params[2].empty())
+            reason = cmd.params[2];
+
+        std::string kickMsg = ":" + clientUser.getNickname() + 
+                             "!" + clientUser.getUsername() + 
+                             "@ircserver" + 
+                             " KICK " + channelName + " " +
+                              target->getNickname() + " :" + 
+                              reason + "\r\n";
+
+        server.broadcastToChannel(channelName, kickMsg);
+        
+        channel.removeMember(target->get_ClientUser_fd());
+
+        if (channel.getMembers().empty())
+            server.removeChannel(channelName);
     }
 }

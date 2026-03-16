@@ -60,7 +60,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     }
     // check if enough parameters are given
     if (parameterCheck(cmd))
-    {   // ERR_NEEDMOREPARAMS 461
+    {   // ERR_NEEDMOREPARAMS
         clientUser.get_outputBuffer().append(
             ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
         return;
@@ -145,6 +145,17 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
         }
     }
 }
+
+/*
+461 ERR_NEEDMOREPARAMS
+472 ERR_UNKNOWNMODE
+482 ERR_CHANOPRIVSNEEDED
+501 ERR_UMODEUNKNOWNFLAG
+
+324 RPL_CHANNELMODEIS	
+*/
+
+// USER MODES (UMODES) are not mandatory and thus not handled.
 
 /*
 4.2.3 Mode message

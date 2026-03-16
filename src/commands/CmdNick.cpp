@@ -105,3 +105,10 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
 // TODO: check for valid nicknames + add error handling + add to client.cpp
     // client.setNick(cmd.params[0]);
 }
+
+/*
+431 ERR_NONICKNAMEGIVEN
+432 ERR_ERRONEUSNICKNAME
+433 ERR_NICKNAMEINUSE
+436 ERR_NICKCOLLISION
+*/

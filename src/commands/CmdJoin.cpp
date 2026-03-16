@@ -32,6 +32,34 @@ static bool channelNameIsValid(const std::string& name)
     return true;
 }
 
+static std::vector<std::string> split_elements(const std::string &input)
+{
+    std::vector<std::string> elements;
+    size_t start = 0;
+    /* loop flow
+     * while true:
+     * find the next comma position in the input string
+     * if: comma is not found in the remaining string
+     * push_back the element from the position start
+     * 
+     * create a substr from start until the next position (comma-start)
+     * and push it onto the elements vectorstack (#ch1,#ch2,#ch3 -> [0]=#ch1 [1]=#ch2 [2]=#ch3)
+     * key1,,key3 -> [0]=key1 [1]="" [2]=key3?
+    */
+    while (true)
+    {
+        size_t comma = input.find(',', start);
+        if (comma == std::string::npos)
+        {
+            elements.push_back(input.substr(start));
+            return elements;
+        }
+        elements.push_back(input.substr(start, comma - start));
+        start = comma + 1;
+    }
+    return elements;
+}
+
 void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
     // Must be registered to JOIN
@@ -42,6 +70,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         return;
     }
 
+    // if the params are empty
     if (cmd.params.empty())
     {
         clientUser.get_outputBuffer().append(
@@ -49,22 +78,25 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         return;
     }
 
-    // IRC allows joining multiple channels: JOIN #a,#b,#c
+    ////////////////////////////////////////////////
+    // IRC allows joining multiple channels: JOIN #a,#b,#c key1,key2,key3
     // We split on commas
-    std::string channelParam = cmd.params[0];
-    std::vector<std::string> channelNames;
-    {
-        size_t start = 0;
-        size_t comma;
-        while ((comma = channelParam.find(',', start)) != std::string::npos)
-        {
-            channelNames.push_back(channelParam.substr(start, comma - start));
-            start = comma + 1;
-        }
-        channelNames.push_back(channelParam.substr(start));
-    }
+    std::vector<std::string> channelNames = split_elements(cmd.params[0]);
+    std::vector<std::string> keys = std::vector<std::string>();
+    if (cmd.params.size() > 1 && !cmd.params[1].empty())
+        keys = split_elements(cmd.params[1]);
 
-    for (const std::string& channelName : channelNames)
+    // build channel + key vector list after split
+    std::vector<std::pair<std::string, std::string>> channels;
+    for (size_t i = 0; i < channelNames.size(); i++)
+    {
+        std::string providedKey = (i < keys.size()) ? keys[i] : "";
+        channels.push_back({channelNames[i], providedKey});
+    }
+    ////////////////////////////////////////////////
+
+    // loop through the channel list vector
+    for (const auto &[channelName, providededKey] : channels)
     {
         if (!channelNameIsValid(channelName))
         {
@@ -76,14 +108,52 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         }
 
         // Get or create channel
-        Channel& channel = server.getOrCreateChannel(channelName, clientUser);
+        if (!server.channelExists(channelName))
+            server.createChannel(channelName, clientUser);
+        Channel& channel = server.getChannel(channelName);
 
         // If already in channel, silently skip (irssi behaviour)
         if (channel.hasMember(clientUser.get_ClientUser_fd()))
             continue;
 
-        // Add member
-        channel.addMember(clientUser);
+        // ORDER: i k l
+        // +i are you invited?              yes/no/not needed
+        // +k do you have the password?     yes/no/not needed
+        // +l is the room full?             yes/no
+        // TODO: CmdInvite
+        // TODO: CmdInvite flagcheck (clientUser._isInvited?)
+        // check if channel is invite only
+        if (channel.isInviteOnly() == true) // && not invited
+        {   // ERR_INVITEONLYCHAN (473)
+            clientUser.get_outputBuffer().append(
+                ":server 473 " + clientUser.getNickname() + " " + channelName +
+                " :Cannot join channel (+i)\r\n");
+            continue;
+        }
+
+        // TODO: add into for loop above for multiple channel checking.
+        // if the key IS NOT the same as the key set in the channel
+        // AND key IS NOT empty
+        // false = pkey != channelkey && channelkey is empty
+        if ((providededKey != channel.getKey()) && !channel.getKey().empty())
+        {   // ERR_BADCHANNELKEY (475)
+            clientUser.get_outputBuffer().append(
+                ":server 475 " + clientUser.getNickname() + " " + channelName +
+                " :Cannot join channel (+k)\r\n");
+            continue;
+        }
+
+
+        // if +l is set and its full
+        if ((channel.getMembers().size() >= channel.getUserLimit()) && channel.getUserLimit() != 0)
+        {   // ERR_CHANNELISFULL (471)
+            clientUser.get_outputBuffer().append(
+                ":server 471 " + clientUser.getNickname() + " " + channelName +
+                " :Cannot join channel (+l)\r\n");
+            continue;
+        }
+
+        channel.addMember(clientUser.get_ClientUser_fd());
 
         // Build the JOIN prefix: :nick!user@host
         std::string prefix = ":" + clientUser.getNickname() + "!" +

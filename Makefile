@@ -66,4 +66,10 @@ fclean:				clean
 
 re:					fclean all
 
+run:				all
+					./ircserv 6667 start
+
+valgrind:			re
+					valgrind --leak-check=full --track-origins=yes ./ircserv 6668 start
+
 .PHONY: all clean fclean re

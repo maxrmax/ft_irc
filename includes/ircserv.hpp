@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <map>
 #include <set>
+#include <csignal>
 
 #include "ClientUser.hpp"
 #include "CmdCap.hpp"
@@ -43,7 +44,7 @@ bool    isspecial(int i);
 
 //main.cpp
 int     check_arguments(int argc, char **argv);
-void    printCommand(const ParsedCommand& cmd);
+void    printCommand(const ParsedCommand& cmd, const ClientUser& clientUser);
 
 //runServer.cpp
 int     acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd);

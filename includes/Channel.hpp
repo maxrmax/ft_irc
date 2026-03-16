@@ -24,8 +24,12 @@ class Channel
 private:
     std::string                 _name;          // channel name
     std::string                 _topic;         // channel topic
+    bool                        _topicFlag;
     std::set<int>               _member_fds;    // fds of all members
     std::unordered_set<int>     _operator_fds;  // fds of channel operator (first to join/+o)
+    bool                        _inviteFlag;
+    unsigned int                _userLimit;
+    std::string                 _key;
 
 public:
     Channel();
@@ -33,21 +37,30 @@ public:
     ~Channel();
 
     const std::string   &getName() const;
-    const std::string   &getTopic() const;
-    void                setTopic(const std::string& topic);
 
-    void                addMember(ClientUser& client);
-    void                removeMember(int fd);
-    bool                hasMember(int fd) const;
-    void                setOperator(int fd);
-    bool                isOperator(int fd) const;
+    const std::string   &getTopic() const;
+    void                setTopic(const std::string &topic);
     
+    void                setTopicFlag(char sign);
+    bool                getTopicFlag() const;
 
     const std::set<int> &getMembers() const;
-    // isn't getMembers() used to get the entire list?
-    // below can be deleted?
-    // Returns comma-separated nick list for RPL_NAMREPLY
-    // consider passing clientUser* lookup function instead
-    // or resolving nicks at the server level before calling getMemberList
-    // std::string         getMemberList(const std::unordered_map<int, ClientUser>& clients) const;
+    void                addMember(int fd);
+    void                removeMember(int fd);
+    bool                hasMember(int fd) const;
+
+    void                setOperator(int fd);
+    void                unsetOperator(int fd);
+    bool                isOperator(int fd) const;
+
+    void                setInviteOnly(char sign);
+    bool                isInviteOnly() const;
+
+    void                setUserLimit(std::string limit);
+    unsigned int        getUserLimit() const;
+
+    void                setKey(std::string key);
+    std::string         getKey() const;
+
+
 };

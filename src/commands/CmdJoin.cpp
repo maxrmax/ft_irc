@@ -80,6 +80,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
 
     ////////////////////////////////////////////////
     // IRC allows joining multiple channels: JOIN #a,#b,#c key1,key2,key3
+    // join #a,#b,#c ,key#b, (works for if only #b has a key)
     // We split on commas
     std::vector<std::string> channelNames = split_elements(cmd.params[0]);
     std::vector<std::string> keys = std::vector<std::string>();
@@ -112,7 +113,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             server.createChannel(channelName, clientUser);
         Channel& channel = server.getChannel(channelName);
 
-        // If already in channel, silently skip (irssi behaviour)
+        // If already in channel, silently skip
         if (channel.hasMember(clientUser.get_ClientUser_fd()))
             continue;
 
@@ -163,18 +164,18 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         std::string joinMsg = prefix + " JOIN " + channelName + "\r\n";
         server.broadcastToChannel(channelName, joinMsg);
 
-        // Send topic (332) or no-topic (331)
-        if (!channel.getTopic().empty())
-        {
-            clientUser.get_outputBuffer().append(
-                ":server 332 " + clientUser.getNickname() + " " + channelName +
-                " :" + channel.getTopic() + "\r\n");
-        }
-        else
+        // Send no-topic (331) or  topic (332)
+        if (channel.getTopic().empty())
         {
             clientUser.get_outputBuffer().append(
                 ":server 331 " + clientUser.getNickname() + " " + channelName +
                 " :No topic is set\r\n");
+        }
+        else
+        {
+            clientUser.get_outputBuffer().append(
+                ":server 332 " + clientUser.getNickname() + " " + channelName +
+                " :" + channel.getTopic() + "\r\n");
         }
 
         // RPL_NAMREPLY (353): send member list

@@ -12,10 +12,10 @@
 
 #include "../../../includes/ircserv.hpp"
 
-Channel::Channel() : _name(""), _topic(""), _topicFlag(false), _inviteFlag(false), _userLimit(0) {}
+Channel::Channel() : _name(""), _topic(""), _topicFlag(false), _inviteFlag(false), _userLimit(0), _key("") {}
 
 Channel::Channel(const std::string &name, ClientUser &founder)
-    : _name(name)
+    : _name(""), _topic(""), _topicFlag(false), _inviteFlag(false), _userLimit(0), _key("") 
 {
     _member_fds.insert(founder.get_ClientUser_fd());
     _operator_fds.insert(founder.get_ClientUser_fd());

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/16 14:09:58 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/17 15:17:31 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,9 @@ class Server
         //man 7 ip explains the IPv4 address
         sockaddr_in server_address;
 
+        //array for fd to poll, to check, if ready with data
+        std::vector<pollfd> poll_fd;
+
         CommandDispatcher dispatcher;
 
         /* create maping for (unique index) fd to Client object 
@@ -83,9 +86,12 @@ class Server
         Server();
         Server(int filedescriptor, int port, std::string password);
 
-        int                 get_server_fd();
-        std::string         get_server_password();
-        sockaddr_in         get_server_address();
+        int                         get_server_fd();
+        std::string                 get_server_password();
+        sockaddr_in                 get_server_address();
+        std::vector<pollfd>         &getPollFD();
+        const std::vector<pollfd>   &getPollFD() const;
+
         void                printRegisteredNicks();
         
         int                 get_server_ready(int portt, std::string password);

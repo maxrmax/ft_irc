@@ -122,13 +122,8 @@ int main(int argc, char **argv)
         return -1;
     std::cout << "Server created. fd = " << irc_server.get_server_fd() << std::endl;
 
-    return(runServer(irc_server));
-    
-    // //delete what I alloced with new
-    // //do inside destructor
-
-    //handle ctrl c, z, whatever and free, close all 
-    //free close port
+    // return(runServer(irc_server));
+    runServer(irc_server);
 
     return (0);
 }

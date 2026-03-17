@@ -33,6 +33,12 @@ static bool parameterCheck(const ParsedCommand &cmd)
 // l - set the user limit to channel;
 void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedCommand &cmd)
 {
+    if (cmd.params.empty())
+    {   // ERR_NEEDMOREPARAMS
+        clientUser.get_outputBuffer().append(
+            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
+        return;
+    }
     // user mode catch 
     // not required by 42 subject, ignoring silently
     if (cmd.params[0][0] != '#')
@@ -81,7 +87,6 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     }
 
     // time to handle the flag:
-    // 501     ERR_UMODEUNKNOWNFLAG     ":Unknown MODE flag"
     // +i / -i -> bool
     // +t / -t -> bool
     // +l / -l -> unsigned int (we would never read int_max, param parsing)
@@ -150,7 +155,6 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
 461 ERR_NEEDMOREPARAMS
 472 ERR_UNKNOWNMODE
 482 ERR_CHANOPRIVSNEEDED
-501 ERR_UMODEUNKNOWNFLAG
 
 324 RPL_CHANNELMODEIS	
 */

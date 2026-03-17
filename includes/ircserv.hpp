@@ -27,6 +27,7 @@
 #include "CmdKick.hpp"
 #include "CmdMode.hpp"
 #include "CmdNick.hpp"
+#include "CmdNotice.hpp"
 #include "CmdPass.hpp"
 #include "CmdPart.hpp"
 #include "CmdPing.hpp"

@@ -27,6 +27,7 @@ SRC		= 			src/main.cpp \
 					src/commands/CmdKick.cpp \
 					src/commands/CmdMode.cpp \
 					src/commands/CmdNick.cpp \
+					src/commands/CmdNotice.cpp \
 					src/commands/CmdPart.cpp \
 					src/commands/CmdPass.cpp \
 					src/commands/CmdPing.cpp \

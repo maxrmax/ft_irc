@@ -90,6 +90,9 @@ int acceptClientUser(Server &irc_server, std::vector<pollfd> &poll_fd, std::unor
     ClientUser client_created(client_accept_fd);
     //ip is 32bit int, not human readable
     //IPv4 address from network byte order (a binary struct in_addr) to a dotted-decimal string 
+    // TODO: return network ip instead of local loopback 
+    // (if connecting per localhost or 127.0.0.1, the ip shown to others is localhost/127.0.0.1)
+    // it should be the network ip or public ip
     client_created.setIp(inet_ntoa(client_address_in.sin_addr));
 
     poll_clientUser__mapping_via_fd[client_accept_fd] = client_created;

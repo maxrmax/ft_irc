@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/17 15:40:42 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/17 19:26:01 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,8 @@ int acceptClientUser(Server &irc_server, std::unordered_map<int, ClientUser> &po
     //melting star prevention, as poll is constantly woken up by check for POLLOUT
     //and thus 100% cpu usage
     //we will enable POLLOUT when we put something in the OutputBuffer
-    temp.events     = POLLIN | POLLOUT;
-    // temp.events     = POLLIN;
+    // temp.events     = POLLIN | POLLOUT;
+    temp.events     = POLLIN;
     temp.revents    = 0;
     irc_server.getPollFD().push_back(temp);
     
@@ -136,7 +136,6 @@ int receive_message(Server &irc_server, int fd, std::unordered_map<int, ClientUs
 
     char   msg[1024]; 
     int    read_len  = recv(irc_server.getPollFD()[fd].fd,msg, sizeof(msg)-1,0);
-    // msg[read_len] = '\0';
     
     if (read_len > 0)
     {
@@ -254,14 +253,30 @@ int runPoll(Server &irc_server, std::unordered_map<int, ClientUser> &poll_client
                 irc_server.getPollFD()[fd].revents = 0;
             }
 
-            if (irc_server.getPollFD()[fd].revents & POLLOUT)
+            //start nsloniow 2603171812
+            //set POLLOUT on outputbuffer not empty so to tell kernel to try to send from that fd
+            //if empty no need to use cpu to tell kernel that something for sending is waiting on that fd
+            if (irc_server.getPollFD()[fd].fd != irc_server.get_server_fd())
             {
-                if (process_fd_ready_for_sending(irc_server, fd, poll_clientUser__mapping_via_fd) < 0)
+                ClientUser &client_for_current_fd = poll_clientUser__mapping_via_fd[irc_server.getPollFD()[fd].fd];
+                if (!client_for_current_fd.get_outputBuffer().get_buffer().empty())
+                    irc_server.getPollFD()[fd].events |= POLLOUT;
+            //end nsloniow 2603171812
+                if (irc_server.getPollFD()[fd].revents & POLLOUT)
                 {
-                    return -1;
+                    if (process_fd_ready_for_sending(irc_server, fd, poll_clientUser__mapping_via_fd) < 0)
+                    {
+                        return -1;
+                    }
+                    irc_server.getPollFD()[fd].revents = 0;
                 }
-                irc_server.getPollFD()[fd].revents = 0;
+            //start nsloniow 2603171812
+            //set POLLOUT on outputbuffer not empty so to tell kernel to try to send from that fd
+            //if empty no need to use cpu to tell kernel that something for sending is waiting on that fd
+                if (client_for_current_fd.get_outputBuffer().get_buffer().empty())
+                    irc_server.getPollFD()[fd].events &= ~POLLOUT;
             }
+            //end nsloniow 2603171812
         //          POLLIN   → there is data to read
         //          POLLOUT  → socket can accept data to send
         //          POLLERR  → error

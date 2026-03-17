@@ -66,7 +66,7 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
     }
 
     std::string channelName = cmd.params[1];
-    std::string username = cmd.params[0];
+    std::string targetUsername = cmd.params[0];
 
 
 
@@ -101,32 +101,64 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
         return;
     }
 
-    ClientUser* target = server.getClientByNick(username);
+    ClientUser* target = server.getClientByNick(targetUsername);
     if (!target)
     {
         // ERR_NOSUCHNICK 401
         clientUser.get_outputBuffer().append(
-            ":server 401 " + clientUser.getNickname() + " " + username +
+            ":server 401 " + clientUser.getNickname() + " " + targetUsername +
             " :No such nick\r\n");
         return;
     }
 
-    // If already in channel, silently skip
+    // If already in channel
     if (channel.hasMember(target->get_ClientUser_fd()))
     {
         // ERR_NOTONCHANNEL 443
         clientUser.get_outputBuffer().append(
             ":server 443 " + target->getNickname() + " " + channelName +
-            " :is already on channell\r\n");
+            " :is already on channel\r\n");
         return;
     }
 
+    channel.setInvited(target->get_ClientUser_fd());
 
     // RPL_INVITING (341):   "<channel> <nick>"
+    // clientuser or target?
     clientUser.get_outputBuffer().append(
-        ":server 341 " + clientUser.getNickname() + " = " + channelName +
-        " :" + username + "\r\n");
+        ":server 341 " + clientUser.getNickname() + " " + channelName +
+        " :" + targetUsername + "\r\n");
+
+    // now send the invite to the recipient
+    // :inviterNick!user@host INVITE <targetNick> <#channel>
+    target->get_outputBuffer().append(
+        ":" + clientUser.getNickname() + "!" + clientUser.getUsername() +
+        "@" + clientUser.getIp() + " INVITE " + targetUsername + " " + channelName + "\r\n");
 }
+
+/*
+:server 001 n3ck :Welcome to ircserver n3ck!n3ck@ircserver
+
+join #ch1
+invite #ch1 n1ck
+:server 403 n3ck n1ck :No such channel
+
+privmsg ch test
+:server 401 n3ck ch :No such nick
+//correct
+
+privmsg #ch test
+:server 404 n3ck #ch :Cannot send to channel
+//correct
+
+privmsg #ch1 test
+//
+invite n1ck #ch1
+:server 341 n3ck = #ch1 :n1ck
+// = (wrong)
+
+n1ck didn't receive a INVITE notice.
+*/
 
 
 /*

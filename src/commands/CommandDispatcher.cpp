@@ -25,8 +25,8 @@ CommandDispatcher::CommandDispatcher()
     _commands["PART"]       = new CmdPart();        // disconnect from a channel: PART #channel1,#channel2,#channel3
     _commands["QUIT"]       = new CmdQuit();        // gracefully disconnect from a server with instant cleanup
     _commands["NOTICE"]     = new CmdNotice();      // send notice to 
-    _commands["TOPIC"]      = new CmdTopic();    // needs to check if +t is set (op only) then check if op
-    _commands["INVITE"]     = new CmdInvite();   // can invite any user to any channel (even non existing). If channel has +i flag, needs op. INVITE <nickname> <#channel>
+    _commands["TOPIC"]      = new CmdTopic();       // needs to check if +t is set (op only) then check if op
+    _commands["INVITE"]     = new CmdInvite();      // can invite any user to any channel (even non existing). If channel has +i flag, needs op. INVITE <nickname> <#channel>
     _commands["KICK"]      = new CmdKick();         // needs op - forcefully part user from channel. KICK <#channel> <nickname> <comment>
     _commands["MODE"]      = new CmdMode();         // channel settings (needs operator)
 }

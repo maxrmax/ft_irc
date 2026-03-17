@@ -54,6 +54,32 @@
 
 void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
+    // TODO: 
+    /*
+        /topic
+        18:51 -!- Topic for #ch: test
+        18:51 -!- Topic set by n2ck [irssiuser@127.0.0.1] [Tue Mar 17 18:50:51 2026]
+        /topic new topic
+        18:51 -!- Topic for #ch: test
+        18:51 -!- Topic set by n2ck [irssiuser@127.0.0.1] [Tue Mar 17 18:50:51 2026]
+        18:51 -!- #ch You're not channel operator
+        /topic
+        18:51 -!- Topic for #ch: test
+        18:51 -!- Topic set by n2ck [irssiuser@127.0.0.1] [Tue Mar 17 18:50:51 2026]
+
+        nc:
+        topic #ch
+        :server 332 n3ck #ch :test
+
+        topic #ch :new channel topic
+        :n3ck!n3ck@127.0.0.1 TOPIC #ch :new channel topic
+
+        topic
+        :server 461 n3ck TOPIC :Not enough parameters
+
+        topic #ch
+        :server 332 n3ck #ch :new channel topic
+    */
     if (!clientUser.isRegistered())
     {
         clientUser.get_outputBuffer().append(

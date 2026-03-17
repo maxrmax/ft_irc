@@ -211,6 +211,45 @@ static int process_fd_ready_for_sending(Server &irc_server, std::vector<pollfd> 
     return 0;
 }
 
+/*
+TODO: runServer.cpp disconnect/poll refactor checklist
+
+1) Centralize disconnect flow
+   - Create one helper for: unregisterClientFd(fd), erase client map entry, close(fd), erase pollfd index.
+   - Reuse this helper for both QUIT-triggered disconnect and recv()==0 (EOF).
+
+2) Return status when current poll index is erased
+   - receive_message/process_ready_fd should return:
+     - <0 on error
+     - >0 when current fd was removed from poll list
+     - 0 otherwise
+   - Prevent continuing to use poll_fd[fd] after erase.
+
+3) Avoid invalid access after erase
+   - Current flow may call handleClientInput(...) after receive_message removed poll_fd[fd].
+   - Guard against stale index/out-of-bounds and stale map lookups.
+
+4) Handle QUIT transport teardown in network layer
+   - CmdQuit may unregister server state, but socket still needs close + poll erase here.
+   - After handleClientInput(...), detect "client no longer registered" and disconnect current fd.
+
+5) Fix runPoll iteration when erasing elements
+   - Do not use unconditional ++fd after erase of current index.
+   - Use manual increment strategy with an "erasedCurrent" flag.
+
+6) Avoid accidental map insertion via operator[]
+   - Replace poll_clientUser__mapping_via_fd[fd] reads with find()/at() where possible.
+   - Prevent recreating client entries after disconnect paths.
+
+7) Keep EOF and QUIT behavior identical
+   - Same teardown path for recv()==0 and QUIT.
+   - Ensures consistent cleanup of channels, nick maps, socket, and poll vector.
+
+8) Optional safety checks
+   - Handle POLLERR/POLLHUP/POLLNVAL with same disconnect helper.
+   - Ensure close(fd) is not called twice in shutdown/cleanup paths.
+*/
+
 int runPoll(Server &irc_server, std::vector<pollfd> &poll_fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
 {
         // poll()—Synchronous I/O Multiplexing

@@ -23,6 +23,7 @@ SRC		= 			src/main.cpp \
 					src/checker/isDigit.cpp \
 					src/checker/isSpecial.cpp \
 					src/commands/CmdCap.cpp \
+					src/commands/CmdInvite.cpp \
 					src/commands/CmdJoin.cpp \
 					src/commands/CmdKick.cpp \
 					src/commands/CmdMode.cpp \

@@ -33,6 +33,8 @@ static bool parameterCheck(const ParsedCommand &cmd)
 // l - set the user limit to channel;
 void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedCommand &cmd)
 {
+    // TODO
+    // check if nc "MODE +i" with missing channel needs to return anything or is perfectly fine as silent error.
     if (cmd.params.empty())
     {   // ERR_NEEDMOREPARAMS
         clientUser.get_outputBuffer().append(

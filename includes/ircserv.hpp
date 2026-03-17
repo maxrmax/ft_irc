@@ -23,6 +23,7 @@
 #include "ClientUser.hpp"
 #include "Channel.hpp"
 #include "CmdCap.hpp"
+#include "CmdInvite.hpp"
 #include "CmdJoin.hpp"
 #include "CmdKick.hpp"
 #include "CmdMode.hpp"

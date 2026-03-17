@@ -27,6 +27,7 @@ private:
     bool                        _topicFlag;
     std::set<int>               _member_fds;    // fds of all members
     std::unordered_set<int>     _operator_fds;  // fds of channel operator (first to join/+o)
+    std::unordered_set<int>     _invited_fds;   // fds of invited users (get removed on join)
     bool                        _inviteFlag;
     unsigned int                _userLimit;
     std::string                 _key;
@@ -52,6 +53,10 @@ public:
     void                setOperator(int fd);
     void                unsetOperator(int fd);
     bool                isOperator(int fd) const;
+
+    void                setInvited(int fd);
+    void                unsetInvited(int fd);
+    bool                isInvited(int fd) const;
 
     void                setInviteOnly(char sign);
     bool                isInviteOnly() const;

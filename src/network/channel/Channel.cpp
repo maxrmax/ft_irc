@@ -67,6 +67,8 @@ void Channel::removeMember(int fd)
     _member_fds.erase(fd);
     if (isOperator(fd))
         unsetOperator(fd);
+
+    // TODO: add auto op next member (newest first in list?)
 }
 
 bool Channel::hasMember(int fd) const
@@ -87,6 +89,21 @@ void Channel::unsetOperator(int fd)
 bool Channel::isOperator(int fd) const
 {
     return _operator_fds.count(fd) > 0;
+}
+
+void Channel::setInvited(int fd)
+{
+    _invited_fds.insert(fd);
+}
+
+void Channel::unsetInvited(int fd)
+{
+    _invited_fds.erase(fd);
+}
+
+bool Channel::isInvited(int fd) const
+{
+    return _invited_fds.count(fd) > 0;
 }
 
 void Channel::setInviteOnly(char sign)

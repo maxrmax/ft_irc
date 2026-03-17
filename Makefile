@@ -6,7 +6,7 @@
 #    By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/16 15:01:06 by mring            ###   ########.fr        #
+#    Updated: 2026/03/16 19:05:22 by ngoyat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRC		= 			src/main.cpp \
 					src/commands/CmdPing.cpp \
 					src/commands/CmdPrivmsg.cpp \
 					src/commands/CmdQuit.cpp \
+					src/commands/CmdTopic.cpp \
 					src/commands/CmdUser.cpp \
 					src/commands/CommandDispatcher.cpp \
 					src/commands/handleClientInput.cpp \

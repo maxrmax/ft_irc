@@ -33,6 +33,7 @@
 #include "CmdPing.hpp"
 #include "CmdPrivmsg.hpp"
 #include "CmdQuit.hpp"
+#include "CmdTopic.hpp"
 #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"

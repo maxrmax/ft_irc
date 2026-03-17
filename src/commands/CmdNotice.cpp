@@ -36,8 +36,8 @@
 // - Warnings
 // - Non-interactive notifications
 
-// IRC PRIVMSG command
-// Syntax: PRIVMSG <target> :<message>
+// IRC NOTICE command
+// Syntax: NOTICE <target> :<message>
 
 #include "../../includes/ircserv.hpp"
 

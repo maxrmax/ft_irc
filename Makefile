@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
+#    By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/13 11:36:36 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/03/16 13:49:22 by mring            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,11 @@ SRC		= 			src/main.cpp \
 					src/checker/isSpecial.cpp \
 					src/commands/CmdCap.cpp \
 					src/commands/CmdJoin.cpp \
+					src/commands/CmdKick.cpp \
 					src/commands/CmdMode.cpp \
 					src/commands/CmdNick.cpp \
+					src/commands/CmdNotice.cpp \
+					src/commands/CmdPart.cpp \
 					src/commands/CmdPass.cpp \
 					src/commands/CmdPing.cpp \
 					src/commands/CmdPrivmsg.cpp \

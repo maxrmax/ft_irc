@@ -1,12 +1,12 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CmdMode.hpp                                        :+:      :+:    :+:   */
+/*   CmdKick.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/10 17:31:28 by mring             #+#    #+#             */
-/*   Updated: 2026/03/16 11:48:41 by mring            ###   ########.fr       */
+/*   Created: 2026/03/16 11:50:03 by mring             #+#    #+#             */
+/*   Updated: 2026/03/16 11:50:09 by mring            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -14,10 +14,10 @@
 
 #include "command.hpp"
 
-class CmdMode : public Command
+class CmdKick : public Command
 {
 public:
     void execute(Server &server,
-                 ClientUser &clientUser,
+                 ClientUser &client,
                  const ParsedCommand &cmd) override;
 };

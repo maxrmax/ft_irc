@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 18:59:40 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/09 19:07:40 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/16 13:41:09 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //CmdPing.cpp
 
-// #include "../../includes/CmdPing.hpp"
-// #include "../../includes/ClientUser.hpp"
 #include "../../includes/ircserv.hpp"
 
 //client PINGs to check presence of active connection 
@@ -23,24 +21,35 @@ void CmdPing::execute(Server&, ClientUser& clientUser, const ParsedCommand& cmd)
     clientUser.get_outputBuffer().append("PONG :\r\n");
 };
 
+/*
+4.6.2 Ping message
 
-// server
-// Command: [PRIVMSG]
-// Params:
-//   [0] -> [#channel]
-//   [1] -> [PING 1773164358 118796]
+      Command: PING
+   Parameters: <server1> [<server2>]
 
+   The PING message is used to test the presence of an active client at
+   the other end of the connection.  A PING message is sent at regular
+   intervals if no other activity detected coming from a connection.  If
+   a connection fails to respond to a PING command within a set amount
+   of time, that connection is closed.
 
-// nc
-// ping -> PONG :
+   Any client which receives a PING message must respond to <server1>
+   (server which sent the PING message out) as quickly as possible with
+   an appropriate PONG message to indicate it is still there and alive.
+   Servers should not respond to PING commands but rely on PINGs from
+   the other end of the connection to indicate the connection is alive.
+   If the <server2> parameter is specified, the PING message gets
+   forwarded there.
 
+   Numeric Replies:
 
-// irssi
-// [ctcp(#channel)] PING 1773164304 581680
-//:mari!IRCTESTER@ircserver PRIVMSG nickie :PING 1773164502 885810
-// ping from mari to nickie sends privmsg (normal?)
-// Command: [PRIVMSG]
-// Params:
-//   [0] -> [nickie]
-//   [1] -> [PING 1773164502 885810]
-// ----------------------
+           ERR_NOORIGIN                    ERR_NOSUCHSERVER
+
+   Examples:
+
+   PING tolsun.oulu.fi             ; server sending a PING message to
+                                   another server to indicate it is still
+                                   alive.
+
+   PING WiZ                        ; PING message being sent to nick WiZ
+*/

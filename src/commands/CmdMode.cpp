@@ -1,3 +1,15 @@
+/******************************************************************************/
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CmdMode.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/09 18:57:10 by mring             #+#    #+#             */
+/*   Updated: 2026/03/16 11:41:30 by mring            ###   ########.fr       */
+/*                                                                            */
+/******************************************************************************/
+
 #include "../../includes/ircserv.hpp"
 
 static bool parameterCheck(const ParsedCommand &cmd)
@@ -48,7 +60,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     }
     // check if enough parameters are given
     if (parameterCheck(cmd))
-    {   // ERR_NEEDMOREPARAMS 461
+    {   // ERR_NEEDMOREPARAMS
         clientUser.get_outputBuffer().append(
             ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
         return;
@@ -133,6 +145,17 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
         }
     }
 }
+
+/*
+461 ERR_NEEDMOREPARAMS
+472 ERR_UNKNOWNMODE
+482 ERR_CHANOPRIVSNEEDED
+501 ERR_UMODEUNKNOWNFLAG
+
+324 RPL_CHANNELMODEIS	
+*/
+
+// USER MODES (UMODES) are not mandatory and thus not handled.
 
 /*
 4.2.3 Mode message

@@ -1,12 +1,12 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CmdPrivmsg.hpp                                     :+:      :+:    :+:   */
+/*   CmdNotice.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: ngoyat <ngoyat@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/26 14:03:39 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 11:51:04 by mring            ###   ########.fr       */
+/*   Created: 2026/03/16 17:50:39 by ngoyat            #+#    #+#             */
+/*   Updated: 2026/03/16 17:50:39 by ngoyat           ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -14,7 +14,7 @@
 
 #include "command.hpp"
 
-class CmdPrivmsg : public Command
+class CmdNotice : public Command
 {
 public:
     void execute(Server &server,

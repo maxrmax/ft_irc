@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/10 17:29:43 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 14:09:58 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ class Server
         bool        channelExists(const std::string& name) const;
         Channel&    createChannel(const std::string& name, ClientUser& founder);
         Channel&    getChannel(const std::string& name);
+        void        removeChannel(const std::string& name);
         void        broadcastToChannel(const std::string& channelName, const std::string& msg);
         void        broadcastToChannelExcept(const std::string& channelName, const std::string& msg, int excludeFd);
         std::string getChannelMemberNicks(const std::string& channelName) const;

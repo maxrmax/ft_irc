@@ -32,6 +32,7 @@
 #include "CmdPart.hpp"
 #include "CmdPing.hpp"
 #include "CmdPrivmsg.hpp"
+#include "CmdTopic.hpp"
 #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"

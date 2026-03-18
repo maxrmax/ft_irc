@@ -36,6 +36,7 @@
 #include "CmdQuit.hpp"
 #include "CmdTopic.hpp"
 #include "CmdUser.hpp"
+#include "Jarvis.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"
 #include "poll.hpp"

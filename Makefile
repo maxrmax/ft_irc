@@ -38,6 +38,7 @@ SRC		= 			src/main.cpp \
 					src/commands/CmdUser.cpp \
 					src/commands/CommandDispatcher.cpp \
 					src/commands/handleClientInput.cpp \
+					src/commands/Jarvis.cpp \
 					src/network/client_user/ClientUser.cpp \
 					src/network/client_user/InputBuffer.cpp \
 					src/network/client_user/OuputBuffer.cpp \

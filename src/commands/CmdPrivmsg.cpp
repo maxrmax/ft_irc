@@ -77,7 +77,14 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
                 " :Cannot send to channel\r\n");
             return;
         }
-
+        // ── Jarvis bot ────────────────────────────────────────────────────────
+        if (text.size() >= 7 && text.substr(0, 7) == "@jarvis")
+        {
+            std::cout << "Jarvis hook triggered: [" << text << "]" << std::endl;
+            CmdJarvis::handleMessage(clientUser, target, text);
+            return;
+        }
+        // ─────────────────────────────────────────────────────────────────────
         // Broadcast to every member EXCEPT the sender
         server.broadcastToChannelExcept(target, msgOut, clientUser.get_ClientUser_fd());
         return;

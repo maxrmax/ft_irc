@@ -19,6 +19,7 @@ OutputBuffer::OutputBuffer() {}
 
 void OutputBuffer::append(const std::string& data)
 {
+    // TODO 7
     buffer += data;
     buffer +="\r\n";
 }
@@ -52,4 +53,4 @@ std::string &OutputBuffer::get_buffer()
     return buffer;
 }
 
-//TODO integration with recv()/poll() loop
+//TODO 2 integration with recv()/poll() loop

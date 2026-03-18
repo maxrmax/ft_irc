@@ -25,6 +25,7 @@ void InputBuffer::append(const std::string& data)
      * If the client sends more than 512 bytes total
      * without a CRLF, the connection must be closed.
      */
+    // TODO 1
     if (_buffer.find("\r\n") == std::string::npos &&
         _buffer.size() > IRC_MAX_LINE + 2)
     {

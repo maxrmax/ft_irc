@@ -59,6 +59,7 @@ class ClientUser
             std::string     getUsername() const;
             std::string     getRealname() const;
             std::string     getIp() const;
+
             bool            hasNick() const;
 
             // Auth state
@@ -67,9 +68,10 @@ class ClientUser
 
             void            setRegistered(bool reg);
             bool            isRegistered() const;
+            // TODO 7
             bool            isReadyToRegister() const;
 
-            // WIP TODO
+            // TODO 4
             void            setToDisconnect(bool disconnect);
             bool            isToDisconnect() const;
 };

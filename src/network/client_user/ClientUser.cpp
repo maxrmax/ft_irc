@@ -16,9 +16,9 @@
 
 ClientUser::~ClientUser()
 {
-    // std::cout << "ClientUser with fd:" << ClientUser_fd << " destructed." << std::endl;
-    //errno
-};
+    // current debug until quit resolved with netcat
+    std::cout << "ClientUser with fd:" << ClientUser_fd << " destructed." << std::endl;
+}
 
 ClientUser::ClientUser():ClientUser_fd(-1), registered(false), passAccepted(false), toDisconnect(false){};
 
@@ -28,28 +28,27 @@ ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), regist
 void ClientUser::set_ClientUser_fd(int filedescriptor)
 {
     ClientUser_fd = filedescriptor;
-};
+}
 
 int ClientUser::get_ClientUser_fd()
 {
     return ClientUser_fd;
-};
+}
 
 InputBuffer &ClientUser::get_inputBuffer()
 {
     return (inputBuffer);
-};
+}
 
 OutputBuffer &ClientUser::get_outputBuffer()
 {
     return (outputBuffer);
-};
+}
 
-// Identity
 void ClientUser::setNickname(const std::string& nick)
 {
     nickname = nick;
-};
+}
 
 std::string ClientUser::getNickname() const
 {
@@ -86,14 +85,11 @@ std::string ClientUser::getIp() const
     return ip;
 }
 
-// nick check?
 bool ClientUser::hasNick() const
 {
     return (!nickname.empty());
-};
+}
 
-
-// Auth state
 void ClientUser::setPassAccepted(bool accepted)
 {
     passAccepted = accepted;
@@ -114,8 +110,7 @@ bool ClientUser::isRegistered() const
     return registered;
 }
 
-// return 0, when password isn't accepted,
-// nickname or username is empty.
+// return 0, when password isn't accepted, nickname or username is empty.
 bool ClientUser::isReadyToRegister() const
 {
     if (passAccepted == false || nickname.empty() || username.empty())
@@ -124,15 +119,13 @@ bool ClientUser::isReadyToRegister() const
 }
 
 // Cleanup
+// TODO 4
 void ClientUser::setToDisconnect(bool disconnect)
 {
-    // WIP TODO
-    // proper disconnection logic
     toDisconnect = disconnect;
 }
 
 bool ClientUser::isToDisconnect() const
 {
-    // WIP TODO
     return toDisconnect;
 }

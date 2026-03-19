@@ -41,7 +41,20 @@
 #include "poll.hpp"
 #include "server.hpp"
 
-//IRC standard protocol max message length 512
+/**
+ * Project umbrella header
+ *
+ * `ircserv.hpp` is the central include that exposes core project types and
+ * shared helpers to the rest of the codebase: `ClientUser`, `Channel`, all
+ * `Cmd*` handlers, `Parser`, `Server` and small utility functions used
+ * across translation units.
+ *
+ * Keep this header lightweight: prefer forward-declarations in implementation
+ * headers when possible to reduce build-time coupling.
+ */
+
+// IRC standard protocol max message length 512 (including CRLF)
+// Store 510 here to represent maximum content bytes excluding CRLF.
 static const size_t IRC_MAX_LINE = 510; // excluding \r\n
 
 //isDigit.cpp

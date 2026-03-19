@@ -14,6 +14,14 @@
 
 #include "command.hpp"
 
+
+/**
+ * CmdNotice
+ *
+ * Handles the IRC NOTICE command.
+ * - Syntax: NOTICE <target> :<message>
+ * - Sends a message to a target (user or channel) without automatic replies (no ERR_NORECIPIENT etc.).
+ */
 class CmdNotice : public Command
 {
 public:

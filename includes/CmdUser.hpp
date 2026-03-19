@@ -10,11 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CMDUSER_HPP
-#define CMDUSER_HPP
+#pragma once
 
 #include "command.hpp"
 
+/**
+ * CmdUser
+ *
+ * Handles the IRC USER command used during registration.
+ * - Syntax: USER <username> <hostname> <servername> :<realname>
+ * - Sets user identity fields required for registration and may complete registration when NICK is present.
+ */
 class CmdUser : public Command
 {
 public:
@@ -22,5 +28,3 @@ public:
                  ClientUser &clientUser,
                  const ParsedCommand &cmd) override;
 };
-
-#endif

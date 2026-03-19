@@ -14,6 +14,15 @@
 
 #include "command.hpp"
 
+
+/**
+ * CmdTopic
+ *
+ * Handles the IRC TOPIC command.
+ * - Syntax: TOPIC <channel> [topic]
+ * - Gets or sets the channel topic depending on presence of the topic parameter.
+ * - Enforces +t (topic protection) where appropriate.
+ */
 class CmdTopic : public Command
 {
 public:

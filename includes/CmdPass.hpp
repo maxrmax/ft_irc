@@ -14,6 +14,14 @@
 
 #include "command.hpp"
 
+
+/**
+ * CmdPass
+ *
+ * Handles the IRC PASS command.
+ * - Syntax: PASS <password>
+ * - Provides a password used during initial registration; may set authentication state.
+ */
 class CmdPass : public Command
 {
 public:

@@ -36,4 +36,4 @@ i first thought i manually close the fd but thats apparently not good practice b
 8. quit flag?
 -> might need a quit flag for commandDispatcher until poll() closes connection
 
-9.
+9. 

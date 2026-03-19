@@ -19,18 +19,31 @@
 
 class ClientUser;
 
+/**
+ * Channel
+ *
+ * Represents an IRC channel:
+ * - stores name, topic and mode flags (invite-only, topic protection)
+ * - maintains member fds, operator fds and invited fds (all are file descriptors, not pointers)
+ *
+ * Ownership / lifecycle notes:
+ * - Channel stores FDs (int) that reference ClientUser instances owned elsewhere (Server / connection manager).
+ *   Channel does not own or delete ClientUser objects.
+ * - Channel objects are typically stored/owned by Server (e.g. in an unordered_map). Callers that take
+ *   references to Channel must not keep them across operations that may rehash/modify the container.
+ */
 class Channel
 {
 private:
-    std::string                 _name;          // channel name
-    std::string                 _topic;         // channel topic
-    bool                        _topicFlag;
-    std::set<int>               _member_fds;    // fds of all members
-    std::unordered_set<int>     _operator_fds;  // fds of channel operator (first to join/+o)
-    std::unordered_set<int>     _invited_fds;   // fds of invited users (get removed on join)
-    bool                        _inviteFlag;
-    unsigned int                _userLimit;
-    std::string                 _key;
+    std::string                 _name;          // channel name (e.g. "#foo")
+    std::string                 _topic;         // channel topic text
+    bool                        _topicFlag;     // topic protection mode (+t)
+    std::set<int>               _member_fds;    // member file descriptors (ordered set for deterministic iteration)
+    std::unordered_set<int>     _operator_fds;  // fds of channel operators (first to join / +o)
+    std::unordered_set<int>     _invited_fds;   // fds invited by +I (cleared on successful join)
+    bool                        _inviteFlag;    // invite-only mode (+i)
+    unsigned int                _userLimit;     // 0 == no limit
+    std::string                 _key;           // channel key/password (empty == no key)
 
 public:
     Channel();
@@ -66,6 +79,4 @@ public:
 
     void                setKey(std::string key);
     std::string         getKey() const;
-
-
 };

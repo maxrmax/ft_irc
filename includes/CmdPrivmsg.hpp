@@ -14,6 +14,14 @@
 
 #include "command.hpp"
 
+/**
+ * CmdPrivmsg
+ *
+ * Handles the IRC PRIVMSG command.
+ * - Syntax: PRIVMSG <target> :<message>
+ * - Sends a private message to a user or to all members of a channel.
+ * - Side effects: uses Server APIs to route/broadcast message and appends to recipients' output buffers.
+ */
 class CmdPrivmsg : public Command
 {
 public:

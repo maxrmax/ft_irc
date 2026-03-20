@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 12:11:15 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/17 15:37:06 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/17 22:15:39 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include "ClientUser.hpp"
 #include "Channel.hpp"
 #include "CmdCap.hpp"
+#include "CmdInvite.hpp"
 #include "CmdJoin.hpp"
 #include "CmdKick.hpp"
 #include "CmdMode.hpp"
@@ -32,6 +33,8 @@
 #include "CmdPart.hpp"
 #include "CmdPing.hpp"
 #include "CmdPrivmsg.hpp"
+#include "CmdQuit.hpp"
+#include "CmdTopic.hpp"
 #include "CmdUser.hpp"
 #include "commandDispatcher.hpp"
 #include "inputHandling.hpp"

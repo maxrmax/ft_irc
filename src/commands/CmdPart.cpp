@@ -6,7 +6,7 @@
 /*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 13:17:43 by mring             #+#    #+#             */
-/*   Updated: 2026/03/16 14:40:59 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/16 18:02:34 by mring            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,14 +108,6 @@ void CmdPart::execute(Server &server, ClientUser &clientUser, const ParsedComman
 
       Command: PART
    Parameters: <channel>{,<channel>}
-
-
-
-
-Oikarinen & Reed                                               [Page 20]
-
-RFC 1459              Internet Relay Chat Protocol              May 1993
-
 
    The PART message causes the client sending the message to be removed
    from the list of active users for all given channels listed in the

@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/17 15:17:31 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/17 22:16:32 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ class Server
          * the correct client in case of nickname changes
          // std::vector <std::string, std::string> nicknames_history;
         *///std::unordered_map <std::string, ClientUser*> nicknames_history;
-        std::unordered_map <std::string, ClientUser*> nicknames_history;
-        std::unordered_map <std::string, ClientUser*> nick_clientUser;
-        std::unordered_map<std::string, Channel>    _channels;
+        std::unordered_map<std::string, ClientUser*>    nicknames_history;
+        std::unordered_map<std::string, ClientUser*>    nick_clientUser;
+        std::unordered_map<std::string, Channel>        _channels;
         // Maps fd → ClientUser* for broadcast routing
         // Populate via registerClientFd() when a client connects.
         std::unordered_map<int, ClientUser*>        _clients;
@@ -94,30 +94,32 @@ class Server
 
         void                printRegisteredNicks();
         
-        int                 get_server_ready(int portt, std::string password);
+        int                         get_server_ready(int portt, std::string password);
         // void                clean_up();
 
-        CommandDispatcher   &get_dispatcher();
-        bool                NickIsAlreadyRegistered(std::string nick) const;
+        CommandDispatcher           &get_dispatcher();
+        bool                        NickIsAlreadyRegistered(std::string nick) const;
         // void                Nicknames_storing(std::string nick); //depracated
-        void                NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
+        void                        NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
         // void                Nicknames_storing(std::string nick);
         // void                NicknameUnregister(std::string nick);
-        void                Nick_ClientUser_mapping(ClientUser &clientUser);
+        void                        Nick_ClientUser_mapping(ClientUser &clientUser);
 
         // Channel
-        bool        channelExists(const std::string& name) const;
-        Channel&    createChannel(const std::string& name, ClientUser& founder);
-        Channel&    getChannel(const std::string& name);
-        void        removeChannel(const std::string& name);
-        void        broadcastToChannel(const std::string& channelName, const std::string& msg);
-        void        broadcastToChannelExcept(const std::string& channelName, const std::string& msg, int excludeFd);
-        std::string getChannelMemberNicks(const std::string& channelName) const;
+        std::vector<std::string>    getChannelsOfClientFd(int fd);
+        bool                        channelExists(const std::string& name) const;
+        Channel&                    createChannel(const std::string& name, ClientUser& founder);
+        Channel&                    getChannel(const std::string& name);
+        void                        removeChannel(const std::string& name);
+        void                        broadcastToChannel(const std::string& channelName, const std::string& msg);
+        void                        broadcastToChannelExcept(const std::string& channelName, const std::string& msg, int excludeFd);
+        std::string                 getChannelMemberNicks(const std::string& channelName) const;
 
         // Client fd registry (call from runServer when accepting/closing clients)
-        void        registerClientFd(int fd, ClientUser* client);
-        void        unregisterClientFd(int fd);
+        void                        registerClientFd(int fd, ClientUser* client);
+        void                        unregisterClientFd(int fd);
 
         // Nick → ClientUser lookup (already exists as nick_clientUser map, just expose it)
-        ClientUser* getClientByNick(const std::string& nick);
+        ClientUser*                 getClientByNick(const std::string& nick);
+        ClientUser*                 getClientByFd(int fd);
 };

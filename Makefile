@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/17 15:32:36 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/03/20 14:04:54 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ SRC		= 			src/main.cpp \
 					src/checker/isDigit.cpp \
 					src/checker/isSpecial.cpp \
 					src/commands/CmdCap.cpp \
+					src/commands/CmdInvite.cpp \
 					src/commands/CmdJoin.cpp \
 					src/commands/CmdKick.cpp \
 					src/commands/CmdMode.cpp \
@@ -33,6 +34,8 @@ SRC		= 			src/main.cpp \
 					src/commands/CmdPass.cpp \
 					src/commands/CmdPing.cpp \
 					src/commands/CmdPrivmsg.cpp \
+					src/commands/CmdQuit.cpp \
+					src/commands/CmdTopic.cpp \
 					src/commands/CmdUser.cpp \
 					src/commands/CommandDispatcher.cpp \
 					src/commands/handleClientInput.cpp \

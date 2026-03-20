@@ -120,10 +120,8 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         // +i are you invited?              yes/no/not needed
         // +k do you have the password?     yes/no/not needed
         // +l is the room full?             yes/no
-        // TODO: CmdInvite
-        // TODO: CmdInvite flagcheck (clientUser._isInvited?)
-        // check if channel is invite only
-        if (channel.isInviteOnly() == true) // && not invited
+        // check if channel is invite only && if the user is invited
+        if (channel.isInviteOnly() == true && !channel.isInvited(clientUser.get_ClientUser_fd()))
         {   // ERR_INVITEONLYCHAN (473)
             clientUser.get_outputBuffer().append(
                 ":server 473 " + clientUser.getNickname() + " " + channelName +
@@ -131,7 +129,6 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             continue;
         }
 
-        // TODO: add into for loop above for multiple channel checking.
         // if the key IS NOT the same as the key set in the channel
         // AND key IS NOT empty
         // false = pkey != channelkey && channelkey is empty
@@ -154,6 +151,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         }
 
         channel.addMember(clientUser.get_ClientUser_fd());
+        channel.unsetInvited(clientUser.get_ClientUser_fd());
 
         // Build the JOIN prefix: :nick!user@host
         std::string prefix = ":" + clientUser.getNickname() + "!" +

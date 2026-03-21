@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPrivmsg.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/16 14:38:45 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/21 11:50:07 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
     //get all targets, which are parameter[0], delimineter ','
     std::vector <std::string> targets;
     std::string delimineter = ",";
-    for(int targets_cnt = 0; targets_cnt < targets.size(); targets_cnt++)
+    for(unsigned long targets_cnt = 0; targets_cnt < targets.size(); targets_cnt++)
     {
         int position = target.find(delimineter);
         targets[targets_cnt] = target.substr(0, position);

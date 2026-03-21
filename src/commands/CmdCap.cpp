@@ -17,6 +17,7 @@
 //LiSt which CAPabilities do you support
 void CmdCap::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
+    (void)server;
     // std::cout << "caps\n" ;
     if (!cmd.params.empty() && cmd.params[0] == "LS")
     {

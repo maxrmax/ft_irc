@@ -10,12 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//server.cpp
-
-// #include <algorithm>
-// #include "../../../includes/server.hpp"
-#include "../../../includes/ircserv.hpp"
-
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 Server::~Server()
 {
@@ -40,7 +41,8 @@ Server::~Server()
 
 Server::Server():server_fd(-1), server_port(-1), server_password(""){};
 
-Server::Server(int filedescriptor, int port, std::string password):server_fd(filedescriptor), server_port(port), server_password(password){};
+Server::Server(int filedescriptor, int port, std::string password) : server_fd(filedescriptor), server_port(port), server_password(password){};
+
 int Server::get_server_fd()
 {
     return server_fd;
@@ -70,6 +72,10 @@ const std::unordered_map<int, ClientUser> &Server::getPoll_clientUser__mapping_v
     return poll_clientUser__mapping_via_fd; 
 }
 
+/**
+ * Handles the initialization of the server class.
+ * It assigns the fd, port and passwort into the class.
+ */
 int Server::get_server_ready(int port, std::string password)
 {
     //cat /etc/protocols -> TCP
@@ -80,16 +86,18 @@ int Server::get_server_ready(int port, std::string password)
         std::cout << "Server could not be created. Try again." << std::endl;
         return -1;
     }
-    // just sits there until a packet arrives. it is blocking. The call - recv() or accept() waits until it can do something, it waits for clients to accept or data to receive.
-    //only when this happenened, the code continues to execute.
-    //Doing fork() and having a thread per fd would not need blocking, as it just sits and waits for its own purpose.
+    // just sits there until a packet arrives. it is blocking.
+    // The call - recv() or accept() waits until it can do something, it waits for clients to accept or data to receive.
+    // When this happenened, the code continues to execute.
+    // Doing fork() and having a thread per fd would not be blocking, as it just sits and waits for its own purpose.
+
     // Manipulating fd behavior, set flag to nonblocking, so it does not sit there open and blocks the system till something arrives at that socket
     fcntl(server_fd, F_SETFL, O_NONBLOCK);
     
-    // server_port = PORT_LISTEN;
     server_port = port;
     server_password = password;
-    //setting address informatiom
+
+    //setting address information
     std::memset(&server_address, 0, sizeof(server_address));    //setting memory to 0 to not have garbage
     server_address.sin_addr.s_addr  = INADDR_ANY;               //listen on all interfaces, Accept connections on all IPv4 addresses of this machine.
     server_address.sin_family       = ADDRESS_FAMILY;

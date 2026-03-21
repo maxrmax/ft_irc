@@ -10,7 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/ircserv.hpp"
+#include "checker.hpp"
+#include <algorithm>
+#include <cctype>
 
 //is a string all digits
 bool is_digits_only(const std::string &string)

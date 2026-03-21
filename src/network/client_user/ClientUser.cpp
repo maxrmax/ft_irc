@@ -10,9 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//ClientUser.cpp
-
-#include "../../../includes/ircserv.hpp"
+#include "ClientUser.hpp" // "inputBuffer.hpp" -> <string> // "OutputBuffer.hpp" -> <string>
+#include <iostream>
 
 ClientUser::~ClientUser()
 {
@@ -110,7 +109,7 @@ bool ClientUser::isRegistered() const
     return registered;
 }
 
-// return 0, when password isn't accepted, nickname or username is empty.
+// return 0, when password isn't accepted or nickname or username is empty.
 bool ClientUser::isReadyToRegister() const
 {
     if (passAccepted == false || nickname.empty() || username.empty())

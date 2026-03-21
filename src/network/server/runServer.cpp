@@ -10,15 +10,46 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// runServer.cpp
-
-#include "../../../includes/ircserv.hpp"
-#include <arpa/inet.h> 
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
+#include "inputHandling.hpp"
+#include <arpa/inet.h>
+#include <csignal>
+// #include <cerrno>
 
 extern volatile sig_atomic_t g_shutdown;
 
+// client fd cleanup on discconect/close.
+void clean_up(std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
+{
+    //auto &pair figures out the type automatically
+    // for (auto &pair : poll_client__mapping_via_fd)
+    for (auto &[fd, client] : poll_clientUser__mapping_via_fd)
+    {
+        // Client destructor will close fd
+        // or explicitly close here if you remove it from destructor
+        if (fd != -1)
+        {
+            if (close(fd) == 0)
+            {    
+                // std::cout << "Client filedescriptor closed for a good nights sleep." << std::endl;
+                std::cout << "Client filedescriptor closed" << std::endl;
+            }
+            else 
+            {
+                std::cout << "Client filedescriptor could not be closed. Operating System will do this." << std::endl;
+            }
+        }       
+    }
+    poll_clientUser__mapping_via_fd.clear(); // triggers destructors
+}
 
-//simple first send message
+// simple first send message
 static int sendMsg(ClientUser &clientUser)
 {    
     if (clientUser.get_outputBuffer().get_buffer().length() > 0)
@@ -48,7 +79,78 @@ static int sendMsg(ClientUser &clientUser)
     return 0;
 }
 
-// int acceptClientUser(Server &irc_server, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
+// static int process_fd_ready_for_sending(Server &irc_server, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
+static int process_fd_ready_for_sending(Server &irc_server, int fd)
+{
+    // std::cout << "poll fd = " << poll_fd[i].fd<< std::endl;
+    if (irc_server.getPollFD()[fd].fd != irc_server.get_server_fd())
+    {
+        //set client to client object that has been mapped to this fd 
+        ClientUser &clientUser = irc_server.getPoll_clientUser__mapping_via_fd()[irc_server.getPollFD()[fd].fd];
+        if (sendMsg(clientUser) < 0)
+        {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+// int receive_message(Server &irc_server, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
+int receive_message(Server &irc_server, int fd)
+{
+    // int polled_fd = poll_fd[fd].fd;
+
+    //check if fd is REALLY ready, POLLIN set to 1
+    // std::cout << "revents=" << poll_fd[i].revents << " POLLIN=" << POLLIN << std::endl;
+
+    char   msg[1024]; 
+    int    read_len  = recv(irc_server.getPollFD()[fd].fd,msg, sizeof(msg)-1,0);
+    
+    if (read_len > 0)
+    {
+        msg[read_len] = '\0';
+        // std::cout << poll_fd[fd].fd << " received: " << msg << std::endl;
+        // std::cout << "current Buffer:     " << poll_clientUser__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
+        
+        //appened to InputBuffer
+        // poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().append(msg);
+        //make clientUser another name for poll_clientUser__mapping_via_fd[poll_fd[fd].fd] and horten this spagethi! We know, I am clever.
+        // ClientUser &clientUser = poll_clientUser__mapping_via_fd[irc_server.getPollFD()[fd].fd]; 
+        ClientUser &clientUser = irc_server.getPoll_clientUser__mapping_via_fd()[irc_server.getPollFD()[fd].fd]; 
+        clientUser.get_inputBuffer().append(msg);
+    
+        // std::cout << "Received: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together() << std::endl;
+        // std::cout << "recv appended to current Buffer: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
+        // std::cout << "recv appended to current Buffer: " << clientUser.get_inputBuffer().get_buffer() << std::endl;
+    }
+    else 
+    {   
+        if (read_len == 0)
+        {
+            std::cout << "Client disconnected fd = " << irc_server.getPollFD()[fd].fd << std::endl;
+            irc_server.unregisterClientFd(irc_server.getPollFD()[fd].fd);
+            // irc_server.NicknameUnregister(poll_clientUser__mapping_via_fd[poll_fd[fd].fd].getNickname());
+            // poll_clientUser__mapping_via_fd.erase(irc_server.getPollFD()[fd].fd);
+            irc_server.getPoll_clientUser__mapping_via_fd().erase(irc_server.getPollFD()[fd].fd);
+            close(irc_server.getPollFD()[fd].fd);
+            irc_server.getPollFD().erase(irc_server.getPollFD().begin() + fd);
+        }
+        else // read_len < 0
+        {
+            if (errno == EAGAIN)
+            {
+                // no data available right now, keep looping
+            }
+            else
+            {
+                // perror("recv");
+                // handle error
+            }
+        }
+    }
+    return 0;
+}
+
 int acceptClientUser(Server &irc_server)
 {
     //create sockets for our client/user, get fd and some more stuff
@@ -127,63 +229,6 @@ int clientUsers_waiting(Server &irc_server)
     return 0;
 }
 
-
-// int receive_message(Server &irc_server, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
-int receive_message(Server &irc_server, int fd)
-{
-    // int polled_fd = poll_fd[fd].fd;
-
-    //check if fd is REALLY ready, POLLIN set to 1
-    // std::cout << "revents=" << poll_fd[i].revents << " POLLIN=" << POLLIN << std::endl;
-
-    char   msg[1024]; 
-    int    read_len  = recv(irc_server.getPollFD()[fd].fd,msg, sizeof(msg)-1,0);
-    
-    if (read_len > 0)
-    {
-        msg[read_len] = '\0';
-        // std::cout << poll_fd[fd].fd << " received: " << msg << std::endl;
-        // std::cout << "current Buffer:     " << poll_clientUser__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
-        
-        //appened to InputBuffer
-        // poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().append(msg);
-        //make clientUser another name for poll_clientUser__mapping_via_fd[poll_fd[fd].fd] and horten this spagethi! We know, I am clever.
-        // ClientUser &clientUser = poll_clientUser__mapping_via_fd[irc_server.getPollFD()[fd].fd]; 
-        ClientUser &clientUser = irc_server.getPoll_clientUser__mapping_via_fd()[irc_server.getPollFD()[fd].fd]; 
-        clientUser.get_inputBuffer().append(msg);
-    
-        // std::cout << "Received: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_message_put_together() << std::endl;
-        // std::cout << "recv appended to current Buffer: " << poll_client__mapping_via_fd[poll_fd[fd].fd].get_inputBuffer().get_buffer() << std::endl;
-        // std::cout << "recv appended to current Buffer: " << clientUser.get_inputBuffer().get_buffer() << std::endl;
-    }
-    else 
-    {   
-        if (read_len == 0)
-        {
-            std::cout << "Client disconnected fd = " << irc_server.getPollFD()[fd].fd << std::endl;
-            irc_server.unregisterClientFd(irc_server.getPollFD()[fd].fd);
-            // irc_server.NicknameUnregister(poll_clientUser__mapping_via_fd[poll_fd[fd].fd].getNickname());
-            // poll_clientUser__mapping_via_fd.erase(irc_server.getPollFD()[fd].fd);
-            irc_server.getPoll_clientUser__mapping_via_fd().erase(irc_server.getPollFD()[fd].fd);
-            close(irc_server.getPollFD()[fd].fd);
-            irc_server.getPollFD().erase(irc_server.getPollFD().begin() + fd);
-        }
-        else // read_len < 0
-        {
-            if (errno == EAGAIN)
-            {
-                // no data available right now, keep looping
-            }
-            else
-            {
-                // perror("recv");
-                // handle error
-            }
-        }
-    }
-    return 0;
-}
-
 // int process_ready_fd(Server &irc_server, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
 int process_ready_fd(Server &irc_server, int fd)
 {
@@ -205,61 +250,6 @@ int process_ready_fd(Server &irc_server, int fd)
     }
     return 0;
 }
-
-// static int process_fd_ready_for_sending(Server &irc_server, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
-static int process_fd_ready_for_sending(Server &irc_server, int fd)
-{
-    // std::cout << "poll fd = " << poll_fd[i].fd<< std::endl;
-    if (irc_server.getPollFD()[fd].fd != irc_server.get_server_fd())
-    {
-        //set client to client object that has been mapped to this fd 
-        ClientUser &clientUser = irc_server.getPoll_clientUser__mapping_via_fd()[irc_server.getPollFD()[fd].fd];
-        if (sendMsg(clientUser) < 0)
-        {
-            return -1;
-        }
-    }
-    return 0;
-}
-
-/*
-TODO: runServer.cpp disconnect/poll refactor checklist
-
-1) Centralize disconnect flow
-   - Create one helper for: unregisterClientFd(fd), erase client map entry, close(fd), erase pollfd index.
-   - Reuse this helper for both QUIT-triggered disconnect and recv()==0 (EOF).
-
-2) Return status when current poll index is erased
-   - receive_message/process_ready_fd should return:
-     - <0 on error
-     - >0 when current fd was removed from poll list
-     - 0 otherwise
-   - Prevent continuing to use poll_fd[fd] after erase.
-
-3) Avoid invalid access after erase
-   - Current flow may call handleClientInput(...) after receive_message removed poll_fd[fd].
-   - Guard against stale index/out-of-bounds and stale map lookups.
-
-4) Handle QUIT transport teardown in network layer
-   - CmdQuit may unregister server state, but socket still needs close + poll erase here.
-   - After handleClientInput(...), detect "client no longer registered" and disconnect current fd.
-
-5) Fix runPoll iteration when erasing elements
-   - Do not use unconditional ++fd after erase of current index.
-   - Use manual increment strategy with an "erasedCurrent" flag.
-
-6) Avoid accidental map insertion via operator[]
-   - Replace poll_clientUser__mapping_via_fd[fd] reads with find()/at() where possible.
-   - Prevent recreating client entries after disconnect paths.
-
-7) Keep EOF and QUIT behavior identical
-   - Same teardown path for recv()==0 and QUIT.
-   - Ensures consistent cleanup of channels, nick maps, socket, and poll vector.
-
-8) Optional safety checks
-   - Handle POLLERR/POLLHUP/POLLNVAL with same disconnect helper.
-   - Ensure close(fd) is not called twice in shutdown/cleanup paths.
-*/
 
 // int runPoll(Server &irc_server, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
 int runPoll(Server &irc_server)
@@ -329,62 +319,21 @@ int runPoll(Server &irc_server)
     return 0;
 }
 
-void clean_up(std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
-{
-    //auto &pair figures out the type automatically
-    // for (auto &pair : poll_client__mapping_via_fd)
-    for (auto &[fd, client] : poll_clientUser__mapping_via_fd)
-    {
-        // Client destructor will close fd
-        // or explicitly close here if you remove it from destructor
-        if (fd != -1)
-        {
-            if (close(fd) == 0)
-            {    
-                // std::cout << "Client filedescriptor closed for a good nights sleep." << std::endl;
-                std::cout << "Client filedescriptor closed" << std::endl;
-            }
-            else 
-            {
-                std::cout << "Client filedescriptor could not be closed. Operating System will do this." << std::endl;
-            }
-        }       
-    }
-    poll_clientUser__mapping_via_fd.clear(); // triggers destructors
-}
-
 void runServer(Server &irc_server)
 {
-    //move into class Server
-    //create array for fd to poll, to check, if ready with data
-    // std::vector<pollfd> poll_fd;
-    //store server socket fd in poll array
-    pollfd   temp;
+    pollfd          temp;
     temp.fd         = irc_server.get_server_fd();
     // | POLLERR | POLLHUP ...?
     temp.events     = POLLIN | POLLOUT;
     temp.revents    = 0;
-    // poll_fd.push_back(temp);
     irc_server.getPollFD().push_back(temp);
 
-    //move into class server
-    //create maping for (unique index) fd to Client object 
-    //unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
-    //int is the index which is equal to client_accepted_fd
-    //Client is the type we map to.
-    // std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
-    
     while (!g_shutdown)
     {
-        //EINVAL    -> invalid arguments
-        //EBADF     -> broken fd    
-        // if (runPoll(irc_server, poll_fd, poll_clientUser__mapping_via_fd) == -1)
-        // if (runPoll(irc_server, poll_clientUser__mapping_via_fd) == -1)
         if (runPoll(irc_server) == -1)
             break;
     }
     std::cout << "\n" << "Graceful shutdown" << std::endl;
     clean_up(irc_server.getPoll_clientUser__mapping_via_fd());
-    // return 0;
 }
 

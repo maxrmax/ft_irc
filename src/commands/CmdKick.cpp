@@ -10,8 +10,14 @@
 /*                                                                            */
 /******************************************************************************/
 
-//CmdKick.cpp
-#include "../../includes/ircserv.hpp"
+#include "CmdKick.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 static bool channelNameIsValid(const std::string& name)
 {

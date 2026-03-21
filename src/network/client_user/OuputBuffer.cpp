@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include "../../../includes/OutputBuffer.hpp"
-#include "../../../includes/ircserv.hpp" 
-// #include <stdexcept>
+#include "OutputBuffer.hpp"
 
 OutputBuffer::~OutputBuffer() {}
 OutputBuffer::OutputBuffer() {}

@@ -10,10 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// IRC JOIN command
-// Syntax: JOIN <#channel>[,<#channel2>,...] [<key>[,<key2>,...]]
-
-#include "../../includes/ircserv.hpp"
+#include "CmdJoin.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 // Channel names must start with '#' and contain no spaces, NUL, BEL, or commas
 static bool channelNameIsValid(const std::string& name)

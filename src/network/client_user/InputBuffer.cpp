@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 // #include "InputBuffer.hpp"
-#include "../../../includes/inputBuffer.hpp"
+#include "inputBuffer.hpp"
 #include <stdexcept>
 
 InputBuffer::InputBuffer() {}

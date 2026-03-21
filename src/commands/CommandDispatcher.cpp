@@ -10,12 +10,34 @@
 /*                                                                            */
 /******************************************************************************/
 
-// CommandDispatcher.cpp
-#include "../../includes/ircserv.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp
+#include "poll.hpp"                 // <poll.h>   - <vector>
+#include "commandDispatcher.hpp"    // <map>      - <string>
+#include "Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+#include "ClientUser.hpp"           // <string>
+*/
+#include "Parser.hpp"
+
+#include "CmdCap.hpp"
+#include "CmdJoin.hpp"
+#include "CmdNick.hpp"
+#include "CmdPass.hpp"
+#include "CmdPing.hpp"
+#include "CmdPrivmsg.hpp"
+#include "CmdUser.hpp"
+#include "CmdPart.hpp"
+#include "CmdQuit.hpp"
+#include "CmdNotice.hpp"
+#include "CmdTopic.hpp"
+#include "CmdInvite.hpp"
+#include "CmdKick.hpp"
+#include "CmdMode.hpp"
+
 
 CommandDispatcher::CommandDispatcher()
 {
-    _commands["CAP"]        = new CmdCap();         // server capabilities, ususally sent automatically on irssi
+    _commands["CAP"]        = new CmdCap();         // server capabilities, for irssi (not a normal command)
     _commands["JOIN"]       = new CmdJoin();        // join a channel. if channel doesn't exist -> create it and become op
     _commands["NICK"]       = new CmdNick();        // change nickname to a currently non registered nickname -> save history reference
     _commands["PASS"]       = new CmdPass();        // password for the server to connect to. necessary to be able to interact with the server beyond read only information.
@@ -27,8 +49,8 @@ CommandDispatcher::CommandDispatcher()
     _commands["NOTICE"]     = new CmdNotice();      // send notice to 
     _commands["TOPIC"]      = new CmdTopic();       // needs to check if +t is set (op only) then check if op
     _commands["INVITE"]     = new CmdInvite();      // can invite any user to any channel (even non existing). If channel has +i flag, needs op. INVITE <nickname> <#channel>
-    _commands["KICK"]      = new CmdKick();         // needs op - forcefully part user from channel. KICK <#channel> <nickname> <comment>
-    _commands["MODE"]      = new CmdMode();         // channel settings (needs operator)
+    _commands["KICK"]       = new CmdKick();        // needs op - forcefully part user from channel. KICK <#channel> <nickname> <comment>
+    _commands["MODE"]       = new CmdMode();        // channel settings (needs operator)
 }
 
 CommandDispatcher::~CommandDispatcher()

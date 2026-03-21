@@ -11,7 +11,16 @@
 /******************************************************************************/
 
 //CmdNick.cpp
-#include "../../includes/ircserv.hpp"
+#include "CmdNick.hpp"
+#include "checker.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
+
 
 // IRC rules - RFC 1459 §2.3.1
 //  First char:  letter only [A-Za-z]

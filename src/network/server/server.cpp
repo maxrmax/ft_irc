@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/17 15:18:34 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/03/20 16:29:04 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,14 @@ std::vector<pollfd> &Server::getPollFD()
 const std::vector<pollfd> &Server::getPollFD() const
 {
     return poll_fd;
+}
+std::unordered_map<int, ClientUser> &Server::getPoll_clientUser__mapping_via_fd()
+{
+    return poll_clientUser__mapping_via_fd; 
+}
+const std::unordered_map<int, ClientUser> &Server::getPoll_clientUser__mapping_via_fd() const
+{
+    return poll_clientUser__mapping_via_fd; 
 }
 
 int Server::get_server_ready(int port, std::string password)

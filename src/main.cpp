@@ -122,7 +122,6 @@ int main(int argc, char **argv)
         return -1;
     std::cout << "Server created. fd = " << irc_server.get_server_fd() << std::endl;
 
-    // return(runServer(irc_server));
     runServer(irc_server);
 
     return (0);

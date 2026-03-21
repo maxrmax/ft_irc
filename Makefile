@@ -6,7 +6,7 @@
 #    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/20 14:04:54 by nsloniow         ###   ########.fr        #
+#    Updated: 2026/03/21 11:47:35 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,16 +51,21 @@ SRC		= 			src/main.cpp \
 OBJ	=				$(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
 %.o:				%.cpp
-					$(CC) -c $< -o $@
+# 					$(CC) $(STD) -c $< -o $@
+					$(CC) $(STD) $(FLAGS) -c $< -o $@
+# 					$(CC) -c $< -o $@
 	
 all:				$(NAME)
 
 $(NAME):			$(OBJ)
 		 			$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
 
-$(OBJ_DIR)/%.o:		%.cpp | $(OBJ_DIR)
+# $(OBJ_DIR)/%.o:		%.cpp | $(OBJ_DIR)
+# 					mkdir -p $(dir $@)
+# 					$(CC) -c $< -o $@
+$(OBJ_DIR)/%.o: 	%.cpp | $(OBJ_DIR)
 					mkdir -p $(dir $@)
-					$(CC) -c $< -o $@
+					$(CC) $(STD) $(FLAGS) -c $< -o $@
 
 $(OBJ_DIR):
 					mkdir -p $(OBJ_DIR)

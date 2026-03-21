@@ -12,9 +12,8 @@
 
 #pragma once
 
-#include "inputBuffer.hpp"
-#include "OutputBuffer.hpp"
-#include "command.hpp"
+#include "inputBuffer.hpp"  // <string>
+#include "OutputBuffer.hpp" // <string
 
 class Server;
 struct ParsedCommand;

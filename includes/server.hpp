@@ -19,6 +19,12 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <unordered_map>
+
+#include "poll.hpp"                 // <poll.h>   - <vector>
+#include "commandDispatcher.hpp"    // <map>      - <string>
+#include "Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+#include "ClientUser.hpp"           // <string>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * mring:
@@ -36,9 +42,7 @@
 inline constexpr int    ADDRESS_FAMILY  =   AF_INET;
 inline constexpr int    PORT_LISTEN     =   6667;
 
-class Channel;
-class ClientUser;
-class CommandDispatcher;
+// Channel and ClientUser definitions are included above
 
 /**
  * Server: core IRC server container
@@ -57,15 +61,15 @@ class Server
 {
     private:
         // listening socket fd
-        int                                             server_fd;          
+        int                                             server_fd;
         // configured port
-        int                                             server_port;        
+        int                                             server_port;
         // server password (PASS)
-        std::string                                     server_password;    
+        std::string                                     server_password;
         // listening address struct
-        sockaddr_in                                     server_address;     
+        sockaddr_in                                     server_address;
         // dispatches IRC commands to handlers
-        CommandDispatcher                               dispatcher;         
+        CommandDispatcher                               dispatcher;
         
         //array for fd to poll, to check, if ready with data
         std::vector<pollfd> poll_fd;

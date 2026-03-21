@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "command.hpp"
+#include "command.hpp" // <string> - <vector>
 
 /**
  * CmdPrivmsg

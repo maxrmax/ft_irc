@@ -14,9 +14,11 @@
 
 #include <map>
 #include <string>
-#include "command.hpp" // include in cpp instead?
 
 class Command;
+class Server;
+class ClientUser;
+struct ParsedCommand;
 
 /**
  * CommandDispatcher

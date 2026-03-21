@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include "ircserv.hpp"
+class Server;
+class ClientUser;
 
 /**
  * handleClientInput

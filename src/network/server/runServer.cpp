@@ -165,15 +165,15 @@ int receive_message(Server &irc_server, int fd)
         {
             std::cout << "Client disconnected fd = " << irc_server.getPollFD()[fd].fd << std::endl;
             irc_server.unregisterClientFd(irc_server.getPollFD()[fd].fd);
-            std::cout << __FILE__ << __LINE__ << std::endl;
+            // std::cout << __FILE__ << __LINE__ << std::endl;
             // irc_server.NicknameUnregister(poll_clientUser__mapping_via_fd[poll_fd[fd].fd].getNickname());
             // poll_clientUser__mapping_via_fd.erase(irc_server.getPollFD()[fd].fd);
             irc_server.getPoll_clientUser__mapping_via_fd().erase(irc_server.getPollFD()[fd].fd);
             std::cout << __FILE__ << __LINE__ << std::endl;
-            close(irc_server.getPollFD()[fd].fd);
-            std::cout << __FILE__ << __LINE__ << std::endl;
+            // close(irc_server.getPollFD()[fd].fd);
+            // std::cout << __FILE__ << __LINE__ << std::endl;
             irc_server.getPollFD().erase(irc_server.getPollFD().begin() + fd);
-            std::cout << __FILE__ << __LINE__ << std::endl;
+            // std::cout << __FILE__ << __LINE__ << std::endl;
             return -1;
         }
         else // read_len < 0
@@ -207,14 +207,15 @@ int process_ready_fd(Server &irc_server, int fd)
     else
     {
         // if (receive_message(irc_server, fd, irc_server.getPoll_clientUser__mapping_via_fd()) < 0)
-        if (receive_message(irc_server, fd) < 0)
+        // if (receive_message(irc_server, fd) < 0)
+        if (receive_message(irc_server, fd) <= 0)
         {
-            std::cout << __FILE__ << __LINE__ << std::endl;
+            // std::cout << __FILE__ << __LINE__ << std::endl;
             return -1;
         }
-        std::cout << __FILE__ << __LINE__ << std::endl;
+        // std::cout << __FILE__ << __LINE__ << std::endl;
         handleClientInput(irc_server.getPoll_clientUser__mapping_via_fd()[irc_server.getPollFD()[fd].fd], irc_server);
-        std::cout << __FILE__ << __LINE__ << std::endl;
+        // std::cout << __FILE__ << __LINE__ << std::endl;
     }
     return 0;
 }
@@ -304,6 +305,7 @@ int runPoll(Server &irc_server)
                 // if (process_ready_fd(irc_server, fd, poll_clientUser__mapping_via_fd) < 0)
                 if (process_ready_fd(irc_server, fd) < 0)
                 {
+                    fd--;
                     return -1;
                 }
                 irc_server.getPollFD()[fd].revents = 0;

@@ -46,7 +46,9 @@ static const size_t IRC_MAX_LINE = 510; // excluding \r\n
 
 //isDigit.cpp
 bool    is_digits_only(const std::string &string);
-bool    isspecial(int i);
+//MAC darwin has its own isspecial() and compiler moans
+// bool    isspecial(int i);
+bool    isspecial_MACdarwin(int i);
 
 //main.cpp
 int     check_arguments(int argc, char **argv);

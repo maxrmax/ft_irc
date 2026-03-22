@@ -12,7 +12,7 @@
 
 // isspecial.cpp
 
-bool isspecial(int i)
+bool isspecial_MACdarwin(int i)
 {
     // '_' not in RFC 1459 but required for irssi
     if (i == '-' || i == '[' || i == ']' || i == '`' || i == '^' || 

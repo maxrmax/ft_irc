@@ -137,29 +137,6 @@ int Server::get_server_ready(int port, std::string password)
     return 0;
 }
 
-// void Server::clean_up()
-// {
-//     //auto &pair figures out the type automatically
-//     // for (auto &pair : poll_client__mapping_via_fd)
-//     for (auto &[fd, client] : poll_clientUser__mapping_via_fd)
-//     {
-//         // Client destructor will close fd
-//         // or explicitly close here if you remove it from destructor
-//         if (fd != -1)
-//         {
-//             if (close(fd) == 0)
-//             {    
-//                 std::cout << "Client filedescriptor closed for a good nights sleep." << std::endl;
-//             }
-//             else 
-//             {
-//                 std::cout << "Client filedescriptor could not be closed." << std::endl;
-//             }
-//         }       
-//     }
-//     poll_clientUser__mapping_via_fd.clear(); // triggers destructors
-// }
-
 CommandDispatcher &Server::get_dispatcher()
 {
     return (dispatcher);
@@ -167,38 +144,12 @@ CommandDispatcher &Server::get_dispatcher()
 
 bool Server::NickIsAlreadyRegistered(std::string nick) const
 {
-    // could be without "> 0" as count returns 0 or 1 in unordered_map anyway
-    // this is just better practice
     return nick_clientUser.count(nick) > 0;
-    // old vector way
-    // if (std::find(nicknames.begin(), nicknames.end(), nick) != nicknames.end())
-        // return true;
-    // return false;
 }
-
-// deprecated because of vector replacement
-// void Server::Nicknames_storing(std::string nick)
-// {
-//     if (!NickIsAlreadyRegistered(nick))
-//         nicknames.push_back(nick);
-// };
-
-// void Server::Nicknames_storing(std::string nick)
-// {
-//     //vector into set as it is easier to erase by string
-//     //so push_back no work anymore
-//     nicknames.insert(nick);
-// };
-
-// void Server::NicknameUnregister(std::string nick)
-// {
-//     nicknames.erase(nick);
-// };
 
 void Server::NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser)
 {
     nicknames_history[previouseNickname] = &clientUser;
-    //nicknames_history[nickNew].push_back(nickOld);
 };
 
 void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
@@ -209,20 +160,7 @@ void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
 void Server::printRegisteredNicks()
 {
     std::cout << "Registered nicknames: ";
-    /* loooook at this, it's the difference of C++98 and C++17
-     *
-     * the old one we had with the vector
-     * for (std::vector<std::string>::const_iterator it = nicknames.begin(); it != nicknames.end(); ++it)
-     *
-     * C++98
-     * for (std::unordered_map<std::string, ClientUser*>::const_iterator it = nick_clientUser.begin();
-     *
-     * and the C++11 and C++17 simplification
-     * const (non modifiable), auto& (reference - not a copy)
-     * binds nick to pair.first, client to pair.second
-     * ": <container>" to iterate
-     * could do [nick, _] by convention but its not enforced
-     */
+
     for (const auto& [nick, client] : nick_clientUser)
         std::cout << nick << " ";
     std::cout << std::endl;

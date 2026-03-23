@@ -72,12 +72,12 @@ class Server
         CommandDispatcher                               dispatcher;
         
         //array for fd to poll, to check, if ready with data
-        std::vector<pollfd> poll_fd;
+        std::vector<pollfd>                             poll_fd;
         //maping for (unique index) fd to Client object 
         //unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
         //int is the index which is equal to client_accepted_fd
         //Client is the type we map to.
-        std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
+        std::unordered_map<int, ClientUser>             poll_clientUser__mapping_via_fd;
 
         /* create maping for (unique index) fd to Client object 
          * unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;

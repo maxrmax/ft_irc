@@ -174,7 +174,7 @@ int receive_message(Server &irc_server, int fd)
             // std::cout << __FILE__ << __LINE__ << std::endl;
             irc_server.getPollFD().erase(irc_server.getPollFD().begin() + fd);
             // std::cout << __FILE__ << __LINE__ << std::endl;
-            return -1;
+            // return -1; // this one quits the server when a client disconnects
         }
         else // read_len < 0
         {

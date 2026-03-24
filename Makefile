@@ -3,16 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+         #
+#    By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/23 12:47:48 by nsloniow          #+#    #+#              #
-#    Updated: 2026/03/16 19:05:22 by ngoyat           ###   ########.fr        #
+#    Updated: 2026/03/21 11:47:35 by nsloniow         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC 		= 			c++
 STD		= 			-std=c++17
-FLAGS	= 			-Wall -Wextra -Werror #-g -fsanitize=address
+# FLAGS	= 			-Wall -Wextra -Werror #-g -fsanitize=address
+FLAGS	= 			-Wall -Wextra -Werror -g -fsanitize=address
 NAME	= 			ircserv
 
 # directories
@@ -51,16 +52,21 @@ SRC		= 			src/main.cpp \
 OBJ	=				$(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
 %.o:				%.cpp
-					$(CC) -c $< -o $@
+# 					$(CC) $(STD) -c $< -o $@
+					$(CC) $(STD) $(FLAGS) -c $< -o $@
+# 					$(CC) -c $< -o $@
 	
 all:				$(NAME)
 
 $(NAME):			$(OBJ)
 		 			$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
 
-$(OBJ_DIR)/%.o:		%.cpp | $(OBJ_DIR)
+# $(OBJ_DIR)/%.o:		%.cpp | $(OBJ_DIR)
+# 					mkdir -p $(dir $@)
+# 					$(CC) -c $< -o $@
+$(OBJ_DIR)/%.o: 	%.cpp | $(OBJ_DIR)
 					mkdir -p $(dir $@)
-					$(CC) -c $< -o $@
+					$(CC) $(STD) $(FLAGS) -c $< -o $@
 
 $(OBJ_DIR):
 					mkdir -p $(OBJ_DIR)

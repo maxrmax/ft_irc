@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 18:59:40 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/16 13:41:09 by mring            ###   ########.fr       */
+/*   Updated: 2026/03/21 11:48:37 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 //Send PONG to tell client, we are still in a valid relationship
 void CmdPing::execute(Server&, ClientUser& clientUser, const ParsedCommand& cmd)
 {
+    (void) cmd;
     clientUser.get_outputBuffer().append("PONG :\r\n");
 };
 

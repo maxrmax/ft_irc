@@ -34,7 +34,7 @@ static bool NickIsValid(std::string nick)
     // check rest of chars
     for (unsigned long i = 1; i < nick.size(); i++)
     {
-        if (!std::isalnum(nick[i]) && !isspecial(nick[i]))
+        if (!std::isalnum(nick[i]) && !isspecial_MACdarwin(nick[i]))
             return false;
     }
     return true;

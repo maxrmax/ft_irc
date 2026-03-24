@@ -19,9 +19,15 @@ ClientUser::~ClientUser()
     std::cout << "ClientUser with fd:" << ClientUser_fd << " destructed." << std::endl;
 }
 
-ClientUser::ClientUser():ClientUser_fd(-1), registered(false), passAccepted(false), toDisconnect(false){};
+ClientUser::ClientUser():ClientUser_fd(-1), registered(false), passAccepted(false), toDisconnect(false)
+{
+    std::cout << "ClientUser without fd constructed." << std::endl;
+};
 
-ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(false), passAccepted(false), toDisconnect(false){};
+ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(false), passAccepted(false), toDisconnect(false)
+{
+    std::cout << "ClientUser with fd:" << ClientUser_fd << " constructed." << std::endl;
+};
 
 
 void ClientUser::set_ClientUser_fd(int filedescriptor)

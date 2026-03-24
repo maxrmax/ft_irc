@@ -71,13 +71,14 @@ class Server
         // dispatches IRC commands to handlers
         CommandDispatcher                               dispatcher;
         
-        //array for fd to poll, to check, if ready with data
+        // array for fd to poll, to check, if ready with data
         std::vector<pollfd>                             poll_fd;
-        //maping for (unique index) fd to Client object 
-        //unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
-        //int is the index which is equal to client_accepted_fd
-        //Client is the type we map to.
-        std::unordered_map<int, ClientUser>             poll_clientUser__mapping_via_fd;
+        // mapping for (unique index) fd to Client object 
+        // unordered map jumps to item by index and is faster than pure std::map.
+        // int is the index which is the fd (or client_accepted_fd on assignment)
+        // ClientUser is our object we map by fd
+        // populate via registerClientFd() and remove via unregisterClientFd()
+        std::unordered_map<int, ClientUser>             _clients;
 
         /* create maping for (unique index) fd to Client object 
          * unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
@@ -102,24 +103,20 @@ class Server
         // channel name -> Channel object (owned by server)
         // Channel references returned by createChannel/getChannel point into this map
         std::unordered_map<std::string, Channel>        _channels;
-        // active clients: fd -> ClientUser* (pointers owned elsewhere; Server does not delete)
-        // populate via registerClientFd() and remove via unregisterClientFd()
-        std::unordered_map<int, ClientUser*>            _clients;
+
 
     public:
         ~Server();
         Server();
         Server(int filedescriptor, int port, std::string password);
 
-        int                                         get_server_fd();
-        std::string                                 get_server_password();
-        sockaddr_in                                 get_server_address();
-        std::vector<pollfd>                         &getPollFD();
-        const std::vector<pollfd>                   &getPollFD() const;
-        std::unordered_map<int, ClientUser>         &getPoll_clientUser__mapping_via_fd();
-        const std::unordered_map<int, ClientUser>   &getPoll_clientUser__mapping_via_fd() const;
+        int                         get_server_fd();
+        std::string                 get_server_password();
+        sockaddr_in                 get_server_address();
+        std::vector<pollfd>         &getPollFD();
+        const std::vector<pollfd>   &getPollFD() const;
 
-        void                printRegisteredNicks();
+        void                        printRegisteredNicks();
         
         int                         get_server_ready(int portt, std::string password);
         // void                clean_up();
@@ -152,7 +149,7 @@ class Server
          * - unregisterClientFd removes mappings, clears nick lookup and removes empty channels
          * Ownership note: Server stores raw ClientUser*; lifecycle (allocation/deletion) is managed elsewhere.
          */
-        void                        registerClientFd(int fd, ClientUser* client);
+        void                        registerClientFd(int fd, ClientUser client);
         void                        unregisterClientFd(int fd);
 
         // lookup helpers (return nullptr if not found)

@@ -18,7 +18,9 @@
 "ClientUser.hpp"           // <string>
 */
 #include "inputHandling.hpp"
+#include <sys/resource.h>
 #include <arpa/inet.h>
+#include <algorithm>
 #include <csignal>
 // #include <cerrno>
 
@@ -204,7 +206,7 @@ int acceptClientUser(Server &irc_server)
             return -1;
         }
     }
-    std::cout << "Client accepted fd = " << client_accept_fd << std::endl;
+    std::cout << "runServer: Client accepted fd = " << client_accept_fd << std::endl;
     // Make the client socket non-blocking
     fcntl(client_accept_fd, F_SETFL, O_NONBLOCK);
     //append client fd to poll list
@@ -228,15 +230,20 @@ int acceptClientUser(Server &irc_server)
     irc_server.getPollFD().push_back(temp);
     
     // create Client object with its assigned fd
+    // gets destroyed on return, is only alive inside this function
     ClientUser client_created(client_accept_fd);
 
-    // ip is 32bit int, not human readable
-    // IPv4 address from network byte order (a binary struct in_addr) to a dotted-decimal string 
-    // TODO: return network ip instead of local loopback 
-    // (if connecting per localhost or 127.0.0.1, the ip shown to others is localhost/127.0.0.1)
-    // it should be the network ip or public ip
-    client_created.setIp(inet_ntoa(client_address_in.sin_addr));
+    // new user register instead of stack creation
+    // irc_server.registerClientFd(client_accept_fd);
+    // ClientUser *client_ptr = irc_server.getClientByFd(client_accept_fd);
+    // if (client_ptr) client_ptr->setIp(inet_ntoa(client_address_in.sin_addr));
+    // std::cout << "runServer: Client " << client_accept_fd << " ip: " << (client_ptr ? client_ptr->getIp() : std::string()) << std::endl;
 
+
+
+    // and here we registered it to _clients[n], which is indexing client by fd
+    // _client[fd] = client; irc_server.registerClientFd(client_accept_fd, std::move(client_created));
+    
     /* generated:
      * Inserting a ClientUser value into `std::unordered_map<int, ClientUser>`
      * stores the object inside the map's buckets. Taking the address of the
@@ -251,12 +258,48 @@ int acceptClientUser(Server &irc_server)
      */
     // poll_clientUser__mapping_via_fd[client_accept_fd] = client_created;
     // so we assign a copy of the created client in the irc_server object for our polling logic?
-    irc_server.getPoll_clientUser__mapping_via_fd()[client_accept_fd] = client_created;
+    irc_server.registerClientFd(client_accept_fd, std::move(client_created));
+    std::cout << "runServer: Client constructed: " << client_accept_fd << std::endl;
 
-    // and here we registered it to _clients[n], which is indexing client by fd
-    // _client[fd] = client;
-    irc_server.registerClientFd(client_accept_fd, &irc_server.getPoll_clientUser__mapping_via_fd()[client_accept_fd]);
 
+    // ip is 32bit int, not human readable
+    // IPv4 address from network byte order (a binary struct in_addr) to a dotted-decimal string 
+    // TODO: return network ip instead of local loopback 
+    // (if connecting per localhost or 127.0.0.1, the ip shown to others is localhost/127.0.0.1)
+    // it should be the network ip or public ip
+    client_created.setIp(inet_ntoa(client_address_in.sin_addr));
+    /*
+    // If client connected via localhost, advertise the server's outbound
+    // IP (the interface used to reach the internet) so remote peers can
+    // reach DCC/file transfers. Use a non-sending UDP trick to discover
+    // the local outbound address. Keep minimal: compute once per process.
+    static const std::string server_public = []() -> std::string
+    {
+        int s = socket(AF_INET, SOCK_DGRAM, 0);
+        if (s < 0) return std::string();
+        sockaddr_in remote{};
+        remote.sin_family = AF_INET;
+        remote.sin_port = htons(53);
+        inet_pton(AF_INET, "8.8.8.8", &remote.sin_addr);
+        connect(s, (sockaddr*)&remote, sizeof(remote));
+        sockaddr_in local{};
+        socklen_t len = sizeof(local);
+        if (getsockname(s, (sockaddr*)&local, &len) < 0) { close(s); return std::string(); }
+        char buf[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &local.sin_addr, buf, sizeof(buf));
+        close(s);
+        return std::string(buf);
+    }();
+
+    char peerbuf[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &client_address_in.sin_addr, peerbuf, sizeof(peerbuf));
+    if (strncmp(peerbuf, "127.", 4) == 0 || client_address_in.sin_addr.s_addr == htonl(INADDR_LOOPBACK))
+        client_created.setIp(server_public.empty() ? std::string(peerbuf) : server_public);
+    else
+        client_created.setIp(std::string(peerbuf));
+    */
+    
+    std::cout << "runServer: Client " << client_accept_fd << " ip: " << client_created.getIp() << std::endl;
     return 0;
 }
 
@@ -386,7 +429,6 @@ int runPoll(Server &irc_server)
             // end nsloniow 2603171812
                 if (irc_server.getPollFD()[fd].revents & POLLOUT)
                 {
-                    // if (process_fd_ready_for_sending(irc_server, fd, irc_server.getPoll_clientUser__mapping_via_fd()) < 0)
                     if (process_fd_ready_for_sending(irc_server, fd) < 0)
                     {
                         return -1;
@@ -408,6 +450,39 @@ int runPoll(Server &irc_server)
     return 0;
 }
 
+void init_server_limits(Server &irc_server)
+{
+    const int reserved_fds = 10;
+    struct rlimit rl;
+    size_t soft_limit = 0;
+
+    if (getrlimit(RLIMIT_NOFILE, &rl) == 0)
+    {
+        if (rl.rlim_cur == RLIM_INFINITY)
+        {
+            long sc = sysconf(_SC_OPEN_MAX);
+            soft_limit = (sc > 0) ? (size_t)sc : 1024;
+        }
+        else
+            soft_limit = (size_t)rl.rlim_cur;
+    }
+    else
+    {
+        long sc = sysconf(_SC_OPEN_MAX);
+        soft_limit = (sc > 0) ? (size_t)sc : 1024;
+    }
+
+    size_t max_clients = 0;
+    if (soft_limit > (size_t)reserved_fds)
+        max_clients = soft_limit - (size_t)reserved_fds;
+    if (max_clients < 16)
+        max_clients = 16;
+
+    // Reserve space to avoid rehash/realloc during runtime.
+    irc_server.getPollFD().reserve(max_clients + 1); // +1 for listener fd
+    irc_server.getPoll_clientUser__mapping_via_fd().reserve(max_clients);
+}
+
 void runServer(Server &irc_server)
 {
     pollfd          temp;
@@ -416,6 +491,8 @@ void runServer(Server &irc_server)
     temp.events     = POLLIN | POLLOUT;
     temp.revents    = 0;
     irc_server.getPollFD().push_back(temp);
+
+    init_server_limits(irc_server);
 
     while (!g_shutdown)
     {

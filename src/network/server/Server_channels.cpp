@@ -137,12 +137,24 @@ ClientUser* Server::getClientByNick(const std::string& nick)
     return it->second;
 }
 
+// void Server::registerClientFd(int fd)
+// {
+//     // construct ClientUser(fd) in-place (no stack temporary)
+//     _clients.try_emplace(fd, fd); // calls ClientUser(fd)
+//     // if constructor doesn't set fd, ensure it:
+//     _clients.at(fd).set_ClientUser_fd(fd);
+// }
 // Call this when a client connects so broadcastToChannel can find them
-void Server::registerClientFd(int fd, ClientUser* client)
+void Server::registerClientFd(int fd, ClientUser client)
 {
     _clients[fd] = client;
 }
 
+// void Server::unregisterClientFd(int fd)
+// {
+//     // cleanup nickname maps, channels, etc. as needed
+//     _clients.erase(fd);
+// }
 // Call this when a client disconnects
 void Server::unregisterClientFd(int fd)
 {

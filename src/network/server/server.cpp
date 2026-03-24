@@ -47,29 +47,25 @@ int Server::get_server_fd()
 {
     return server_fd;
 };
+
 std::string Server::get_server_password()
 {
     return server_password;
 };
+
 sockaddr_in Server::get_server_address()
 {
     return server_address;
 };
+
 std::vector<pollfd> &Server::getPollFD()
 {
     return poll_fd; 
 }
+
 const std::vector<pollfd> &Server::getPollFD() const
 {
     return poll_fd;
-}
-std::unordered_map<int, ClientUser> &Server::getPoll_clientUser__mapping_via_fd()
-{
-    return poll_clientUser__mapping_via_fd; 
-}
-const std::unordered_map<int, ClientUser> &Server::getPoll_clientUser__mapping_via_fd() const
-{
-    return poll_clientUser__mapping_via_fd; 
 }
 
 /**

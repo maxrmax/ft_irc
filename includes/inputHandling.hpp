@@ -28,4 +28,4 @@ class ClientUser;
  * Side-effects: may append replies to the client's `OutputBuffer` or
  * modify server state via command handlers.
  */
-void handleClientInput(ClientUser &clientUser, Server &irc_server);
+void handleClientInput(ClientUser *clientUser, Server &irc_server);

@@ -68,6 +68,29 @@ const std::vector<pollfd> &Server::getPollFD() const
     return poll_fd;
 }
 
+void Server::setClientIp(int fd, const std::string &str_ip)
+{
+    ClientUser *client = getClientByFd(fd);
+    if (client)
+        client->setIp(str_ip);
+}
+
+const std::string Server::getClientIp(int fd)
+{
+    ClientUser *client = getClientByFd(fd);
+    return client->getIp();
+}
+
+std::unordered_map<int, ClientUser> &Server::get_clients_map()
+{
+    return _clients;
+}
+
+const std::unordered_map<int, ClientUser> &Server::get_clients_map() const
+{
+    return _clients;
+}
+
 /**
  * Handles the initialization of the server class.
  * It assigns the fd, port and passwort into the class.

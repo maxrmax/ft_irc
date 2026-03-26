@@ -76,6 +76,6 @@ run:				all
 valgrind: 			FLAGS =
 valgrind: 			FLAGS += $(FLAGSV)
 valgrind:			re
-					valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-limit=no ./$(NAME) 6668 start
+					valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-limit=no ./$(NAME) 6668 start > valgrind.log 2>&1
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re run valgrind

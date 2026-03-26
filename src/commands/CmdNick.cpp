@@ -75,14 +75,16 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
 
     // store nickname
     std::string previouseNickname = clientUser.getNickname();
-    // set nickname for current clientUser
+    // set new nickname for current clientUser
     clientUser.setNickname(cmd.params[0]);
-    // add clientUser to server mapping (isn't it already?)
+    // add clientUser to server mapping based on new nickname
+    // TODO check if old nick gets removed.
     server.Nick_ClientUser_mapping(clientUser);
 
     /* if previousNickname is different to the current nickname
-     * reference previousNickname to the current client
-    */  
+     * reference the client to the old nickname
+     * in the nickname_history map
+     */  
     if (previouseNickname != clientUser.getNickname())
     {
         server.NicknamesHistory_storing(previouseNickname, clientUser);

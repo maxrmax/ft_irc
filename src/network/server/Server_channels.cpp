@@ -69,7 +69,7 @@ void Server::broadcastToChannel(const std::string& channelName, const std::strin
     {
         auto it = _clients.find(fd);
         if (it != _clients.end())
-            it->second->get_outputBuffer().append(msg);
+            it->second.get_outputBuffer().append(msg);
     }
 }
 
@@ -88,7 +88,7 @@ void Server::broadcastToChannelExcept(const std::string& channelName,
             continue;
         auto it = _clients.find(fd);
         if (it != _clients.end())
-            it->second->get_outputBuffer().append(msg);
+            it->second.get_outputBuffer().append(msg);
     }
 }
 
@@ -114,7 +114,7 @@ std::string Server::getChannelMemberNicks(const std::string& channelName) const
         if (ch.isOperator(fd))
             result += "@";
 
-        result += it->second->getNickname();
+        result += it->second.getNickname();
     }
     return result;
 }
@@ -126,7 +126,7 @@ ClientUser* Server::getClientByFd(int fd)
     auto it = _clients.find(fd);
     if (it == _clients.end())
         return nullptr;
-    return it->second;
+    return &it->second;
 }
 
 ClientUser* Server::getClientByNick(const std::string& nick)
@@ -137,37 +137,36 @@ ClientUser* Server::getClientByNick(const std::string& nick)
     return it->second;
 }
 
-// void Server::registerClientFd(int fd)
-// {
-//     // construct ClientUser(fd) in-place (no stack temporary)
-//     _clients.try_emplace(fd, fd); // calls ClientUser(fd)
-//     // if constructor doesn't set fd, ensure it:
-//     _clients.at(fd).set_ClientUser_fd(fd);
-// }
 // Call this when a client connects so broadcastToChannel can find them
-void Server::registerClientFd(int fd, ClientUser client)
+void Server::registerClientFd(int fd)
 {
-    _clients[fd] = client;
+    // construct ClientUser(fd) in-place (no stack temporary)
+    _clients.emplace(fd, fd);
+    // if constructor doesn't set fd, ensure it:
+    _clients.at(fd).set_ClientUser_fd(fd);
 }
 
-// void Server::unregisterClientFd(int fd)
-// {
-//     // cleanup nickname maps, channels, etc. as needed
-//     _clients.erase(fd);
-// }
-// Call this when a client disconnects
+// Cleans up every map and association of this fd
 void Server::unregisterClientFd(int fd)
 {
-    // cleanup of entire client
+    // cleanup nickname maps, channels, etc. as needed
+    
     auto clientIt = _clients.find(fd);
+
+    // if the fd is found (end would mean not found)
     if (clientIt != _clients.end())
     {
-        std::string nick = clientIt->second->getNickname();
+        // get the nickname
+        std::string nick = clientIt->second.getNickname();
+        // remove the nickname/clientUser pair by nickname
         nick_clientUser.erase(nick);
+        // remove clientUser * from nickname_history (point nowhere)
         nicknames_history[nick] = nullptr;
     }
 
+    // now get a list of each channel that fd was part of
     std::vector<std::string> channelList = getChannelsOfClientFd(fd);
+    // and rmeove the fd from every channel
     for (const auto& channelName : channelList)
     {
         Channel& channel = getChannel(channelName);
@@ -175,6 +174,7 @@ void Server::unregisterClientFd(int fd)
         if (channel.getMembers().empty())
             removeChannel(channelName);
     }
-        
+    
+    // final deletion
     _clients.erase(fd);
 }

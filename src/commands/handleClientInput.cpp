@@ -25,13 +25,13 @@
 // entire umbrella; keep the signature in sync with that declaration.
 void printCommand(const ParsedCommand& cmd, const ClientUser& clientUser);
 
-void handleClientInput(ClientUser &clientUser, Server &irc_server)
+void handleClientInput(ClientUser *clientUser, Server &irc_server)
 {
-    while (clientUser.get_inputBuffer().hasLine())
+    while (clientUser->get_inputBuffer().hasLine())
     {
         // parse msg for command
-        ParsedCommand cmd = Parser::parseLine(clientUser.get_inputBuffer().popLine());
-        printCommand(cmd, clientUser);
-        irc_server.get_dispatcher().dispatch(irc_server, clientUser, cmd);
+        ParsedCommand cmd = Parser::parseLine(clientUser->get_inputBuffer().popLine());
+        printCommand(cmd, *clientUser);
+        irc_server.get_dispatcher().dispatch(irc_server, *clientUser, cmd);
     }
 }

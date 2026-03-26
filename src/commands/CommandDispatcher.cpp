@@ -98,7 +98,6 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
     
     if (it == _commands.end())
     {
-        //nickname or all
         std::string target = clientUser.hasNick() ? clientUser.getNickname() : "*";
         std::string msgToSend = ":server 421 " + target + " " + cmd.command + " :Unknown command\r\n";
         clientUser.get_outputBuffer().append(msgToSend);

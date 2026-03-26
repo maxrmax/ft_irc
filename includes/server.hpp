@@ -110,21 +110,25 @@ class Server
         Server();
         Server(int filedescriptor, int port, std::string password);
 
-        int                         get_server_fd();
-        std::string                 get_server_password();
-        sockaddr_in                 get_server_address();
-        std::vector<pollfd>         &getPollFD();
-        const std::vector<pollfd>   &getPollFD() const;
+        int                                         get_server_fd();
+        std::string                                 get_server_password();
+        sockaddr_in                                 get_server_address();
+        std::vector<pollfd>                         &getPollFD();
+        const std::vector<pollfd>                   &getPollFD() const;
+        std::unordered_map<int, ClientUser>         &get_clients_map();
+        const std::unordered_map<int, ClientUser>   &get_clients_map() const;
+        void                                        setClientIp(int fd, const std::string &str_ip);
+        const std::string                           getClientIp(int fd);
 
-        void                        printRegisteredNicks();
+        void                                        printRegisteredNicks();
         
-        int                         get_server_ready(int portt, std::string password);
+        int                                         get_server_ready(int portt, std::string password);
         // void                clean_up();
 
-        CommandDispatcher           &get_dispatcher();
-        bool                        NickIsAlreadyRegistered(std::string nick) const;
-        void                        NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
-        void                        Nick_ClientUser_mapping(ClientUser &clientUser);
+        CommandDispatcher                           &get_dispatcher();
+        bool                                        NickIsAlreadyRegistered(std::string nick) const;
+        void                                        NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
+        void                                        Nick_ClientUser_mapping(ClientUser &clientUser);
 
         /* Channel management API
          * - getChannelsOfClientFd: returns vector of channel names the fd is member of
@@ -149,7 +153,7 @@ class Server
          * - unregisterClientFd removes mappings, clears nick lookup and removes empty channels
          * Ownership note: Server stores raw ClientUser*; lifecycle (allocation/deletion) is managed elsewhere.
          */
-        void                        registerClientFd(int fd, ClientUser client);
+        void                        registerClientFd(int fd);
         void                        unregisterClientFd(int fd);
 
         // lookup helpers (return nullptr if not found)

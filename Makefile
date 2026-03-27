@@ -13,7 +13,7 @@
 CC 		= 			c++
 STD		= 			-std=c++17
 FLAGS	= 			-Wall -Wextra -Werror -fsanitize=address -I$(INC_DIR)
-FLAGSV	= 			-Wall -Wextra -Werror -g -O0 -I$(INC_DIR)
+FLAGSV	= 			-Wall -Wextra -Werror -g -O0 -I$(INC_DIR) -DDEBUG_BUILD=1
 NAME	= 			ircserv
 
 # directories

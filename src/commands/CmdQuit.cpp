@@ -46,11 +46,8 @@ void CmdQuit::execute(Server &server, ClientUser &clientUser, const ParsedComman
         if (recipient)
             recipient->get_outputBuffer().append(quitMsg);
     }
-    server.unregisterClientFd(quitterFd);
-
-    // TODO:
-    // handle disconnect client in runServer.cpp (currently not disconnecting)
-    // and recv() == 0 / read == 0
+    shutdown(quitterFd, SHUT_RDWR);
+    clientUser.setToDisconnect(true);
 }
 
 // — (QUIT message is broadcast)	

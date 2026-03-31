@@ -154,6 +154,10 @@ You are also able to send files per /dcc
 # Instruction
 make -> run
 
+# Resources
+
+---
+
 ## How to Run
 either with `make run` -> default port is `6667` and server passwort is `start`
 `make valgrind` for testing `6668`, `start`

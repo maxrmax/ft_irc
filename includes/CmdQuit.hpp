@@ -12,8 +12,16 @@
 
 #pragma once
 
-#include "command.hpp"
+#include "command.hpp" // <string> - <vector>
 
+
+/**
+ * CmdQuit
+ *
+ * Handles the IRC QUIT command.
+ * - Syntax: QUIT [message]
+ * - Marks the client for disconnection and notifies joined channels of the quit.
+ */
 class CmdQuit : public Command
 {
 public:

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// isspecial.cpp
+#include "checker.hpp"
 
 bool isspecial_MACdarwin(int i)
 {

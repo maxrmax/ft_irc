@@ -12,8 +12,16 @@
 
 #pragma once
 
-#include "command.hpp"
+#include "command.hpp" // <string> - <vector>
 
+
+/**
+ * CmdKick
+ *
+ * Handles the IRC KICK command.
+ * - Syntax: KICK <channel> <user> [reason]
+ * - Removes a user from a channel; requires operator privileges.
+ */
 class CmdKick : public Command
 {
 public:

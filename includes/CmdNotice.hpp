@@ -12,8 +12,16 @@
 
 #pragma once
 
-#include "command.hpp"
+#include "command.hpp" // <string> - <vector>
 
+
+/**
+ * CmdNotice
+ *
+ * Handles the IRC NOTICE command.
+ * - Syntax: NOTICE <target> :<message>
+ * - Sends a message to a target (user or channel) without automatic replies (no ERR_NORECIPIENT etc.).
+ */
 class CmdNotice : public Command
 {
 public:

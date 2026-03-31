@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/ircserv.hpp"
+#include "Channel.hpp" // <string> <vector> <set> <unordered_set>
+#include "ClientUser.hpp" // "inputBuffer.hpp" -> <string> // "OutputBuffer.hpp" -> <string>
 
 Channel::Channel() : _name(""), _topic(""), _topicFlag(false), _inviteFlag(false), _userLimit(0), _key("") {}
 

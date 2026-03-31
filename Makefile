@@ -12,8 +12,8 @@
 
 CC 		= 			c++
 STD		= 			-std=c++17
-# FLAGS	= 			-Wall -Wextra -Werror #-g -fsanitize=address
-FLAGS	= 			-Wall -Wextra -Werror -g -fsanitize=address
+FLAGS	= 			-Wall -Wextra -Werror -fsanitize=address -I$(INC_DIR)
+FLAGSV	= 			-Wall -Wextra -Werror -g -O0 -I$(INC_DIR) -DDEBUG_BUILD=1
 NAME	= 			ircserv
 
 # directories
@@ -50,20 +50,12 @@ SRC		= 			src/main.cpp \
 					src/parser/Parser.cpp 
 			
 OBJ	=				$(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
-
-%.o:				%.cpp
-# 					$(CC) $(STD) -c $< -o $@
-					$(CC) $(STD) $(FLAGS) -c $< -o $@
-# 					$(CC) -c $< -o $@
 	
 all:				$(NAME)
 
 $(NAME):			$(OBJ)
 		 			$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
 
-# $(OBJ_DIR)/%.o:		%.cpp | $(OBJ_DIR)
-# 					mkdir -p $(dir $@)
-# 					$(CC) -c $< -o $@
 $(OBJ_DIR)/%.o: 	%.cpp | $(OBJ_DIR)
 					mkdir -p $(dir $@)
 					$(CC) $(STD) $(FLAGS) -c $< -o $@
@@ -82,7 +74,9 @@ re:					fclean all
 run:				all
 					./ircserv 6667 start
 
+valgrind: 			FLAGS =
+valgrind: 			FLAGS += $(FLAGSV)
 valgrind:			re
-					valgrind --leak-check=full --track-origins=yes ./ircserv 6668 start
+					valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-limit=no ./$(NAME) 6668 start > valgrind.log 2>&1
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re run valgrind

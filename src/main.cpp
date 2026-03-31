@@ -10,7 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/ircserv.hpp"
+#include <csignal>
+#include <iostream>
+
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
+#include "Parser.hpp"   // <string> - <vector>
+#include "checker.hpp"  // <string>
+
+// forward declaration from runServer.cpp
+void runServer(Server &irc_server);
 
 //volatile:
 // tells the compiler this variable can be changed anytime
@@ -78,21 +92,6 @@ void printCommand(const ParsedCommand& cmd, const ClientUser& clientUser)
     std::cout << "----------------------\n";
 }
 
-// int main(void)
-// {
-//     std::string line;
-//     ParsedCommand cmd;
-
-//     std::cout << "IRC Parser Test (Ctrl+D to quit)\n";
-//     while (std::getline(std::cin, line))
-//     {
-//         cmd = Parser::parseLine(line);
-//         printCommand(cmd);
-//     }
-//     return 0;
-// }
-
-
 int check_arguments(int argc, char **argv)
 {
     if (argc < 3)
@@ -109,14 +108,13 @@ int check_arguments(int argc, char **argv)
     return (0);
 }
 
-
 int main(int argc, char **argv)
 {
-    //are arguments valid
     if (check_arguments(argc, argv) == -1)
         return (-1);
+
     setup_signals();
-    //get server ready
+
     Server  irc_server;
     if (irc_server.get_server_ready(std::stoi(argv[1]), argv[2]) == -1)
         return -1;

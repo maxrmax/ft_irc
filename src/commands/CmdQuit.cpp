@@ -10,7 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/ircserv.hpp"
+#include "CmdQuit.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 void CmdQuit::execute(Server &server, ClientUser &clientUser, const ParsedCommand &cmd)
 {
@@ -39,37 +46,34 @@ void CmdQuit::execute(Server &server, ClientUser &clientUser, const ParsedComman
         if (recipient)
             recipient->get_outputBuffer().append(quitMsg);
     }
-    server.unregisterClientFd(quitterFd);
-
-    // TODO:
-    // handle disconnect client in runServer.cpp (currently not disconnecting)
-    // and recv() == 0 / read == 0
+    shutdown(quitterFd, SHUT_RDWR);
+    clientUser.setToDisconnect(true);
 }
 
 // — (QUIT message is broadcast)	
 
 /*
-4.1.6 Quit
+// 4.1.6 Quit
 
-      Command: QUIT
-   Parameters: [<Quit message>]
+//       Command: QUIT
+//    Parameters: [<Quit message>]
 
-   A client session is ended with a quit message.  The server must close
-   the connection to a client which sends a QUIT message. If a "Quit
-   Message" is given, this will be sent instead of the default message,
-   the nickname.
+//    A client session is ended with a quit message.  The server must close
+//    the connection to a client which sends a QUIT message. If a "Quit
+//    Message" is given, this will be sent instead of the default message,
+//    the nickname.
 
-   If, for some other reason, a client connection is closed without  the
-   client  issuing  a  QUIT  command  (e.g.  client  dies and EOF occurs
-   on socket), the server is required to fill in the quit  message  with
-   some sort  of  message  reflecting the nature of the event which
-   caused it to happen.
+//    If, for some other reason, a client connection is closed without  the
+//    client  issuing  a  QUIT  command  (e.g.  client  dies and EOF occurs
+//    on socket), the server is required to fill in the quit  message  with
+//    some sort  of  message  reflecting the nature of the event which
+//    caused it to happen.
 
-   Numeric Replies:
+//    Numeric Replies:
 
-           None.
+//            None.
 
-   Examples:
+//    Examples:
 
-   QUIT :Gone to have lunch        ; Preferred message format.
+//    QUIT :Gone to have lunch        ; Preferred message format.
 */

@@ -10,7 +10,14 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include "../../includes/ircserv.hpp"
+#include "CmdInvite.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 // Channel names must start with '#' and contain no spaces, NUL, BEL, or commas
 static bool channelNameIsValid(const std::string& name)
@@ -174,32 +181,32 @@ n1ck didn't receive a INVITE notice.
 
 
 /*
-4.2.7 Invite message
+// 4.2.7 Invite message
 
-      Command: INVITE
-   Parameters: <nickname> <channel>
+//       Command: INVITE
+//    Parameters: <nickname> <channel>
 
-   The INVITE message is used to invite users to a channel.  The
-   parameter <nickname> is the nickname of the person to be invited to
-   the target channel <channel>.  There is no requirement that the
-   channel the target user is being invited to must exist or be a valid
-   channel.  To invite a user to a channel which is invite only (MODE
-   +i), the client sending the invite must be recognised as being a
-   channel operator on the given channel.
+//    The INVITE message is used to invite users to a channel.  The
+//    parameter <nickname> is the nickname of the person to be invited to
+//    the target channel <channel>.  There is no requirement that the
+//    channel the target user is being invited to must exist or be a valid
+//    channel.  To invite a user to a channel which is invite only (MODE
+//    +i), the client sending the invite must be recognised as being a
+//    channel operator on the given channel.
 
-   Numeric Replies:
+//    Numeric Replies:
 
-           ERR_NEEDMOREPARAMS              ERR_NOSUCHNICK
-           ERR_NOTONCHANNEL                ERR_USERONCHANNEL
-           ERR_CHANOPRIVSNEEDED
-           RPL_INVITING                    RPL_AWAY
+//            ERR_NEEDMOREPARAMS              ERR_NOSUCHNICK
+//            ERR_NOTONCHANNEL                ERR_USERONCHANNEL
+//            ERR_CHANOPRIVSNEEDED
+//            RPL_INVITING                    RPL_AWAY
 
-   Examples:
+//    Examples:
 
-   :Angel INVITE Wiz #Dust         ; User Angel inviting WiZ to channel
-                                   #Dust
+//    :Angel INVITE Wiz #Dust         ; User Angel inviting WiZ to channel
+//                                    #Dust
 
-   INVITE Wiz #Twilight_Zone       ; Command to invite WiZ to
-                                   #Twilight_zone
+//    INVITE Wiz #Twilight_Zone       ; Command to invite WiZ to
+//                                    #Twilight_zone
 
 */

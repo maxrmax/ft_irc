@@ -12,7 +12,14 @@
 
 // CmdPass.cpp
 
-#include "../../includes/ircserv.hpp"
+#include "CmdPass.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 // PASS check handled in dispatcher before any cmd can be run
 // This class merely sets password accepted true

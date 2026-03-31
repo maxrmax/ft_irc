@@ -11,7 +11,16 @@
 /******************************************************************************/
 
 //CmdNick.cpp
-#include "../../includes/ircserv.hpp"
+#include "CmdNick.hpp"
+#include "checker.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
+
 
 // IRC rules - RFC 1459 §2.3.1
 //  First char:  letter only [A-Za-z]
@@ -66,14 +75,16 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
 
     // store nickname
     std::string previouseNickname = clientUser.getNickname();
-    // set nickname for current clientUser
+    // set new nickname for current clientUser
     clientUser.setNickname(cmd.params[0]);
-    // add clientUser to server mapping (isn't it already?)
+    // add clientUser to server mapping based on new nickname
+    // TODO check if old nick gets removed.
     server.Nick_ClientUser_mapping(clientUser);
 
     /* if previousNickname is different to the current nickname
-     * reference previousNickname to the current client
-    */  
+     * reference the client to the old nickname
+     * in the nickname_history map
+     */  
     if (previouseNickname != clientUser.getNickname())
     {
         server.NicknamesHistory_storing(previouseNickname, clientUser);

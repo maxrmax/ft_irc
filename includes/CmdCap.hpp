@@ -10,16 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//CmdCap.hpp
-
 #pragma once
 
-#include "command.hpp"
+#include "command.hpp" // <string> - <vector>
 
-class CmdCap : public Command 
+/**
+ * CmdCap
+ *
+ * Handles the CAP (capabilities) command sequence used during client capability negotiation.
+ * - Syntax: CAP <subcommand> [params]
+ * - Expected to negotiate optional features; implementation may respond and modify client state.
+ */
+class CmdCap : public Command
 {
-    public:
-        void execute(Server &server,
-                     ClientUser &client,
-                    const ParsedCommand &cmd) override;
+public:
+    void execute(Server &server,
+                 ClientUser &client,
+                 const ParsedCommand &cmd) override;
 };

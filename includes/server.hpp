@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include "ircserv.hpp"
-
 #include <fcntl.h>
 #include <iostream>
 #include <netinet/in.h>
@@ -21,13 +19,13 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "commandDispatcher.hpp"
+#include <unordered_map>
 
-//saver than define a macro is to do a const
-//this is in its very own scope for each programm this header is included
-//it is not a global variable which would be extern <global variable name>
-inline constexpr int    ADDRESS_FAMILY  =   AF_INET;
-inline constexpr int    PORT_LISTEN     =   6667;  
+#include "poll.hpp"                 // <poll.h>   - <vector>
+#include "commandDispatcher.hpp"    // <map>      - <string>
+#include "Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+#include "ClientUser.hpp"           // <string>
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * mring:
  *      it is a global variable (const int has internal linkage, implicit static)
@@ -41,26 +39,46 @@ inline constexpr int    PORT_LISTEN     =   6667;
  *      one shared instance across all translation units
  *      without inline each .cpp that includes this header would get a copy
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+inline constexpr int    ADDRESS_FAMILY  =   AF_INET;
+inline constexpr int    PORT_LISTEN     =   6667;
 
+// Channel and ClientUser definitions are included above
+
+/**
+ * Server: core IRC server container
+ *
+ * - owns the listening socket info (server_fd, server_address)
+ * - owns maps for clients, channels and nickname lookups
+ * - provides channel-management and client-registry APIs used by command handlers
+ *
+ * Conventions:
+ * - Methods returning references (Channel&) refer into the _channels map.
+ *   Caller must not store references across operations that may mutate the map.
+ * - getChannel(name) uses .at() and will throw std::out_of_range if missing.
+ * - registerClientFd/unregisterClientFd manage the _clients map ownership (ClientUser* stored).
+ */
 class Server
 {
     private:
-        int         server_fd;
-        int         server_port;
-        std::string server_password;
-        //INternet not incomming
-        //man 7 ip explains the IPv4 address
-        sockaddr_in server_address;
-
-        //array for fd to poll, to check, if ready with data
-        std::vector<pollfd> poll_fd;
-        //maping for (unique index) fd to Client object 
-        //unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
-        //int is the index which is equal to client_accepted_fd
-        //Client is the type we map to.
-        std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
-
-        CommandDispatcher dispatcher;
+        // listening socket fd
+        int                                             server_fd;
+        // configured port
+        int                                             server_port;
+        // server password (PASS)
+        std::string                                     server_password;
+        // listening address struct
+        sockaddr_in                                     server_address;
+        // dispatches IRC commands to handlers
+        CommandDispatcher                               dispatcher;
+        
+        // array for fd to poll, to check, if ready with data
+        std::vector<pollfd>                             poll_fd;
+        // mapping for (unique index) fd to Client object 
+        // unordered map jumps to item by index and is faster than pure std::map.
+        // int is the index which is the fd (or client_accepted_fd on assignment)
+        // ClientUser is our object we map by fd
+        // populate via registerClientFd() and remove via unregisterClientFd()
+        std::unordered_map<int, ClientUser>             _clients;
 
         /* create maping for (unique index) fd to Client object 
          * unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
@@ -80,11 +98,12 @@ class Server
          // std::vector <std::string, std::string> nicknames_history;
         *///std::unordered_map <std::string, ClientUser*> nicknames_history;
         std::unordered_map<std::string, ClientUser*>    nicknames_history;
+        // current nickname -> ClientUser* for O(1) lookup
         std::unordered_map<std::string, ClientUser*>    nick_clientUser;
+        // channel name -> Channel object (owned by server)
+        // Channel references returned by createChannel/getChannel point into this map
         std::unordered_map<std::string, Channel>        _channels;
-        // Maps fd → ClientUser* for broadcast routing
-        // Populate via registerClientFd() when a client connects.
-        std::unordered_map<int, ClientUser*>        _clients;
+
 
     public:
         ~Server();
@@ -96,23 +115,30 @@ class Server
         sockaddr_in                                 get_server_address();
         std::vector<pollfd>                         &getPollFD();
         const std::vector<pollfd>                   &getPollFD() const;
-        std::unordered_map<int, ClientUser>         &getPoll_clientUser__mapping_via_fd();
-        const std::unordered_map<int, ClientUser>   &getPoll_clientUser__mapping_via_fd() const;
+        std::unordered_map<int, ClientUser>         &get_clients_map();
+        const std::unordered_map<int, ClientUser>   &get_clients_map() const;
+        void                                        setClientIp(int fd, const std::string &str_ip);
+        const std::string                           getClientIp(int fd);
 
-        void                printRegisteredNicks();
+        void                                        printRegisteredNicks();
         
-        int                         get_server_ready(int portt, std::string password);
+        int                                         get_server_ready(int portt, std::string password);
         // void                clean_up();
 
-        CommandDispatcher           &get_dispatcher();
-        bool                        NickIsAlreadyRegistered(std::string nick) const;
-        // void                Nicknames_storing(std::string nick); //depracated
-        void                        NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
-        // void                Nicknames_storing(std::string nick);
-        // void                NicknameUnregister(std::string nick);
-        void                        Nick_ClientUser_mapping(ClientUser &clientUser);
+        CommandDispatcher                           &get_dispatcher();
+        bool                                        NickIsAlreadyRegistered(std::string nick) const;
+        void                                        NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser);
+        void                                        Nick_ClientUser_mapping(ClientUser &clientUser);
 
-        // Channel
+        /* Channel management API
+         * - getChannelsOfClientFd: returns vector of channel names the fd is member of
+         * - channelExists: fast check for presence in _channels
+         * - createChannel: create if missing and return reference to stored Channel
+         * - getChannel: access existing Channel by name (uses .at(), may throw)
+         * - removeChannel: erase channel from _channels
+         * - broadcastToChannel / broadcastToChannelExcept: append raw msg to member output buffers
+         * - getChannelMemberNicks: build space-separated nick list; '@' prefixed for ops
+         */
         std::vector<std::string>    getChannelsOfClientFd(int fd);
         bool                        channelExists(const std::string& name) const;
         Channel&                    createChannel(const std::string& name, ClientUser& founder);
@@ -122,11 +148,15 @@ class Server
         void                        broadcastToChannelExcept(const std::string& channelName, const std::string& msg, int excludeFd);
         std::string                 getChannelMemberNicks(const std::string& channelName) const;
 
-        // Client fd registry (call from runServer when accepting/closing clients)
-        void                        registerClientFd(int fd, ClientUser* client);
+        /* Client fd registry
+         * - registerClientFd stores a pointer in _clients for routing
+         * - unregisterClientFd removes mappings, clears nick lookup and removes empty channels
+         * Ownership note: Server stores raw ClientUser*; lifecycle (allocation/deletion) is managed elsewhere.
+         */
+        void                        registerClientFd(int fd);
         void                        unregisterClientFd(int fd);
 
-        // Nick → ClientUser lookup (already exists as nick_clientUser map, just expose it)
+        // lookup helpers (return nullptr if not found)
         ClientUser*                 getClientByNick(const std::string& nick);
         ClientUser*                 getClientByFd(int fd);
 };

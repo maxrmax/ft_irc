@@ -12,8 +12,16 @@
 
 #pragma once
 
-#include "command.hpp"
+#include "command.hpp" // <string> - <vector>
 
+
+/**
+ * CmdPart
+ *
+ * Handles the IRC PART command.
+ * - Syntax: PART <channel> [reason]
+ * - Removes caller from the specified channel and notifies members.
+ */
 class CmdPart : public Command
 {
 public:

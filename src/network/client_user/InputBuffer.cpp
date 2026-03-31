@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 // #include "InputBuffer.hpp"
-#include "../../../includes/inputBuffer.hpp"
+#include "inputBuffer.hpp"
 #include <stdexcept>
 
 InputBuffer::InputBuffer() {}
@@ -25,6 +25,7 @@ void InputBuffer::append(const std::string& data)
      * If the client sends more than 512 bytes total
      * without a CRLF, the connection must be closed.
      */
+    // TODO 1
     if (_buffer.find("\r\n") == std::string::npos &&
         _buffer.size() > IRC_MAX_LINE + 2)
     {
@@ -33,6 +34,7 @@ void InputBuffer::append(const std::string& data)
     }
 }
 
+// TODO \r\n checking in all buffer statements
 bool InputBuffer::hasLine() const
 {
     return _buffer.find("\r\n") != std::string::npos;

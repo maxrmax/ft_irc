@@ -10,14 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//CmdPrivmsg.cpp
-
-
-// IRC PRIVMSG command
-// Syntax: PRIVMSG <target> :<message>
-// Target can be a #channel or a nickname
-
-#include "../../includes/ircserv.hpp"
+#include "CmdPrivmsg.hpp"
+#include "Jarvis.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
@@ -129,51 +130,51 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
 */
 
 /*
-4.4.1 Private messages
+// 4.4.1 Private messages
 
-      Command: PRIVMSG
-   Parameters: <receiver>{,<receiver>} <text to be sent>
+//       Command: PRIVMSG
+//    Parameters: <receiver>{,<receiver>} <text to be sent>
 
-   PRIVMSG is used to send private messages between users.  <receiver>
-   is the nickname of the receiver of the message.  <receiver> can also
-   be a list of names or channels separated with commas.
+//    PRIVMSG is used to send private messages between users.  <receiver>
+//    is the nickname of the receiver of the message.  <receiver> can also
+//    be a list of names or channels separated with commas.
 
-   The <receiver> parameter may also me a host mask  (#mask)  or  server
-   mask  ($mask).   In  both cases the server will only send the PRIVMSG
-   to those who have a server or host matching the mask.  The mask  must
-   have at  least  1  (one)  "."  in it and no wildcards following the
-   last ".".  This requirement exists to prevent people sending messages
-   to  "#*"  or "$*",  which  would  broadcast  to  all  users; from
-   experience, this is abused more than used responsibly and properly.
-   Wildcards are  the  '*' and  '?'   characters.   This  extension  to
-   the PRIVMSG command is only available to Operators.
+//    The <receiver> parameter may also me a host mask  (#mask)  or  server
+//    mask  ($mask).   In  both cases the server will only send the PRIVMSG
+//    to those who have a server or host matching the mask.  The mask  must
+//    have at  least  1  (one)  "."  in it and no wildcards following the
+//    last ".".  This requirement exists to prevent people sending messages
+//    to  "#*"  or "$*",  which  would  broadcast  to  all  users; from
+//    experience, this is abused more than used responsibly and properly.
+//    Wildcards are  the  '*' and  '?'   characters.   This  extension  to
+//    the PRIVMSG command is only available to Operators.
 
-   Numeric Replies:
+//    Numeric Replies:
 
-           ERR_NORECIPIENT                 ERR_NOTEXTTOSEND
-           ERR_CANNOTSENDTOCHAN            ERR_NOTOPLEVEL
-           ERR_WILDTOPLEVEL                ERR_TOOMANYTARGETS
-           ERR_NOSUCHNICK
-           RPL_AWAY
+//            ERR_NORECIPIENT                 ERR_NOTEXTTOSEND
+//            ERR_CANNOTSENDTOCHAN            ERR_NOTOPLEVEL
+//            ERR_WILDTOPLEVEL                ERR_TOOMANYTARGETS
+//            ERR_NOSUCHNICK
+//            RPL_AWAY
 
-   Examples:
+//    Examples:
 
-:Angel PRIVMSG Wiz :Hello are you receiving this message ?
-                                ; Message from Angel to Wiz.
+// :Angel PRIVMSG Wiz :Hello are you receiving this message ?
+//                                 ; Message from Angel to Wiz.
 
-PRIVMSG Angel :yes I'm receiving it !receiving it !'u>(768u+1n) .br ;
-                                Message to Angel.
+// PRIVMSG Angel :yes I'm receiving it !receiving it !'u>(768u+1n) .br ;
+//                                 Message to Angel.
 
-PRIVMSG jto@tolsun.oulu.fi :Hello !
-                                ; Message to a client on server
-                                tolsun.oulu.fi with username of "jto".
+// PRIVMSG jto@tolsun.oulu.fi :Hello !
+//                                 ; Message to a client on server
+//                                 tolsun.oulu.fi with username of "jto".
 
-PRIVMSG $*.fi :Server tolsun.oulu.fi rebooting.
-                                ; Message to everyone on a server which
-                                has a name matching *.fi.
+// PRIVMSG $*.fi :Server tolsun.oulu.fi rebooting.
+//                                 ; Message to everyone on a server which
+//                                 has a name matching *.fi.
 
-PRIVMSG #*.edu :NSFNet is undergoing work, expect interruptions
-                                ; Message to all users who come from a
-                                host which has a name matching *.edu.
+// PRIVMSG #*.edu :NSFNet is undergoing work, expect interruptions
+//                                 ; Message to all users who come from a
+//                                 host which has a name matching *.edu.
 
 */

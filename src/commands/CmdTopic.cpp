@@ -10,76 +10,17 @@
 /*                                                                            */
 /******************************************************************************/
 
-// 4.2.4 Topic message
-
-//       Command: TOPIC
-//    Parameters: <channel> [<topic>]
-
-//    The TOPIC message is used to change or view the topic of a channel.
-//    The topic for channel <channel> is returned if there is no <topic>
-//    given.  If the <topic> parameter is present, the topic for that
-//    channel will be changed, if the channel modes permit this action.
-
-//    Numeric Replies:
-
-//            ERR_NEEDMOREPARAMS              ERR_NOTONCHANNEL
-//            RPL_NOTOPIC                     RPL_TOPIC
-//            ERR_CHANOPRIVSNEEDED
-
-
-
-// Oikarinen & Reed                                               [Page 23]
-
-// RFC 1459              Internet Relay Chat Protocol              May 1993
-
-
-//    Examples:
-//    :Wiz TOPIC #test :New topic     ;User Wiz setting the topic.
-//    TOPIC #test :another topic      ;set the topic on #test to "another
-//                                    topic".
-//    TOPIC #test                     ; check the topic for #test.
-
-
-// RFC 1459 - 4.2.4 Topic
-//
-// Syntax:  TOPIC <channel>            → query current topic
-//          TOPIC <channel> :          → clear topic
-//          TOPIC <channel> :<topic>   → set new topic
-//
-// _topicFlag (channel mode +t):
-//   true  → only operators can change the topic
-//   false → any member can change the topic
-
-#include "../../includes/ircserv.hpp"
+#include "CmdTopic.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
-    // TODO: 
-    /*
-        /topic
-        18:51 -!- Topic for #ch: test
-        18:51 -!- Topic set by n2ck [irssiuser@127.0.0.1] [Tue Mar 17 18:50:51 2026]
-        /topic new topic
-        18:51 -!- Topic for #ch: test
-        18:51 -!- Topic set by n2ck [irssiuser@127.0.0.1] [Tue Mar 17 18:50:51 2026]
-        18:51 -!- #ch You're not channel operator
-        /topic
-        18:51 -!- Topic for #ch: test
-        18:51 -!- Topic set by n2ck [irssiuser@127.0.0.1] [Tue Mar 17 18:50:51 2026]
-
-        nc:
-        topic #ch
-        :server 332 n3ck #ch :test
-
-        topic #ch :new channel topic
-        :n3ck!n3ck@127.0.0.1 TOPIC #ch :new channel topic
-
-        topic
-        :server 461 n3ck TOPIC :Not enough parameters
-
-        topic #ch
-        :server 332 n3ck #ch :new channel topic
-    */
     if (!clientUser.isRegistered())
     {
         clientUser.get_outputBuffer().append(
@@ -159,3 +100,45 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
     std::string broadcast = prefix + " TOPIC " + channelName + " :" + newTopic + "\r\n";
     server.broadcastToChannel(channelName, broadcast);
 }
+
+/*
+// 4.2.4 Topic message
+
+//       Command: TOPIC
+//    Parameters: <channel> [<topic>]
+
+//    The TOPIC message is used to change or view the topic of a channel.
+//    The topic for channel <channel> is returned if there is no <topic>
+//    given.  If the <topic> parameter is present, the topic for that
+//    channel will be changed, if the channel modes permit this action.
+
+//    Numeric Replies:
+
+//            ERR_NEEDMOREPARAMS              ERR_NOTONCHANNEL
+//            RPL_NOTOPIC                     RPL_TOPIC
+//            ERR_CHANOPRIVSNEEDED
+
+
+
+// Oikarinen & Reed                                               [Page 23]
+
+// RFC 1459              Internet Relay Chat Protocol              May 1993
+
+
+//    Examples:
+//    :Wiz TOPIC #test :New topic     ;User Wiz setting the topic.
+//    TOPIC #test :another topic      ;set the topic on #test to "another
+//                                    topic".
+//    TOPIC #test                     ; check the topic for #test.
+
+
+// RFC 1459 - 4.2.4 Topic
+
+// Syntax:  TOPIC <channel>            → query current topic
+//          TOPIC <channel> :          → clear topic
+//          TOPIC <channel> :<topic>   → set new topic
+
+// _topicFlag (channel mode +t):
+//   true  → only operators can change the topic
+//   false → any member can change the topic
+*/

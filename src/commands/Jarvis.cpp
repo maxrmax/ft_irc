@@ -30,8 +30,15 @@
 // CmdPrivmsg calls CmdJarvis::handleMessage() when it detects "@jarvis".
 // No Jarvis logic lives in CmdPrivmsg – only a one-line check and delegation.
  
-#include "../../includes/ircserv.hpp"
 #include <ctime>
+#include "Jarvis.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 static const std::string JARVIS_PREFIX = ":Jarvis!bot@ircserver";
 
@@ -71,11 +78,9 @@ static void jarvisNotice(ClientUser& target, const std::string& noticeTarget, co
 static std::string parseArgFromText(const std::string& text)
 {
     size_t pos = 7; // skip "@jarvis"
-    while (pos < text.size() && (text[pos] == ' ' || text[pos] == ':'))
+    while (pos < text.size() && text[pos] == ' ')
         pos++;
     std::string arg = text.substr(pos);
-    for (size_t i = 0; i < arg.size(); i++)
-        arg[i] = std::tolower(arg[i]);
     return arg;
 }
 
@@ -86,8 +91,6 @@ static std::string parseArgFromCmd(const ParsedCommand& cmd)
     std::string arg = cmd.params[0];
     if (!arg.empty() && arg[0] == ':')
         arg = arg.substr(1);
-    for (size_t i = 0; i < arg.size(); i++)
-        arg[i] = std::tolower(arg[i]);
     return arg;
 }
 
@@ -96,7 +99,7 @@ static void dispatch(ClientUser& clientUser, const std::string& noticeTarget, co
         if (arg == "420")
     {
         // IRC formatting: NN = color (09=green),  = italic,  = reset
-        std::string msg = "09( ͡° ͜ʖ ͡°) blaze it";
+        std::string msg = "09( ͡° ͜ʖ ͡°) blaze it\r\n";
         jarvisNotice(clientUser, noticeTarget, msg);
         return;
     }

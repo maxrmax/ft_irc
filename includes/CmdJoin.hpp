@@ -12,12 +12,20 @@
 
 #pragma once
 
-#include "command.hpp"
+#include "command.hpp" // <string> - <vector>
 
+/**
+ * CmdJoin
+ *
+ * Handles the IRC JOIN command.
+ * - Syntax: JOIN <channel> [key]
+ * - Adds the caller to the channel, creates the channel if it does not exist,
+ *   and enforces invite/key/limit modes.
+ */
 class CmdJoin : public Command
 {
 public:
-    void execute(Server &server, 
+    void execute(Server &server,
                  ClientUser &clientUser,
                  const ParsedCommand &cmd) override;
 };

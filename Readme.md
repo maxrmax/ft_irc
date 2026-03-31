@@ -146,14 +146,25 @@ Your README must be written in English.
 *This project has been created as part of the 42 curriculum by nsloniow, ngoyat, mring*
 
 # Description
+We created a irc server, to which you can connect per irssi (pre-installed on every 42 ubuntu pc),
+or netcat (nc) which is just there on any *unix system.
+It allows clients to communicate to each other, either through channels or per direct messages.
+You are also able to send files per /dcc
 
 # Instruction
+make -> run
 
 ## How to Run
+either with `make run` -> default port is `6667` and server passwort is `start`
+`make valgrind` for testing `6668`, `start`
+./ircserver \<port> \<password> 
 
 ## Arguments
+\<port> -> the port, starting from 1028
+\<password> -> connection password for clients to use
 
 ## External functions used
+yes
 
 # additional section 1
 

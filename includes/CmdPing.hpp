@@ -10,15 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//CmdPing.hpp
-
 #pragma once
-#include "command.hpp"
 
-class CmdPing : public Command 
+#include "command.hpp" // <string> - <vector>
+
+/**
+ * CmdPing
+ *
+ * Handles the IRC PING command.
+ * - Syntax: PING <server1> [server2]
+ * - Replies with PONG to keep connections alive and measure latency.
+ */
+class CmdPing : public Command
 {
-    public:
-        void execute(Server &server,
-                     ClientUser &client,
-                     const ParsedCommand &cmd) override;
+public:
+    void execute(Server &server,
+                 ClientUser &client,
+                 const ParsedCommand &cmd) override;
 };

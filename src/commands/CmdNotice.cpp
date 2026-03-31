@@ -10,36 +10,14 @@
 /*                                                                            */
 /******************************************************************************/
 
-// 4.4.2 Notice
-
-//       Command: NOTICE
-//    Parameters: <nickname> <text>
-
-//    The NOTICE message is used similarly to PRIVMSG.  The difference
-//    between NOTICE and PRIVMSG is that automatic replies must never be
-//    sent in response to a NOTICE message.  This rule applies to servers
-//    too - they must not send any error reply back to the client on
-//    receipt of a notice.  The object of this rule is to avoid loops
-//    between a client automatically sending something in response to
-//    something it received.  This is typically used by automatons (clients
-//    with either an AI or other interactive program controlling their
-//    actions) which are always seen to be replying lest they end up in a
-//    loop with another automaton.
-
-//    See PRIVMSG for more details on replies and examples.
-
-// Commonly used for:
-
-// - Server messages
-// - Bot informational messages
-// - NickServ / ChanServ replies
-// - Warnings
-// - Non-interactive notifications
-
-// IRC NOTICE command
-// Syntax: NOTICE <target> :<message>
-
-#include "../../includes/ircserv.hpp"
+#include "CmdNotice.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 void CmdNotice::execute(Server& server, ClientUser& clientUser, const ParsedCommand& cmd)
 {
@@ -103,3 +81,33 @@ void CmdNotice::execute(Server& server, ClientUser& clientUser, const ParsedComm
     // std::cout << server.getClientByNick(cmd.params[0])->get_outputBuffer().get_buffer() << std::endl;
 }
 
+/*
+// 4.4.2 Notice
+
+//       Command: NOTICE
+//    Parameters: <nickname> <text>
+
+//    The NOTICE message is used similarly to PRIVMSG.  The difference
+//    between NOTICE and PRIVMSG is that automatic replies must never be
+//    sent in response to a NOTICE message.  This rule applies to servers
+//    too - they must not send any error reply back to the client on
+//    receipt of a notice.  The object of this rule is to avoid loops
+//    between a client automatically sending something in response to
+//    something it received.  This is typically used by automatons (clients
+//    with either an AI or other interactive program controlling their
+//    actions) which are always seen to be replying lest they end up in a
+//    loop with another automaton.
+
+//    See PRIVMSG for more details on replies and examples.
+
+// Commonly used for:
+
+// - Server messages
+// - Bot informational messages
+// - NickServ / ChanServ replies
+// - Warnings
+// - Non-interactive notifications
+
+// IRC NOTICE command
+// Syntax: NOTICE <target> :<message>
+*/

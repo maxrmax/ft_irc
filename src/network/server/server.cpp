@@ -10,12 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//server.cpp
-
-// #include <algorithm>
-// #include "../../../includes/server.hpp"
-#include "../../../includes/ircserv.hpp"
-
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
 
 Server::~Server()
 {
@@ -40,36 +41,60 @@ Server::~Server()
 
 Server::Server():server_fd(-1), server_port(-1), server_password(""){};
 
-Server::Server(int filedescriptor, int port, std::string password):server_fd(filedescriptor), server_port(port), server_password(password){};
+Server::Server(int filedescriptor, int port, std::string password) : server_fd(filedescriptor), server_port(port), server_password(password){};
+
 int Server::get_server_fd()
 {
     return server_fd;
 };
+
 std::string Server::get_server_password()
 {
     return server_password;
 };
+
 sockaddr_in Server::get_server_address()
 {
     return server_address;
 };
+
 std::vector<pollfd> &Server::getPollFD()
 {
     return poll_fd; 
 }
+
 const std::vector<pollfd> &Server::getPollFD() const
 {
     return poll_fd;
 }
-std::unordered_map<int, ClientUser> &Server::getPoll_clientUser__mapping_via_fd()
+
+void Server::setClientIp(int fd, const std::string &str_ip)
 {
-    return poll_clientUser__mapping_via_fd; 
-}
-const std::unordered_map<int, ClientUser> &Server::getPoll_clientUser__mapping_via_fd() const
-{
-    return poll_clientUser__mapping_via_fd; 
+    ClientUser *client = getClientByFd(fd);
+    if (client)
+        client->setIp(str_ip);
 }
 
+const std::string Server::getClientIp(int fd)
+{
+    ClientUser *client = getClientByFd(fd);
+    return client->getIp();
+}
+
+std::unordered_map<int, ClientUser> &Server::get_clients_map()
+{
+    return _clients;
+}
+
+const std::unordered_map<int, ClientUser> &Server::get_clients_map() const
+{
+    return _clients;
+}
+
+/**
+ * Handles the initialization of the server class.
+ * It assigns the fd, port and passwort into the class.
+ */
 int Server::get_server_ready(int port, std::string password)
 {
     //cat /etc/protocols -> TCP
@@ -80,16 +105,18 @@ int Server::get_server_ready(int port, std::string password)
         std::cout << "Server could not be created. Try again." << std::endl;
         return -1;
     }
-    // just sits there until a packet arrives. it is blocking. The call - recv() or accept() waits until it can do something, it waits for clients to accept or data to receive.
-    //only when this happenened, the code continues to execute.
-    //Doing fork() and having a thread per fd would not need blocking, as it just sits and waits for its own purpose.
+    // just sits there until a packet arrives. it is blocking.
+    // The call - recv() or accept() waits until it can do something, it waits for clients to accept or data to receive.
+    // When this happenened, the code continues to execute.
+    // Doing fork() and having a thread per fd would not be blocking, as it just sits and waits for its own purpose.
+
     // Manipulating fd behavior, set flag to nonblocking, so it does not sit there open and blocks the system till something arrives at that socket
     fcntl(server_fd, F_SETFL, O_NONBLOCK);
     
-    // server_port = PORT_LISTEN;
     server_port = port;
     server_password = password;
-    //setting address informatiom
+
+    //setting address information
     std::memset(&server_address, 0, sizeof(server_address));    //setting memory to 0 to not have garbage
     server_address.sin_addr.s_addr  = INADDR_ANY;               //listen on all interfaces, Accept connections on all IPv4 addresses of this machine.
     server_address.sin_family       = ADDRESS_FAMILY;
@@ -129,29 +156,6 @@ int Server::get_server_ready(int port, std::string password)
     return 0;
 }
 
-// void Server::clean_up()
-// {
-//     //auto &pair figures out the type automatically
-//     // for (auto &pair : poll_client__mapping_via_fd)
-//     for (auto &[fd, client] : poll_clientUser__mapping_via_fd)
-//     {
-//         // Client destructor will close fd
-//         // or explicitly close here if you remove it from destructor
-//         if (fd != -1)
-//         {
-//             if (close(fd) == 0)
-//             {    
-//                 std::cout << "Client filedescriptor closed for a good nights sleep." << std::endl;
-//             }
-//             else 
-//             {
-//                 std::cout << "Client filedescriptor could not be closed." << std::endl;
-//             }
-//         }       
-//     }
-//     poll_clientUser__mapping_via_fd.clear(); // triggers destructors
-// }
-
 CommandDispatcher &Server::get_dispatcher()
 {
     return (dispatcher);
@@ -159,38 +163,12 @@ CommandDispatcher &Server::get_dispatcher()
 
 bool Server::NickIsAlreadyRegistered(std::string nick) const
 {
-    // could be without "> 0" as count returns 0 or 1 in unordered_map anyway
-    // this is just better practice
     return nick_clientUser.count(nick) > 0;
-    // old vector way
-    // if (std::find(nicknames.begin(), nicknames.end(), nick) != nicknames.end())
-        // return true;
-    // return false;
 }
-
-// deprecated because of vector replacement
-// void Server::Nicknames_storing(std::string nick)
-// {
-//     if (!NickIsAlreadyRegistered(nick))
-//         nicknames.push_back(nick);
-// };
-
-// void Server::Nicknames_storing(std::string nick)
-// {
-//     //vector into set as it is easier to erase by string
-//     //so push_back no work anymore
-//     nicknames.insert(nick);
-// };
-
-// void Server::NicknameUnregister(std::string nick)
-// {
-//     nicknames.erase(nick);
-// };
 
 void Server::NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser)
 {
     nicknames_history[previouseNickname] = &clientUser;
-    //nicknames_history[nickNew].push_back(nickOld);
 };
 
 void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
@@ -201,20 +179,7 @@ void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
 void Server::printRegisteredNicks()
 {
     std::cout << "Registered nicknames: ";
-    /* loooook at this, it's the difference of C++98 and C++17
-     *
-     * the old one we had with the vector
-     * for (std::vector<std::string>::const_iterator it = nicknames.begin(); it != nicknames.end(); ++it)
-     *
-     * C++98
-     * for (std::unordered_map<std::string, ClientUser*>::const_iterator it = nick_clientUser.begin();
-     *
-     * and the C++11 and C++17 simplification
-     * const (non modifiable), auto& (reference - not a copy)
-     * binds nick to pair.first, client to pair.second
-     * ": <container>" to iterate
-     * could do [nick, _] by convention but its not enforced
-     */
+
     for (const auto& [nick, client] : nick_clientUser)
         std::cout << nick << " ";
     std::cout << std::endl;

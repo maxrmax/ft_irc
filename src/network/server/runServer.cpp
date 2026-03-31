@@ -10,30 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
-/* server.hpp:
-"poll.hpp"                 // <poll.h>   - <vector>
-"commandDispatcher.hpp"    // <map>      - <string>
-"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
-"ClientUser.hpp"           // <string>
-*/
+#include "server.hpp"
 #include "inputHandling.hpp"
 #include <sys/resource.h>
 #include <arpa/inet.h>
 #include <algorithm>
 #include <csignal>
-// #include <cerrno>
 
 extern volatile sig_atomic_t g_shutdown;
 
 // client fd cleanup on discconect/close.
 void clean_up(std::unordered_map<int, ClientUser> &clients)
 {
-    //auto &pair figures out the type automatically
     for (auto &[fd, client] : clients)
     {
-        // Client destructor will close fd
-        // or explicitly close here if you remove it from destructor
         if (fd != -1)
         {
             if (close(fd) == 0)
@@ -45,16 +35,14 @@ void clean_up(std::unordered_map<int, ClientUser> &clients)
     clients.clear();
 }
 
-// simple first send message
+// handles the dispatch of outgoing messages from the buffer to the recipient
 static int sendMsg(ClientUser *clientUser)
 {    
     if (clientUser->get_outputBuffer().get_buffer().length() > 0)
     {
-        // ssize_t send(int __fd, const void *__buf, size_t __n, int __flags)
         // Send N bytes of BUF to socket FD. Returns the number sent or -1.
         // This function is a cancellation point and therefore not marked with __THROW.
         ssize_t send_len = send(clientUser->get_ClientUser_fd(), clientUser->get_outputBuffer().get_buffer().c_str(), clientUser->get_outputBuffer().get_buffer().size(), 0);
-        // printf("%s %d send_len %zd\n", __FILE__, __LINE__, send_len);
         if (send_len < 0)
         {
             if (errno == EAGAIN)
@@ -68,20 +56,24 @@ static int sendMsg(ClientUser *clientUser)
         }
         else
         {
-            // printf("%s %d outBuff BEFORE pop %s\n", __FILE__, __LINE__, clientUser.get_outputBuffer().get_buffer().c_str());
-            // clientUser.get_outputBuffer().popLine();
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                printf("%s %d outBuff BEFORE pop %s\n", __FILE__, __LINE__, clientUser->get_outputBuffer().get_buffer().c_str());
+            #endif
             clientUser->get_outputBuffer().get_buffer().erase(0, send_len);
-            // printf("%s %d outBuff AFTER  pop %s\n", __FILE__, __LINE__, clientUser.get_outputBuffer().get_buffer().c_str());
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                printf("%s %d outBuff AFTER  pop %s\n", __FILE__, __LINE__, clientUser->get_outputBuffer().get_buffer().c_str());
+            #endif
         }
-        // std::cout << "out after send: " << clientUser.get_outputBuffer().get_buffer() << std::endl;
-    }
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "out after send: " << clientUser->get_outputBuffer().get_buffer() << std::endl;
+        #endif
+        }
     return 0;
 }
 
-// static int process_fd_ready_for_sending(Server &irc_server, int fd, std::unordered_map<int, ClientUser> &poll_clientUser__mapping_via_fd)
+// process for the message to be sent to the receiving client
 static int process_fd_ready_for_sending(Server &irc_server, int poll_index)
 {
-    // std::cout << "poll fd = " << poll_fd[i].fd<< std::endl;
     int client_fd = irc_server.getPollFD()[poll_index].fd;
     if (client_fd != irc_server.get_server_fd())
     {
@@ -111,7 +103,6 @@ int receive_message(Server &irc_server, int poll_index)
     {
         msg[read_len] = '\0';
         
-        // appened to InputBuffer
         clientUser->get_inputBuffer().append(msg);
     
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -122,10 +113,6 @@ int receive_message(Server &irc_server, int poll_index)
     }
     else // read_len <= 0
     {   
-        // 0 means the client closed the connection: irssi does automatically with /quit
-        // nc doesn't. you need ctrl+c for that
-        // -> need to implement disconnect logic for nc (here?, checking)
-        // close only closes after the disconnect from the client, so thats not it for ^
         if (read_len == 0)
         {
             std::cout << "Client " << client_fd << " disconnected." << std::endl;
@@ -141,7 +128,7 @@ int receive_message(Server &irc_server, int poll_index)
 
         // fatal socket error
         std::cerr << "recv error on fd " << client_fd << ": " << strerror(errno) << std::endl;
-            // mark client for disconnect; runPoll will perform cleanup
+        // mark client for disconnect; runPoll will perform cleanup
         clientUser->setToDisconnect(true);
         return -1;
     }
@@ -151,16 +138,11 @@ int receive_message(Server &irc_server, int poll_index)
 // Core logic around fd assignment and creation of client object in irc_server (_clients)
 int acceptClientUser(Server &irc_server)
 {
-    // get the incoming ip
-    // ??? why do we take the server ip, where is the client ip?
     sockaddr_in client_address_in = irc_server.get_server_address();
-    // get address length
     socklen_t   client_address_length = sizeof(client_address_in);
 
-    // the connecting clients assigned fd
     int client_accept_fd = accept(irc_server.get_server_fd(), (struct sockaddr *)&client_address_in, &client_address_length);
 
-    // if the assignment failed
     if (client_accept_fd < 0)
     {
         // non-blocking needs check on errno so it keeps looping until we finish our loop
@@ -180,19 +162,17 @@ int acceptClientUser(Server &irc_server)
     #endif
 
     // Make the client socket non-blocking
+    // append client fd to poll list
+    // melting star prevention, as poll is constantly woken up by check for POLLOUT and thus 100% cpu usage
+    // we will enable POLLOUT only when needed by the OutputBuffer
     fcntl(client_accept_fd, F_SETFL, O_NONBLOCK);
-    //append client fd to poll list
     pollfd   temp;
     temp.fd         = client_accept_fd;
-    //  melting star prevention, as poll is constantly woken up by check for POLLOUT and thus 100% cpu usage
-    // we will enable POLLOUT only when needed by the OutputBuffer
-    // temp.events     = POLLIN | POLLOUT;
     temp.events     = POLLIN;
     temp.revents    = 0;
 
     irc_server.getPollFD().push_back(temp);
 
-    // new user register instead of stack creation
     irc_server.registerClientFd(client_accept_fd);
 
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -200,46 +180,7 @@ int acceptClientUser(Server &irc_server)
     #endif
 
 
-    // ip is 32bit int, not human readable
-    // IPv4 address from network byte order (a binary struct in_addr) to a dotted-decimal string 
-    // TODO: return network ip instead of local loopback 
-    // (if connecting per localhost or 127.0.0.1, the ip shown to others is localhost/127.0.0.1)
-    // it should be the network ip or public ip
-    /*
-        use server outbound ip for localhost clients.
-        if peerbuf is loopback setClientip to server_public ip.
-    */
     irc_server.setClientIp(client_accept_fd, inet_ntoa(client_address_in.sin_addr));
-    /*
-    // If client connected via localhost, advertise the server's outbound
-    // IP (the interface used to reach the internet) so remote peers can
-    // reach DCC/file transfers. Use a non-sending UDP trick to discover
-    // the local outbound address. Keep minimal: compute once per process.
-    static const std::string server_public = []() -> std::string
-    {
-        int s = socket(AF_INET, SOCK_DGRAM, 0);
-        if (s < 0) return std::string();
-        sockaddr_in remote{};
-        remote.sin_family = AF_INET;
-        remote.sin_port = htons(53);
-        inet_pton(AF_INET, "8.8.8.8", &remote.sin_addr);
-        connect(s, (sockaddr*)&remote, sizeof(remote));
-        sockaddr_in local{};
-        socklen_t len = sizeof(local);
-        if (getsockname(s, (sockaddr*)&local, &len) < 0) { close(s); return std::string(); }
-        char buf[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &local.sin_addr, buf, sizeof(buf));
-        close(s);
-        return std::string(buf);
-    }();
-
-    char peerbuf[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &client_address_in.sin_addr, peerbuf, sizeof(peerbuf));
-    if (strncmp(peerbuf, "127.", 4) == 0 || client_address_in.sin_addr.s_addr == htonl(INADDR_LOOPBACK))
-        client_created.setIp(server_public.empty() ? std::string(peerbuf) : server_public);
-    else
-        client_created.setIp(std::string(peerbuf));
-    */
    
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
         std::cout << "runServer: Client " << client_accept_fd << " ip: " << irc_server.getClientIp(client_accept_fd) << std::endl;
@@ -251,7 +192,6 @@ int acceptClientUser(Server &irc_server)
 // accept all clients that are to be ready as per poll(fd) desicion
 int clientUsers_waiting(Server &irc_server)
 {
-    // just set to true, why not.
     bool clientUsers_are_waiting = true;
 
     while (clientUsers_are_waiting)
@@ -263,13 +203,10 @@ int clientUsers_waiting(Server &irc_server)
         case -1:
             return -1; // failed to accept client
         case -2:
-            // no more clients are waiting right now, so we leave the unlimited loop to not block
-            // returns 0
             clientUsers_are_waiting = false; 
+            // no more clients are waiting right now, so we leave the unlimited loop to not block
         }
     }
-    
-    // why are we returning at all? we don't use the return value for anything
     return 0;
 }
 
@@ -277,7 +214,6 @@ int clientUsers_waiting(Server &irc_server)
 int process_ready_fd(Server &irc_server, int poll_index)
 {
     int client_fd = irc_server.getPollFD()[poll_index].fd;
-    // std::cout << "poll fd = " << poll_fd[i].fd<< std::endl;
     // if current polled_fd is the servers fd, check if any connection is waiting.
     if (client_fd == irc_server.get_server_fd())
     {
@@ -286,12 +222,11 @@ int process_ready_fd(Server &irc_server, int poll_index)
     }
     else // else handle clients polled_fd and their input
     {
-        // TODO: receive_message never returns -1 at this moment
         if (receive_message(irc_server, poll_index) == -1)
             return -1;
         ClientUser *cu = irc_server.getClientByFd(client_fd);
         if (!cu)
-            return 0;
+            return -1;
 
         // it parses the input and then dispatches the input
         // command-dispatcher "handleClientCommands"
@@ -344,13 +279,6 @@ int runPoll(Server &irc_server)
         #endif
             pollfd &client_poll = irc_server.getPollFD()[poll_index];
 
-            /*
-                client cleanup on quit/disconnect
-               bug:
-                on force disconnect (ctrl+c/window quit)
-                invalid read errors
-                due receive_message unregister/cleanup
-            */
             ClientUser *client_for_current_fd = nullptr;
             if (client_poll.fd != irc_server.get_server_fd())
                 client_for_current_fd = irc_server.getClientByFd(client_poll.fd);
@@ -374,24 +302,16 @@ int runPoll(Server &irc_server)
 
             if (client_poll.revents & (POLLERR | POLLHUP | POLLNVAL))
             {
-                // TODO: cleanup: unregister, close, erase pollfd entry
-                // continue; // skip further processing for this fd
+                // TODO: check how we have to handle the events
+                // continue; // continue would mean we skip the remaining loop -> check if we need to do that
             }
         
-            //  * Keep the cleanup deterministic: remove pollfd via swap-pop or
-            //  * otherwise ensure the outer loop handles shifted indices safely.
-
             // bitwise AND check if POLLIN bit is inside .revents
             // if it is -> true
             // true means -> socket is ready for reading.
             // POLLIN -> socket read check
             if (client_poll.revents & POLLIN)
             {
-                // reading data from client
-
-                // waiting clients
-                // receive_message()
-                // handleClientInput -> dispatch -> commands
                 int rc = process_ready_fd(irc_server, poll_index);
                 client_poll.revents = 0;
                 if (rc == -1)
@@ -417,7 +337,7 @@ int runPoll(Server &irc_server)
                     client_poll.revents = 0;
                 }
 
-                // if outputBuffer is empty, &= ~POLLOUT
+                // if outputBuffer is empty, &= ~POLLOUT (unset POLLOUT)
                 if (!client_for_current_fd || client_for_current_fd->get_outputBuffer().get_buffer().empty())
                     client_poll.events &= ~POLLOUT;
             }
@@ -465,7 +385,6 @@ void runServer(Server &irc_server)
     pollfd                  polling_server_fd;
     // first set server fd to poll list for server events
     polling_server_fd.fd         = irc_server.get_server_fd();
-    // | POLLERR | POLLHUP ...?
     // define the events we want the server to react to
     polling_server_fd.events     = POLLIN | POLLOUT;
     // set to "no events have happened"

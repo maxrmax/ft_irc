@@ -27,6 +27,9 @@ void printCommand(const ParsedCommand& cmd, const ClientUser& clientUser);
 
 void handleClientInput(ClientUser *clientUser, Server &irc_server)
 {
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[05.05.01] handleClientInput" << std::endl; // debug comment
+    #endif
     while (clientUser->get_inputBuffer().hasLine())
     {
         // parse msg for command

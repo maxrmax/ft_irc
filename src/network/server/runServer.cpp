@@ -37,12 +37,21 @@ void clean_up(std::unordered_map<int, ClientUser> &clients)
 
 // handles the dispatch of outgoing messages from the buffer to the recipient
 static int sendMsg(ClientUser *clientUser)
-{    
+{
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[08.01.01] sendMsg: " << clientUser->get_ClientUser_fd() << std::endl;
+    #endif
     if (clientUser->get_outputBuffer().get_buffer().length() > 0)
     {
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[08.01.02] buffer before send: " << clientUser->get_outputBuffer().get_buffer() << std::endl;
+        #endif
         // Send N bytes of BUF to socket FD. Returns the number sent or -1.
         // This function is a cancellation point and therefore not marked with __THROW.
         ssize_t send_len = send(clientUser->get_ClientUser_fd(), clientUser->get_outputBuffer().get_buffer().c_str(), clientUser->get_outputBuffer().get_buffer().size(), 0);
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[08.01.03] send_len: " << send_len << std::endl;
+        #endif
         if (send_len < 0)
         {
             if (errno == EAGAIN)
@@ -57,17 +66,23 @@ static int sendMsg(ClientUser *clientUser)
         else
         {
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                printf("%s %d outBuff BEFORE pop %s\n", __FILE__, __LINE__, clientUser->get_outputBuffer().get_buffer().c_str());
+                std::cout << "[08.01.04] outBUff BEFORE erase: " << __FILE__ << " " << __LINE__ << " " << clientUser->get_outputBuffer().get_buffer() << std::endl;
             #endif
             clientUser->get_outputBuffer().get_buffer().erase(0, send_len);
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                printf("%s %d outBuff AFTER  pop %s\n", __FILE__, __LINE__, clientUser->get_outputBuffer().get_buffer().c_str());
+                std::cout << "[08.01.05] outBUff AFRER erase: " << __FILE__ << " " << __LINE__ << " " << clientUser->get_outputBuffer().get_buffer() << std::endl;
             #endif
         }
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
-            std::cout << "out after send: " << clientUser->get_outputBuffer().get_buffer() << std::endl;
+            std::cout << "[08.01.06] buffer after send: " << clientUser->get_outputBuffer().get_buffer() << std::endl;
         #endif
-        }
+    }
+    else
+    {
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "bufferlength < 0" << std::endl;
+        #endif
+    }
     return 0;
 }
 
@@ -75,6 +90,9 @@ static int sendMsg(ClientUser *clientUser)
 static int process_fd_ready_for_sending(Server &irc_server, int poll_index)
 {
     int client_fd = irc_server.getPollFD()[poll_index].fd;
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[08.01] prepare sending. fd: " << client_fd << " - poll_index: " << poll_index << std::endl;
+    #endif    
     if (client_fd != irc_server.get_server_fd())
     {
         //set client to client object that has been mapped to this fd 
@@ -86,29 +104,42 @@ static int process_fd_ready_for_sending(Server &irc_server, int poll_index)
             return -1;
         }
     }
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[08.02] message sent" << poll_index << std::endl;
+    #endif  
     return 0;
 }
 
 int receive_message(Server &irc_server, int poll_index)
 {
     int client_fd = irc_server.getPollFD()[poll_index].fd;
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[05.04.01] client_fd: " << client_fd << " - poll_index: " << poll_index << std::endl; // debug comment
+    #endif
     ClientUser *clientUser = irc_server.getClientByFd(client_fd);
     if (!clientUser)
         return 0;
 
     char   msg[1024]; 
     int    read_len  = recv(client_fd, msg, sizeof(msg)-1, 0);
-    
+
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[05.04.02] read_len: " << read_len << std::endl; // debug comment
+        std::cout << "[05.04.02] Received: " << msg << std::endl;
+    #endif
+
     if (read_len > 0)
     {
         msg[read_len] = '\0';
-        
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[05.04.03] read_len: " << read_len << std::endl; // debug comment
+            std::cout << "[05.04.04] Current Buffer: " << clientUser->get_inputBuffer().get_buffer() << std::endl;
+        #endif
+
         clientUser->get_inputBuffer().append(msg);
     
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
-            std::cout << "Received: " << msg << std::endl;
-            std::cout << "Current Buffer: " << clientUser->get_inputBuffer().get_buffer() << std::endl;
-            std::cout << "Appended Current Buffer: " << clientUser->get_inputBuffer().get_buffer() << std::endl;
+            std::cout << "[05.04.04] Appended Buffer: " << clientUser->get_inputBuffer().get_buffer() << std::endl;
         #endif
     }
     else // read_len <= 0
@@ -122,10 +153,16 @@ int receive_message(Server &irc_server, int poll_index)
         }
         if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) // read_len < 0
         {
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                std::cout << "[05.04.05] errno: " << errno << std::endl;
+            #endif
             // no data available right now, keep looping
             return 0;
         }
 
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[05.04.06] fatal error on fd: " << client_fd << std::endl;
+        #endif
         // fatal socket error
         std::cerr << "recv error on fd " << client_fd << ": " << strerror(errno) << std::endl;
         // mark client for disconnect; runPoll will perform cleanup
@@ -158,7 +195,7 @@ int acceptClientUser(Server &irc_server)
     }
 
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
-        std::cout << "runServer: Client accepted fd = " << client_accept_fd << std::endl;
+        std::cout << "[05.03.01] runServer: Client accepted fd = " << client_accept_fd << std::endl;
     #endif
 
     // Make the client socket non-blocking
@@ -176,14 +213,14 @@ int acceptClientUser(Server &irc_server)
     irc_server.registerClientFd(client_accept_fd);
 
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
-        std::cout << "runServer: Client constructed: " << client_accept_fd << " with ip: " << irc_server.getClientIp(client_accept_fd) << std::endl;
+        std::cout << "[05.03.02] runServer: Client constructed: " << client_accept_fd << " with ip: " << irc_server.getClientIp(client_accept_fd) << std::endl;
     #endif
 
 
     irc_server.setClientIp(client_accept_fd, inet_ntoa(client_address_in.sin_addr));
    
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
-        std::cout << "runServer: Client " << client_accept_fd << " ip: " << irc_server.getClientIp(client_accept_fd) << std::endl;
+        std::cout << "[05.03.03] runServer: Client " << client_accept_fd << " ip: " << irc_server.getClientIp(client_accept_fd) << std::endl;
     #endif
     
     return 0;
@@ -200,11 +237,11 @@ int clientUsers_waiting(Server &irc_server)
         // accept_client return 0 -> accepted successfully
         switch (acceptClientUser(irc_server))
         {
-        case -1:
-            return -1; // failed to accept client
-        case -2:
-            clientUsers_are_waiting = false; 
-            // no more clients are waiting right now, so we leave the unlimited loop to not block
+            case -1:
+                return -1; // failed to accept client
+            case -2:
+                clientUsers_are_waiting = false; 
+                // no more clients are waiting right now, so we leave the unlimited loop to not block
         }
     }
     return 0;
@@ -213,21 +250,36 @@ int clientUsers_waiting(Server &irc_server)
 // process the poll vector poll_fd
 int process_ready_fd(Server &irc_server, int poll_index)
 {
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[05.01] Poll_index " << poll_index << std::endl; // debug comment
+    #endif
     int client_fd = irc_server.getPollFD()[poll_index].fd;
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[05.02] client_fd " << client_fd << std::endl; // debug comment
+    #endif
     // if current polled_fd is the servers fd, check if any connection is waiting.
     if (client_fd == irc_server.get_server_fd())
     {
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[05.03] server_fd, check for waiting client: " << client_fd << std::endl; // debug comment
+        #endif
         // checks if any connection is waiting
         clientUsers_waiting(irc_server);
     }
     else // else handle clients polled_fd and their input
     {
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[05.04] client_fd, receive message: " << client_fd << " - poll_index: " << poll_index << std::endl; // debug comment
+        #endif
         if (receive_message(irc_server, poll_index) == -1)
             return -1;
         ClientUser *cu = irc_server.getClientByFd(client_fd);
         if (!cu)
             return -1;
 
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[05.05] handleClientInput: " << client_fd << std::endl; // debug comment
+        #endif
         // it parses the input and then dispatches the input
         // command-dispatcher "handleClientCommands"
         handleClientInput(cu, irc_server);
@@ -237,111 +289,152 @@ int process_ready_fd(Server &irc_server, int poll_index)
 
 int runPoll(Server &irc_server)
 {
-        // poll()—Synchronous I/O Multiplexing
-        // data() = pointer to first element
+    // poll()—Synchronous I/O Multiplexing
+    // data() = pointer to first element
 
-        // nfds (pollfd.size) is the count of entries
-        // -1 is the timeout -> block until events occur
+    // nfds (pollfd.size) is the count of entries
+    // -1 is the timeout -> block until events occur
 
-        // poll returns number based on:
-        // 1+ (amount of fds with events)
-        // 0 for timeout
-        // -1 for error (example: nothing to poll -> EAGAIN)
-        int poll_amount = poll(irc_server.getPollFD().data(), irc_server.getPollFD().size(), -1);
-        if (poll_amount < 0)
+    // poll returns number based on:
+    // 1+ (amount of fds with events)
+    // 0 for timeout
+    // -1 for error (example: nothing to poll -> EAGAIN)
+    int poll_amount = poll(irc_server.getPollFD().data(), irc_server.getPollFD().size(), -1);
+    if (poll_amount < 0)
+    {
+        // we return to the start of the loop and poll again
+        if (errno == EAGAIN || errno == EINTR)
         {
-            // we return to the start of the loop and poll again
-            if (errno == EAGAIN || errno == EINTR)
+            return 0;
+        }
+        // else if polling failed we break and exit the program
+        else
+        {
+            std::cout << "Polling failed." << std::endl;
+            return -1;
+        }
+    }
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[01] Current Poll (amount of fd's with events) " << poll_amount << std::endl; // debug comment
+    #endif
+
+    // iterating all found fd's as long fd is within poll list
+    // from here on we handle a single fd/client per iteration.
+    // and where do i push fd's into the vector list?
+    // -> process_ready_fd
+
+    // double check fd (iterator) with every client_poll.fd
+    for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
+    {
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[02] poll for fd " << poll_index << std::endl;
+        #endif
+
+        pollfd &client_poll = irc_server.getPollFD()[poll_index];
+
+        ClientUser *client_for_current_fd = nullptr;
+        if (client_poll.fd != irc_server.get_server_fd())
+            client_for_current_fd = irc_server.getClientByFd(client_poll.fd);
+
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[03] client we poll " << client_for_current_fd << std::endl;
+        #endif
+
+        if (client_for_current_fd && client_for_current_fd->isToDisconnect())
+        {
+            int fd_to_remove = client_for_current_fd->get_ClientUser_fd();
+            close(fd_to_remove);
+            irc_server.unregisterClientFd(fd_to_remove);
+            // swap-pop to remove current pollfd without invalidating iteration badly
+            size_t last = irc_server.getPollFD().size() - 1;
+            if (poll_index != last)
+                irc_server.getPollFD()[poll_index] = irc_server.getPollFD()[last];
+            irc_server.getPollFD().pop_back();
+            // step back so the next iteration processes the moved entry
+            if (poll_index != 0)
+                --poll_index;
+            continue;
+        }
+
+
+        if (client_poll.revents & (POLLERR | POLLHUP | POLLNVAL))
+        {
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                std::cout << "[04] POLLERR | POLLHUP | POLLNVAL" << std::endl;
+            #endif
+            // TODO: check how we have to handle the events
+            // continue; // continue would mean we skip the remaining loop -> check if we need to do that
+        }
+    
+        // bitwise AND check if POLLIN bit is inside .revents
+        // if it is -> true
+        // true means -> socket is ready for reading.
+        // POLLIN -> socket read check
+        if (client_poll.revents & POLLIN)
+        {
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                std::cout << "[05] POLLIN fd " << poll_index << std::endl;
+            #endif
+
+            int rc = process_ready_fd(irc_server, poll_index);
+            client_poll.revents = 0;
+            if (rc == -1)
+                continue;
+        }
+
+        // POLLOUT -> socket write check
+        // set POLLOUT on outputbuffer to non empty, to tell the kernel to try to send from that fd
+        if (client_poll.fd != irc_server.get_server_fd())
+        {
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                std::cout << "[06] POLLOUT fd " << poll_index << std::endl;
+            #endif
+
+            // if its not empty set pollout in .events.
+            if (client_for_current_fd && !client_for_current_fd->get_outputBuffer().get_buffer().empty())
             {
-                return 0;
+                #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                    std::cout << "[07] POLLOUT not empty. unset pollout - fd " << poll_index << std::endl;
+                    std::cout << "[07] events before |= POLLOUT: " << client_poll.events << std::endl;
+                #endif
+                // |= (or equals) should set pollout even if it is/isn't set.
+                client_poll.events |= POLLOUT;
+                #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                    std::cout << "[07] events after |= POLLOUT: " << client_poll.events << std::endl;
+                #endif
             }
-            // else if polling failed we break and exit the program
-            else
+
+            // if pollout is set in .revents
+            if (client_poll.revents & POLLOUT)
             {
-                std::cout << "Polling failed." << std::endl;
-                return -1;
+                #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                    std::cout << "[08] POLLOUT fd " << poll_index << std::endl;
+                #endif
+                // process the msg to send.
+                if (process_fd_ready_for_sending(irc_server, poll_index) < 0)
+                {
+                    // breaks runPoll loop if send returns -1
+                    return -1;
+                }
+                client_poll.revents = 0;
+            }
+
+            // if no client or if outputBuffer is empty, &= ~POLLOUT (unset POLLOUT)
+            if (!client_for_current_fd || client_for_current_fd->get_outputBuffer().get_buffer().empty())
+            {
+                #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                    std::cout << "[09] no client/empty buffer events before &= ~: " << client_poll.events << std::endl;
+                #endif
+                client_poll.events &= ~POLLOUT;
+                #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                    std::cout << "[09] no client/empty buffer events after &= ~: " << client_poll.events << std::endl;
+                #endif
             }
         }
-        #if defined(DEBUG_BUILD) && DEBUG_BUILD
-            std::cout << "Polling " << poll_amount << std::endl; // debug comment
-        #endif
-
-        // iterating all found fd's as long fd is within poll list
-        // from here on we handle a single fd/client per iteration.
-        // and where do i push fd's into the vector list?
-        // -> process_ready_fd
-
-        // double check fd (iterator) with every client_poll.fd
-        for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
-        {
-        #if defined(DEBUG_BUILD) && DEBUG_BUILD
-            std::cout << "for fd: " << poll_index << " iterator" << std::endl;
-        #endif
-            pollfd &client_poll = irc_server.getPollFD()[poll_index];
-
-            ClientUser *client_for_current_fd = nullptr;
-            if (client_poll.fd != irc_server.get_server_fd())
-                client_for_current_fd = irc_server.getClientByFd(client_poll.fd);
-
-            if (client_for_current_fd && client_for_current_fd->isToDisconnect())
-            {
-                int fd_to_remove = client_for_current_fd->get_ClientUser_fd();
-                close(fd_to_remove);
-                irc_server.unregisterClientFd(fd_to_remove);
-                // swap-pop to remove current pollfd without invalidating iteration badly
-                size_t last = irc_server.getPollFD().size() - 1;
-                if (poll_index != last)
-                    irc_server.getPollFD()[poll_index] = irc_server.getPollFD()[last];
-                irc_server.getPollFD().pop_back();
-                // step back so the next iteration processes the moved entry
-                if (poll_index != 0) --poll_index;
-                continue;
-            }
-            // bug till here.
-
-
-            if (client_poll.revents & (POLLERR | POLLHUP | POLLNVAL))
-            {
-                // TODO: check how we have to handle the events
-                // continue; // continue would mean we skip the remaining loop -> check if we need to do that
-            }
-        
-            // bitwise AND check if POLLIN bit is inside .revents
-            // if it is -> true
-            // true means -> socket is ready for reading.
-            // POLLIN -> socket read check
-            if (client_poll.revents & POLLIN)
-            {
-                int rc = process_ready_fd(irc_server, poll_index);
-                client_poll.revents = 0;
-                if (rc == -1)
-                    continue;
-            }
-
-            // POLLOUT -> socket write check
-            // set POLLOUT on outputbuffer to non empty, to tell the kernel to try to send from that fd
-            if (client_poll.fd != irc_server.get_server_fd())
-            {
-                // if its not empty set pollout in .events.
-                if (client_for_current_fd && !client_for_current_fd->get_outputBuffer().get_buffer().empty())
-                    client_poll.events |= POLLOUT;
-
-                // if pollout is set in .revents
-                if (client_poll.revents & POLLOUT)
-                {
-                    // process the msg to send.
-                    if (process_fd_ready_for_sending(irc_server, poll_index) < 0)
-                    {
-                        return -1;
-                    }
-                    client_poll.revents = 0;
-                }
-
-                // if outputBuffer is empty, &= ~POLLOUT (unset POLLOUT)
-                if (!client_for_current_fd || client_for_current_fd->get_outputBuffer().get_buffer().empty())
-                    client_poll.events &= ~POLLOUT;
-            }
-        }   
+    }
+    #if defined(DEBUG_BUILD) && DEBUG_BUILD
+        std::cout << "[00] end of poll loop (for finished)" << std::endl;
+    #endif
     return 0;
 }
 

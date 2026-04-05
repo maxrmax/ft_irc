@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/04/05 12:00:00 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/05 13:46:20 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ int receive_message(Server &irc_server, int poll_index)
         std::cerr << "recv error on fd " << client_fd << ": " << strerror(errno) << std::endl;
         // mark client for disconnect; runPoll will perform cleanup
         clientUser->setToDisconnect(true);
-        return -1;
+        return -1;  
     }
     return 0;
 }
@@ -418,6 +418,11 @@ int runPoll(Server &irc_server)
             #endif
             // TODO: check how we have to handle the events
             // continue; // continue would mean we skip the remaining loop -> check if we need to do that
+            int fd = client_poll.fd;
+            ClientUser *cu = irc_server.getClientByFd(fd);
+            if (cu)
+                cu->setToDisconnect(true);
+            continue; // skip further processing
         }
     
         // bitwise AND check if POLLIN bit is inside .revents
@@ -545,8 +550,14 @@ void runServer(Server &irc_server)
     pollfd                  polling_server_fd;
     // first set server fd to poll list for server events
     polling_server_fd.fd         = irc_server.get_server_fd();
+    
     // define the events we want the server to react to
+    // For the server socket, you should NOT use POLLOUT.
+    // A listening socket is almost always “writable”
+    // POLLOUT causes poll() to wake up constantly => CPU burn
     polling_server_fd.events     = POLLIN | POLLOUT;
+    // polling_server_fd.events     = POLLIN;
+    
     // set to "no events have happened"
     polling_server_fd.revents    = 0;
     // push the server fd on the stack

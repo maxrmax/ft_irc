@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/04/05 13:46:20 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/07 13:25:57 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ static int sendMsg(ClientUser *clientUser)
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
         std::cout << "[08.01.01] sendMsg: " << clientUser->get_ClientUser_fd() << std::endl;
     #endif
-     //keep sending until ouputBuffer is empty
-    // if (clientUser.get_outputBuffer().get_buffer().length() > 0)
+
+    //keep sending until ouputBuffer is empty
     while (clientUser->get_outputBuffer().get_buffer().length() > 0)
     {
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -54,7 +54,6 @@ static int sendMsg(ClientUser *clientUser)
         //limiting send size to 4096 if Buffer is too big, so not to overwheelm kernel, we send in chuncks
         // Typical OS socket buffer alignment:
         // Many OSes (Linux, BSD, macOS) internally use 4 KB pages for memory. Sending in multiples of 4096 bytes often aligns nicely with the kernel’s buffer pages.
-        // ssize_t send_len = send(clientUser.get_ClientUser_fd(), clientUser.get_outputBuffer().get_buffer().c_str(), clientUser.get_outputBuffer().get_buffer().size(), 0);
         ssize_t send_len = send(clientUser->get_ClientUser_fd(), clientUser->get_outputBuffer().get_buffer().c_str(), std::min(clientUser->get_outputBuffer().get_buffer().size(), static_cast<size_t>(4096)), 0);
         
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -64,7 +63,9 @@ static int sendMsg(ClientUser *clientUser)
         {
             if (errno == EAGAIN)
             {
-                // std::cout << "Socket fd not ready to send yet.\n";
+                // kernel cannot tae anything right now
+                //so breaking to not overspin cpu
+                break;
             }
             else
             {
@@ -86,12 +87,6 @@ static int sendMsg(ClientUser *clientUser)
             std::cout << "[08.01.06] buffer after send: " << clientUser->get_outputBuffer().get_buffer() << std::endl;
         #endif
     }
-    // else
-    // {
-    //     #if defined(DEBUG_BUILD) && DEBUG_BUILD
-    //         std::cout << "bufferlength < 0" << std::endl;
-    //     #endif
-    // }
     return 0;
 }
 
@@ -208,23 +203,19 @@ int acceptClientUser(Server &irc_server)
     #endif
 
     // Make the client socket non-blocking
-    // append client fd to poll list
-    // melting star prevention, as poll is constantly woken up by check for POLLOUT and thus 100% cpu usage
-    // we will enable POLLOUT only when needed by the OutputBuffer
     fcntl(client_accept_fd, F_SETFL, O_NONBLOCK);
+    
+    // append client fd to poll list
     pollfd   temp;
     temp.fd         = client_accept_fd;
     temp.events     = POLLIN;
     temp.revents    = 0;
-
     irc_server.getPollFD().push_back(temp);
-
     irc_server.registerClientFd(client_accept_fd);
 
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
         std::cout << "[05.03.02] runServer: Client constructed: " << client_accept_fd << " with ip: " << irc_server.getClientIp(client_accept_fd) << std::endl;
     #endif
-
 
     irc_server.setClientIp(client_accept_fd, inet_ntoa(client_address_in.sin_addr));
    
@@ -266,6 +257,7 @@ int process_ready_fd(Server &irc_server, int poll_index)
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
         std::cout << "[05.02] client_fd " << client_fd << std::endl; // debug comment
     #endif
+
     // if current polled_fd is the servers fd, check if any connection is waiting.
     if (client_fd == irc_server.get_server_fd())
     {
@@ -298,19 +290,7 @@ int process_ready_fd(Server &irc_server, int poll_index)
 
 int runPoll(Server &irc_server)
 {
-    //set POLLOUT on outputbuffer not empty so to tell kernel to try to send from that fd
-    //if empty no need to use cpu to tell kernel that something for sending is waiting on that fd
-    // for (size_t fd = 0; fd < irc_server.getPollFD().size(); fd++)
-    // {
-    //     if (irc_server.getPollFD()[fd].fd != irc_server.get_server_fd())
-    //     {
-    //         ClientUser &client_for_current_fd = irc_server.getPoll_clientUser__mapping_via_fd()[irc_server.getPollFD()[fd].fd];
-    //         if (!client_for_current_fd.get_outputBuffer().get_buffer().empty())
-    //             irc_server.getPollFD()[fd].events |= POLLOUT;
-    //          else
-    //             irc_server.getPollFD()[fd].events &= ~POLLOUT;
-    //     }
-    // }
+    //setting POLLOUT in .events if outputBuffer is not empty
     for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
     {
         if (irc_server.getPollFD()[poll_index].fd != irc_server.get_server_fd())
@@ -353,10 +333,12 @@ int runPoll(Server &irc_server)
     //Then we use send() to actually let the kernel take our outputBufferContent.
     int poll_amount = poll(irc_server.getPollFD().data(), irc_server.getPollFD().size(), -1);
 
-    //if fd is not ready
+    //kernel could not perform the poll operation at all
     if (poll_amount < 0)
     {
         // we return to the start of the loop and poll again
+        // INTR = interuppted by signal
+        // AGAIN = resource, here fd. temporarely unavailable
         if (errno == EAGAIN || errno == EINTR)
         {
             return 0;
@@ -364,7 +346,7 @@ int runPoll(Server &irc_server)
         // else if polling failed we break and exit the program
         else
         {
-            std::cout << "Polling failed." << std::endl;
+            std::cout << "Polling failed." << errno << std::endl;
             return -1;
         }
     }
@@ -416,8 +398,7 @@ int runPoll(Server &irc_server)
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
                 std::cout << "[04] POLLERR | POLLHUP | POLLNVAL" << std::endl;
             #endif
-            // TODO: check how we have to handle the events
-            // continue; // continue would mean we skip the remaining loop -> check if we need to do that
+
             int fd = client_poll.fd;
             ClientUser *cu = irc_server.getClientByFd(fd);
             if (cu)
@@ -439,13 +420,6 @@ int runPoll(Server &irc_server)
             int rc = process_ready_fd(irc_server, poll_index);
             client_poll.revents = 0;
             
-            // if (rc < 0)
-            // {
-            //    poll_index--;
-            //    return -1;
-            // }
-            if (rc == -1)
-                continue;
             if (rc == -1)
             {
                 poll_index--;
@@ -453,55 +427,19 @@ int runPoll(Server &irc_server)
             }
         }
 
-        // POLLOUT -> socket write check
-        // set POLLOUT on outputbuffer to non empty, to tell the kernel to try to send from that fd
-        if (client_poll.fd != irc_server.get_server_fd())
+        // POLLOUT -> socket write check  
+        if (client_poll.revents & POLLOUT)
         {
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                std::cout << "[06] POLLOUT fd " << poll_index << std::endl;
+                std::cout << "[08] POLLOUT fd " << poll_index << std::endl;
             #endif
-
-            // if its not empty set pollout in .events.
-            if (client_for_current_fd && !client_for_current_fd->get_outputBuffer().get_buffer().empty())
+            // process the msg to send.
+            if (process_fd_ready_for_sending(irc_server, poll_index) < 0)
             {
-                #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                    std::cout << "[07] POLLOUT not empty. unset pollout - fd " << poll_index << std::endl;
-                    std::cout << "[07] events before |= POLLOUT: " << client_poll.events << std::endl;
-                #endif
-                // |= (or equals) should set pollout even if it is/isn't set.
-                client_poll.events |= POLLOUT;
-                #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                    std::cout << "[07] events after |= POLLOUT: " << client_poll.events << std::endl;
-                #endif
+                // breaks runPoll loop if send returns -1
+                return -1;
             }
-
-            // if pollout is set in .revents
-            if (client_poll.revents & POLLOUT)
-            {
-                #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                    std::cout << "[08] POLLOUT fd " << poll_index << std::endl;
-                #endif
-                // process the msg to send.
-                if (process_fd_ready_for_sending(irc_server, poll_index) < 0)
-                {
-                    // breaks runPoll loop if send returns -1
-                    return -1;
-                }
-                client_poll.revents = 0;
-            }
-
-            //we set and unset POLLOUT at the start of function runPoll()
-            // // if no client or if outputBuffer is empty, &= ~POLLOUT (unset POLLOUT)
-            // if (!client_for_current_fd || client_for_current_fd->get_outputBuffer().get_buffer().empty())
-            // {
-            //     #if defined(DEBUG_BUILD) && DEBUG_BUILD
-            //         std::cout << "[09] no client/empty buffer events before &= ~: " << client_poll.events << std::endl;
-            //     #endif
-            //     client_poll.events &= ~POLLOUT;
-            //     #if defined(DEBUG_BUILD) && DEBUG_BUILD
-            //         std::cout << "[09] no client/empty buffer events after &= ~: " << client_poll.events << std::endl;
-            //     #endif
-            // }
+            client_poll.revents = 0;
         }
     }
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -555,8 +493,8 @@ void runServer(Server &irc_server)
     // For the server socket, you should NOT use POLLOUT.
     // A listening socket is almost always “writable”
     // POLLOUT causes poll() to wake up constantly => CPU burn
-    polling_server_fd.events     = POLLIN | POLLOUT;
-    // polling_server_fd.events     = POLLIN;
+    // polling_server_fd.events     = POLLIN | POLLOUT;
+    polling_server_fd.events     = POLLIN;
     
     // set to "no events have happened"
     polling_server_fd.revents    = 0;

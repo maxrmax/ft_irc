@@ -19,19 +19,6 @@ InputBuffer::InputBuffer() {}
 void InputBuffer::append(const std::string& data)
 {
     _buffer += data;
-
-    /*
-     * IRC rule:
-     * If the client sends more than 512 bytes total
-     * without a CRLF, the connection must be closed.
-     */
-    // TODO 1
-    if (_buffer.find("\r\n") == std::string::npos &&
-        _buffer.size() > IRC_MAX_LINE + 2)
-    {
-        _buffer.clear();
-        throw std::length_error("ERROR :Line too long");
-    }
 }
 
 // TODO \r\n checking in all buffer statements
@@ -46,10 +33,8 @@ std::string InputBuffer::popLine()
     if (pos == std::string::npos)
         return "";
 
-    /*
-     * pos == message length WITHOUT \r\n
-     */
-    if (pos > IRC_MAX_LINE)
+    // pos == message length WITHOUT \r\n
+    if (pos > IRC_MAX_LINE - 2)
     {
         // Discard invalid line
         _buffer.erase(0, pos + 2);
@@ -65,5 +50,3 @@ const std::string &InputBuffer::get_buffer() const
 {
     return _buffer;
 }
-
-//TODO integration with recv()/poll() loop

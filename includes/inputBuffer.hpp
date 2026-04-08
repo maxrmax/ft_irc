@@ -62,7 +62,6 @@ private:
     std::string _buffer;
 
     // IRC standard max message length is 512 including CRLF; store 510 here
-    // excluding the terminating CRLF so parsers can validate 510 bytes of content.
-    static const size_t IRC_MAX_LINE = 510; // excluding \r\n
+    static const size_t IRC_MAX_LINE = 512;
 };
 

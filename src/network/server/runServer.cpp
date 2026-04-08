@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/04/07 13:25:57 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/08 13:54:20 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,6 +360,7 @@ int runPoll(Server &irc_server)
     // -> process_ready_fd
 
     // double check fd (iterator) with every client_poll.fd
+    //first read all data from all fds - as per rfc1459 8.3
     for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
     {
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -418,7 +419,9 @@ int runPoll(Server &irc_server)
 
             // reading data from client(s)
             int rc = process_ready_fd(irc_server, poll_index);
-            client_poll.revents = 0;
+
+            //do not set revents to 0 as we need it for POLLOUT loop
+            // client_poll.revents = 0;
             
             if (rc == -1)
             {
@@ -426,7 +429,55 @@ int runPoll(Server &irc_server)
                 continue;
             }
         }
+    }
 
+    //last write all data from all fds - as per rfc1459 8.3
+    for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
+    {
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[02] poll for fd " << poll_index << std::endl;
+        #endif
+
+        pollfd &client_poll = irc_server.getPollFD()[poll_index];
+
+        ClientUser *client_for_current_fd = nullptr;
+        if (client_poll.fd != irc_server.get_server_fd())
+            client_for_current_fd = irc_server.getClientByFd(client_poll.fd);
+
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[03] client we poll " << client_for_current_fd << std::endl;
+        #endif
+
+        if (client_for_current_fd && client_for_current_fd->isToDisconnect())
+        {
+            int fd_to_remove = client_for_current_fd->get_ClientUser_fd();
+            close(fd_to_remove);
+            irc_server.unregisterClientFd(fd_to_remove);
+            // swap-pop to remove current pollfd without invalidating iteration badly
+            size_t last = irc_server.getPollFD().size() - 1;
+            if (poll_index != last)
+                irc_server.getPollFD()[poll_index] = irc_server.getPollFD()[last];
+            irc_server.getPollFD().pop_back();
+            // step back so the next iteration processes the moved entry
+            if (poll_index != 0)
+                --poll_index;
+            continue;
+        }
+
+
+        if (client_poll.revents & (POLLERR | POLLHUP | POLLNVAL))
+        {
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                std::cout << "[04] POLLERR | POLLHUP | POLLNVAL" << std::endl;
+            #endif
+
+            int fd = client_poll.fd;
+            ClientUser *cu = irc_server.getClientByFd(fd);
+            if (cu)
+                cu->setToDisconnect(true);
+            continue; // skip further processing
+        }
+    
         // POLLOUT -> socket write check  
         if (client_poll.revents & POLLOUT)
         {

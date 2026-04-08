@@ -190,3 +190,13 @@ PRIORITIZED NEXT STEPS (small actionable batch):
 4. Implement NICK validation and broadcast.
 
 If you'd like, I can start implementing step 1 now and open a PR with tests and a short changelog.
+
+
+
+
+
+//ToDo 080426 nsloniow
+- rename .hpp for class starting with capital letter
+	.command
+	.commandDispatcher
+	.adjust #includes in files

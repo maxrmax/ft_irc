@@ -52,6 +52,7 @@ SRC		= 			src/main.cpp \
 OBJ	=				$(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 	
 all:				$(NAME)
+					$(MAKE) -C irc_tester
 
 $(NAME):			$(OBJ)
 		 			$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
@@ -65,18 +66,23 @@ $(OBJ_DIR):
 
 clean:
 					rm -rf $(OBJ_DIR)
+					$(MAKE) -C irc_tester clean
 
 fclean:				clean
 		 			rm -f $(NAME)
+					$(MAKE) -C irc_tester fclean
 
 re:					fclean all
 
 run:				all
 					./ircserv 6667 start
 
+tester:
+					$(MAKE) -C irc_tester tester
+
 valgrind: 			FLAGS =
 valgrind: 			FLAGS += $(FLAGSV)
 valgrind:			re
 					valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-limit=no ./$(NAME) 6668 start > valgrind.log 2>&1
 
-.PHONY: all clean fclean re run valgrind
+.PHONY: all clean fclean re run valgrind tester

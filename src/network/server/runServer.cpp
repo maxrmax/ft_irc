@@ -59,7 +59,7 @@ static int sendMsg(ClientUser *clientUser)
         // Many OSes (Linux, BSD, macOS) internally use 4 KB pages for memory. Sending in multiples of 4096 bytes often aligns nicely with the kernel’s buffer pages.
         ssize_t send_len = send(clientUser->get_ClientUser_fd(), clientUser->get_outputBuffer().get_buffer().c_str(), std::min(clientUser->get_outputBuffer().get_buffer().size(), static_cast<size_t>(4096)), 0);
         
-        // set pollout
+        // set pollout ?
 
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
             std::cout << "[05.01.03] send_len:            " << send_len << std::endl;
@@ -78,9 +78,6 @@ static int sendMsg(ClientUser *clientUser)
         }
         else
         {
-            #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                std::cout << "[05.01.04] outBuff BEFORE erase: " << clientUser->get_outputBuffer().get_buffer() << std::endl;
-            #endif
             clientUser->get_outputBuffer().get_buffer().erase(0, send_len);
         }
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -112,12 +109,12 @@ static int process_fd_ready_for_sending(Server &irc_server, int poll_index)
         if (clientUser->get_outputBuffer().get_buffer().empty())
         {
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                std::cout << "[77] set POLLEVENT &= ~ fd:  " << irc_server.getPollFD()[poll_index].fd << " - poll_index: " << poll_index << std::endl;
+                std::cout << "[77] set POLLEVENT &= ~ fd:     " << irc_server.getPollFD()[poll_index].fd << " - poll_index: " << poll_index << std::endl;
             #endif
             p.events &= ~POLLOUT;
         }
         else
-        { // never triggered? need test
+        { // never triggered? need to test
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
                 std::cout << "[88] set POLLEVENT |= fd:    " << irc_server.getPollFD()[poll_index].fd << " - poll_index: " << poll_index << std::endl;
             #endif
@@ -294,73 +291,48 @@ int process_ready_fd(Server &irc_server, int poll_index)
     return 0;
 }
 
-int runPoll(Server &irc_server)
+static int pollDisconnect(Server &irc_server, pollfd &client_poll, size_t *poll_index)
 {
-    //set POLLOUT on outputbuffer not empty so to tell kernel to try to send from that fd
-    //if empty no need to use cpu to tell kernel that something for sending is waiting on that fd
-    // we already use cpu by doing this check
+    ClientUser *client_for_current_fd = nullptr;
+    if (client_poll.fd != irc_server.get_server_fd())
+        client_for_current_fd = irc_server.getClientByFd(client_poll.fd);
 
-    // can i dissolve this loop into a different spot?
-    for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
+    // [DC] disconnect handler
+    if (client_for_current_fd && client_for_current_fd->isToDisconnect())
     {
-        if (irc_server.getPollFD()[poll_index].fd != irc_server.get_server_fd())
-        {    
-            ClientUser *client_for_current_fd = irc_server.getClientByFd(irc_server.getPollFD()[poll_index].fd);
-            // if buffer of fd is not empty |= POLLOUT
-            if (!client_for_current_fd->get_outputBuffer().get_buffer().empty())
-            { // runs once after register and after each part
-                #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                    std::cout << "[01] setting POLLEVENT |= fd:   " << irc_server.getPollFD()[poll_index].fd << " - poll_index: " << poll_index << std::endl;
-                #endif
-                irc_server.getPollFD()[poll_index].events |= POLLOUT;
-            }
-        }
-    }
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[DC] disconnect fd:             " << client_poll.fd << " - poll_index: " << *poll_index << std::endl;
+        #endif
 
-
-    // poll()—Synchronous I/O Multiplexing
-    // data() = pointer to first element
-
-    // nfds (pollfd.size) is the count of entries
-    // -1 is the timeout -> block until events occur
-
-    // poll returns number based on:
-    // 1+ (amount of fds with events)
-    // 0 for timeout
-    // -1 for error (example: nothing to poll -> EAGAIN)
-
-    // With setting events on fd, we actually ask for permission. poll() tells us, when it got granted by kernel. We act with send() or recv() to do the deed.
-    //poll()checks if the events, POLLIN, POLLOUT, POLLxx are happening on our fd. The kernel is showing the events are there. 
-    //The kernel sets POLLIN when it received data from outside
-    //Then we use recv() to actually take this data into our iputBufferContent.
-    //The kernel will set POLLOUT when it is ready to send, can take data, has space to send.
-    //Then we use send() to actually let the kernel take our outputBufferContent.
-    int poll_amount = poll(irc_server.getPollFD().data(), irc_server.getPollFD().size(), -1);
-
-    //kernel could not perform the poll operation at all
-    if (poll_amount < 0)
-    {
-        // we return to the start of the loop and poll again
-        // INTR = interuppted by signal
-        // AGAIN = resource, here fd. temporarely unavailable
-        if (errno == EAGAIN || errno == EINTR)
+        int fd_to_remove = client_for_current_fd->get_ClientUser_fd();
+        close(fd_to_remove);
+        irc_server.unregisterClientFd(fd_to_remove);
+        // swap-pop to remove current pollfd without invalidating iteration badly
+        size_t last = irc_server.getPollFD().size() - 1;
+        if (*poll_index != last)
         {
-            return 0;
+            #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                std::cout << "[DC] " << irc_server.getPollFD()[*poll_index].fd << " index: " << *poll_index << " replaced by: " << irc_server.getPollFD()[last].fd << std::endl;
+            #endif
+            irc_server.getPollFD()[*poll_index] = irc_server.getPollFD()[last];
         }
-        // else if polling failed we break and exit the program
-        else
-        {
-            std::cout << "Polling failed." << errno << std::endl;
-            return -1;
-        }
+        irc_server.getPollFD().pop_back();
+        // step back so the next iteration processes the moved entry
+        if (*poll_index != 0)
+            (*poll_index)--;
+
+
+        #if defined(DEBUG_BUILD) && DEBUG_BUILD
+            std::cout << "[DC] after swap-pop poll_index:                 " << *poll_index << std::endl;
+        #endif
+
+        return -1;
     }
+    return 0;
+}
 
-    // iterating all found fd's as long fd is within poll list
-    // from here on we handle a single fd/client per iteration.
-    // and where do i push fd's into the vector list?
-    // -> process_ready_fd
-
-    // double check fd (by poll_index (iterator)) with every client_poll.fd
+static int pollLoop(Server &irc_server)
+{
     for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
     {
         pollfd &client_poll = irc_server.getPollFD()[poll_index];
@@ -369,36 +341,8 @@ int runPoll(Server &irc_server)
             std::cout << "[02] poll for fd:               " << client_poll.fd << " - poll_index: " << poll_index << std::endl;
         #endif
         
-        ClientUser *client_for_current_fd = nullptr;
-        if (client_poll.fd != irc_server.get_server_fd())
-            client_for_current_fd = irc_server.getClientByFd(client_poll.fd);
-
-        if (client_for_current_fd && client_for_current_fd->isToDisconnect())
-        {
-            #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                std::cout << "[DC] disconnect fd:             " << client_poll.fd << " - poll_index: " << poll_index << std::endl;
-            #endif
-            int fd_to_remove = client_for_current_fd->get_ClientUser_fd();
-            close(fd_to_remove);
-            irc_server.unregisterClientFd(fd_to_remove);
-            // swap-pop to remove current pollfd without invalidating iteration badly
-            size_t last = irc_server.getPollFD().size() - 1;
-            if (poll_index != last)
-            {
-                #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                    std::cout << "[DC] " << irc_server.getPollFD()[poll_index].fd << " index: " << poll_index << " replaced by: " << irc_server.getPollFD()[last].fd << std::endl;
-                #endif
-                irc_server.getPollFD()[poll_index] = irc_server.getPollFD()[last];
-            }
-            irc_server.getPollFD().pop_back();
-            // step back so the next iteration processes the moved entry
-            if (poll_index != 0)
-                --poll_index;
-            #if defined(DEBUG_BUILD) && DEBUG_BUILD
-                std::cout << "[DC] after swap-pop poll_index:                 " << poll_index << std::endl;
-            #endif
+        if (pollDisconnect(irc_server, client_poll, &poll_index) == -1)
             continue;
-        }
 
         // [03] POLLERR | POLLHUP | POLLNVAL
         if (client_poll.revents & (POLLERR | POLLHUP | POLLNVAL))
@@ -432,8 +376,7 @@ int runPoll(Server &irc_server)
             }
         }
 
-
-        // [05] POLLIN -> server to client
+        // [05] POLLOUT -> server to client
         if (client_poll.revents & POLLOUT)
         {
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -448,6 +391,75 @@ int runPoll(Server &irc_server)
             client_poll.revents = 0;
         }
     }
+    return 0;
+}
+
+int pollCheck(Server &irc_server)
+{
+    int poll_amount = poll(irc_server.getPollFD().data(), irc_server.getPollFD().size(), -1);
+
+    //kernel could not perform the poll operation at all
+    if (poll_amount < 0)
+    {
+        // we return to the start of the loop and poll again
+        // INTR = interuppted by signal
+        // AGAIN = resource, here fd. temporarely unavailable
+        if (errno == EAGAIN || errno == EINTR)
+        {
+            return 1;
+        }
+        // else if polling failed we break and exit the program
+        else
+        {
+            std::cout << "Polling failed." << errno << std::endl;
+            return -1;
+        }
+    }
+    return 0;
+}
+
+int runPoll(Server &irc_server)
+{
+    //set POLLOUT on outputbuffer not empty so to tell kernel to try to send from that fd
+    //if empty no need to use cpu to tell kernel that something for sending is waiting on that fd
+    // we already use cpu by doing this check
+
+    // can i dissolve this loop into a different spot?
+    for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
+    {
+        if (irc_server.getPollFD()[poll_index].fd != irc_server.get_server_fd())
+        {    
+            ClientUser *client_for_current_fd = irc_server.getClientByFd(irc_server.getPollFD()[poll_index].fd);
+            // if buffer of fd is not empty |= POLLOUT
+            // &= ~ is unsetting, never needed at the beginning of a loop
+            if (!client_for_current_fd->get_outputBuffer().get_buffer().empty())
+            { // runs once after register and after each part
+                #if defined(DEBUG_BUILD) && DEBUG_BUILD
+                    std::cout << "[01] setting POLLEVENT |= fd:   " << irc_server.getPollFD()[poll_index].fd << " - poll_index: " << poll_index << std::endl;
+                #endif
+                irc_server.getPollFD()[poll_index].events |= POLLOUT;
+            }
+        }
+    }
+
+    switch (pollCheck(irc_server))
+    {
+        default:
+            break;
+        case 1:
+            return 1; // restart runPoll()
+        case -1:
+            return -1; // end program
+    }
+
+    switch (pollLoop(irc_server))
+    {
+        default:
+            break;
+        case -1:
+            return -1; // end program
+    }
+
     #if defined(DEBUG_BUILD) && DEBUG_BUILD
         std::cout << "[99] end of poll loop" << std::endl;
     #endif

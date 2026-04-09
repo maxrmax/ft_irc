@@ -73,7 +73,8 @@ static int sendMsg(ClientUser *clientUser)
             else
             {
                 std::cerr << "Error sending to client.\n";
-                return -1; // need specific test for this case to test
+                // don't use return -1, else the server closes.
+                // the error happens when a client is not reachable due disconnects
             }
         }
         else

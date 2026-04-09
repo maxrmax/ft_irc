@@ -79,6 +79,8 @@ run:				all
 
 tester:
 					$(MAKE) -C irc_tester tester
+tester2:
+					$(MAKE) -C irc_tester tester2
 
 valgrind: 			FLAGS =
 valgrind: 			FLAGS += $(FLAGSV)

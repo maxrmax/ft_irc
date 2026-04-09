@@ -111,51 +111,54 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             continue;
         }
 
-        // Get or create channel
-        if (!server.channelExists(channelName))
-            server.createChannel(channelName, clientUser);
+        if (server.channelExists(channelName))
+        {
+
+            Channel& channel = server.getChannel(channelName);
+
+            // If already in channel, silently skip
+            if (channel.hasMember(clientUser.get_ClientUser_fd()))
+                continue;
+
+            // ORDER: i k l
+            // +i are you invited?              yes/no/not needed
+            // +k do you have the password?     yes/no/not needed
+            // +l is the room full?             yes/no
+            // check if channel is invite only && if the user is invited
+            if (channel.isInviteOnly() == true && !channel.isInvited(clientUser.get_ClientUser_fd()))
+            {   // ERR_INVITEONLYCHAN (473)
+                clientUser.get_outputBuffer().append(
+                    ":server 473 " + clientUser.getNickname() + " " + channelName +
+                    " :Cannot join channel (+i)\r\n");
+                continue;
+            }
+
+            // if the key IS NOT the same as the key set in the channel
+            // AND key IS NOT empty
+            // false = pkey != channelkey && channelkey is empty
+            if ((providededKey != channel.getKey()) && !channel.getKey().empty())
+            {   // ERR_BADCHANNELKEY (475)
+                clientUser.get_outputBuffer().append(
+                    ":server 475 " + clientUser.getNickname() + " " + channelName +
+                    " :Cannot join channel (+k)\r\n");
+                continue;
+            }
+
+
+            // if +l is set and its full
+            if ((channel.getMembers().size() >= channel.getUserLimit()) && channel.getUserLimit() != 0)
+            {   // ERR_CHANNELISFULL (471)
+                clientUser.get_outputBuffer().append(
+                    ":server 471 " + clientUser.getNickname() + " " + channelName +
+                    " :Cannot join channel (+l)\r\n");
+                continue;
+            }
+
+            channel.addMember(clientUser.get_ClientUser_fd());
+            channel.unsetInvited(clientUser.get_ClientUser_fd());
+        }
+        server.createChannel(channelName, clientUser);
         Channel& channel = server.getChannel(channelName);
-
-        // If already in channel, silently skip
-        if (channel.hasMember(clientUser.get_ClientUser_fd()))
-            continue;
-
-        // ORDER: i k l
-        // +i are you invited?              yes/no/not needed
-        // +k do you have the password?     yes/no/not needed
-        // +l is the room full?             yes/no
-        // check if channel is invite only && if the user is invited
-        if (channel.isInviteOnly() == true && !channel.isInvited(clientUser.get_ClientUser_fd()))
-        {   // ERR_INVITEONLYCHAN (473)
-            clientUser.get_outputBuffer().append(
-                ":server 473 " + clientUser.getNickname() + " " + channelName +
-                " :Cannot join channel (+i)\r\n");
-            continue;
-        }
-
-        // if the key IS NOT the same as the key set in the channel
-        // AND key IS NOT empty
-        // false = pkey != channelkey && channelkey is empty
-        if ((providededKey != channel.getKey()) && !channel.getKey().empty())
-        {   // ERR_BADCHANNELKEY (475)
-            clientUser.get_outputBuffer().append(
-                ":server 475 " + clientUser.getNickname() + " " + channelName +
-                " :Cannot join channel (+k)\r\n");
-            continue;
-        }
-
-
-        // if +l is set and its full
-        if ((channel.getMembers().size() >= channel.getUserLimit()) && channel.getUserLimit() != 0)
-        {   // ERR_CHANNELISFULL (471)
-            clientUser.get_outputBuffer().append(
-                ":server 471 " + clientUser.getNickname() + " " + channelName +
-                " :Cannot join channel (+l)\r\n");
-            continue;
-        }
-
-        channel.addMember(clientUser.get_ClientUser_fd());
-        channel.unsetInvited(clientUser.get_ClientUser_fd());
 
         // Build the JOIN prefix: :nick!user@host
         std::string prefix = ":" + clientUser.getNickname() + "!" +

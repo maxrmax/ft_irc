@@ -39,6 +39,8 @@ fclean:		clean
 re:			fclean all
 
 tester:
-			./client-tester 10 10.13.7.8 6668 t
+			./client-tester 100 10.13.7.8 6668
 
-.PHONY : all clean re fclean tester
+tester2:
+			./client-tester 100 10.13.7.8 6668 t
+.PHONY : all clean re fclean tester tester2

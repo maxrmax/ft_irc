@@ -43,7 +43,7 @@ class clientTester {
         std::vector<std::string> m_vars;
         const std::string m_ipAddress;
         const int m_port;
-        int m_seconds = 3;
+        int m_seconds = 60;
         int m_fd = 0;
         int m_clientId;
         size_t m_delay;

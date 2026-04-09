@@ -48,6 +48,10 @@ void clientTester::run( void ) {
     std::linear_congruential_engine<unsigned int , 193703 , 0 , 83474882> lce;
     lce.seed( std::chrono::system_clock::now().time_since_epoch().count() );
 	
+    m_seconds = lce() % 61;
+    if ( m_seconds <= 2 )
+        m_seconds = 3;
+
     m_vars.push_back( std::to_string( m_seconds ) );
 
     mtx.lock();

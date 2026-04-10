@@ -6,3 +6,4 @@
 !.vscode/c_cpp_properties.json
 ircserv
 valgrind.log
+irc_tester/client-tester

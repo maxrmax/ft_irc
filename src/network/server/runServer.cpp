@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/04/08 14:12:22 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/10 16:29:35 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ int receive_message(Server &irc_server, int poll_index)
             if (!clientUser->get_outputBuffer().get_buffer().empty())
                 irc_server.getPollFD()[poll_index].events |= POLLOUT;
             clientUser->setToDisconnect(true);
-            std::cout << "Client " << client_fd << " kicked. Message too long." << std::endl;
+            std::cout << "Client " << client_fd << " kicked. Message over 512 bytes long." << std::endl;
             return -1;
         }
         if (read_len == 0)

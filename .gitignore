@@ -5,5 +5,5 @@
 !.vscode/settings.json
 !.vscode/c_cpp_properties.json
 ircserv
-valgrind.log
+*.log
 irc_tester/client-tester

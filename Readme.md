@@ -97,16 +97,39 @@ Security / correctness notes for evaluators
 - `poll()` is called once per loop iteration to inspect readiness. The server handles `POLLIN` (read), `POLLOUT` (write) and error conditions; closed clients are cleaned up and removed from the `pollfd` vector.
 
 Testing checklist (Evaluator guide)
+netcat (nc):
 ----------------------------------
 1. Build: `make` — the target produces the `ircserv` binary.
 2. Start server: `./ircserv 6667 start` (or `make run`).
 3. Connect with `irssi` (recommended) and/or `nc -C 127.0.0.1 6667`.
 4. nc: Authenticate and register: send `PASS <password>` then `NICK <nick>` and `USER <user> * * :Real Name`.
-4. irssi: Authenticate and register: send `/connect <ip> <port> <pass>`.
 5. Join a channel: `JOIN #channel` and verify `PRIVMSG #channel :hello` is broadcast to other members.
 6. Channel operator features: test `MODE`, `KICK`, `INVITE`, `TOPIC` as operator and verify errors for non-ops.
 7. Partial command test: With `nc`, send a command in parts (use `Ctrl+D` to send fragmented input) to ensure the server aggregates and processes the full line.
 8. Unexpected disconnects: kill a client and verify server cleans up and continues serving other clients.
+
+irssi:
+----------------------------------
+1. Build: `make` — the target produces the `ircserv` binary.
+2. Start server: `./ircserv 6667 start` (or `make run`).
+3. run `irssi` 
+D. Commands are case sensitive but the server capitalizes all commands
+4. Authenticate and register: send `/CONNECT <ip> <port> <pass>`.
+5. Join a channel: `/JOIN #channel` and verify chatting works by just sending a message.
+6. Channel operator features: test `/MODE`, `/KICK`, `/INVITE`, `/TOPIC` as operator and verify errors for non-ops.
+7. Unexpected disconnects: kill a client and verify server cleans up and continues serving other clients.
+
+irc_tester (optional, basically netcat):
+----------------------------------
+1. the tester compilation is included in (all)
+2. `make tester` and `make tester2` will run the tester
+3. `make tester` connects N clients. Tey run connect.conf then after-connect.conf and then repeat the loop.conf
+4. `make tester2` does the same but runs loop once, then disconnects and restarts from the beginning.
+
+
+##### Unexpected Disconnects:
+with valgrind, debug prints will confirm all actions happening within the program.
+From construction to destructions, buffer management and the entire poll loop, where necessary.
 
 Classic resources and references
 -------------------------------

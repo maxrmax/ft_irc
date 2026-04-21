@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:05:52 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/20 16:27:43 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/21 18:30:30 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,23 +80,6 @@ class Server
         // populate via registerClientFd() and remove via unregisterClientFd()
         std::unordered_map<int, ClientUser>             _clients;
 
-        /* create maping for (unique index) fd to Client object 
-         * unordered map jumps to item by index and is faster than (sorted) mappoll_client__mapping_via_fd;
-         * int is the index which is equal to client_accepted_fd
-         * Client is the type we map to.
-         * std::unordered_map<int, ClientUser> poll_clientUser__mapping_via_fd;
-         * TODO: refactor of poll_clientUser__mapping_via_fd -> here
-        */// std::unordered_map<int, ClientUser*>        _clientStorage;
-        
-        /* redundant, nick_clientUser already contains all nicks
-         * from O(n) (linear) to O(1) (constant)
-        */// std::vector <std::string> nicknames;
-        
-        /* using unordered_map and vector for nicknames_history;
-         * changed to ClientUser* to correctly reference the old_nick towards
-         * the correct client in case of nickname changes
-         // std::vector <std::string, std::string> nicknames_history;
-        *///std::unordered_map <std::string, ClientUser*> nicknames_history;
         std::unordered_map<std::string, ClientUser*>    nicknames_history;
         // current nickname -> ClientUser* for O(1) lookup
         std::unordered_map<std::string, ClientUser*>    nick_clientUser;
@@ -123,7 +106,6 @@ class Server
         void                                        printRegisteredNicks();
         
         int                                         get_server_ready(int portt, std::string password);
-        // void                clean_up();
 
         CommandDispatcher                           &get_dispatcher();
         bool                                        NickIsAlreadyRegistered(std::string nick) const;

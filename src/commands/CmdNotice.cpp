@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CmdNotice.hpp                                      :+:      :+:    :+:   */
+/*   CmdNotice.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ngoyat <ngoyat@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 17:49:39 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 17:49:39 by ngoyat           ###   ########.fr       */
+/*   Updated: 2026/04/23 11:20:24 by nsloniow         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "CmdNotice.hpp"
 #include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
@@ -57,17 +57,6 @@ void CmdNotice::execute(Server& server, ClientUser& clientUser, const ParsedComm
         server.broadcastToChannelExcept(target, msgOut, clientUser.get_ClientUser_fd());
         return;
     }
-
-
-    //private message to individual clients
-    //get all targets, which are parameter[0], delimineter ','
-    // std::vector <std::string> targets;
-    // std::string delimineter = ",";
-    // for(int targets_cnt = 0; targets_cnt < targets.size(); targets_cnt++)
-    // {
-    //     int position = target.find(delimineter);
-    //     targets[targets_cnt] = target.substr(0, position);
-    // }
     
     // ── Private message to a nick ────────────────────────────────────────────
     ClientUser* recipient = server.getClientByNick(target);
@@ -78,7 +67,6 @@ void CmdNotice::execute(Server& server, ClientUser& clientUser, const ParsedComm
 
     recipient->get_outputBuffer().append(msgOut);
 
-    // std::cout << server.getClientByNick(cmd.params[0])->get_outputBuffer().get_buffer() << std::endl;
 }
 
 /*

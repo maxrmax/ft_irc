@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/17 17:47:13 by mring             #+#    #+#             */
-/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:17:46 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,6 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
     channel.setInvited(target->get_ClientUser_fd());
 
     // RPL_INVITING (341):   "<channel> <nick>"
-    // clientuser or target?
     clientUser.get_outputBuffer().append(
         ":server 341 " + clientUser.getNickname() + " " + channelName +
         " :" + targetUsername);
@@ -162,7 +161,7 @@ privmsg #ch1 test
 //
 invite n1ck #ch1
 :server 341 n3ck = #ch1 :n1ck
-// = (wrong)
+// = (wrong)cclean
 
 n1ck didn't receive a INVITE notice.
 */

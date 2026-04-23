@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:20:52 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,8 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
         return;
     }
 
-    //start nsloniow2603121042
-    //instead of using string "ircserver", we use ip, provided by client 
-    //on command USER with 2nd parameter
-    // std::string prefix = ":" + clientUser.getNickname() + "!" +
-    //                      clientUser.getUsername() + "@ircserver";
     std::string prefix = ":" + clientUser.getNickname() + "!" + clientUser.getUsername() +
              "@" + clientUser.getIp();
-    //end nsloniow2603121042
     std::string msgOut = prefix + " PRIVMSG " + target + " :" + text;
 
     // ── Channel message ──────────────────────────────────────────────────────

@@ -119,7 +119,7 @@ netcat needs to be told explicitly what it has to do
     `MODE #channel [+|-]l LIMIT` to set or unset a user limit for that channel 
     `MODE #channel [+|-]t` to set or unset a channel topic to be changed by operator only
     `KICK #channel username` kick a user from that specific channel (op only)
-    `INVITE #channel username` invites an user to join an invite only (+i) channel. Invite is onetime use only.
+    `INVITE username #channel` invites an user to join an invite only (+i) channel. Invite is onetime use only.
     `TOPIC #channel :Topic message` changes the channel topic (+t means op only)
 5. `PART #ch` disconnect from the given channel
 6. `PRIVMSG <#ch|nickname> :message` send a message to a channel or a private message to another user
@@ -147,7 +147,7 @@ In irssi you have to sometimes switch views with ctrl+n (next) to change channel
     `/MODE [#ch] [+|-]t` to set or unset a channel topic to be changed by operator only
     `/MODE #ch` to view current applied flags. +o flag is only displayed in irssi by @ in front of a name
     `/KICK [#ch] username` kick a user from that specific channel (op only)
-    `/INVITE [#ch] username` invites an user to join an invite only (+i) channel. Invite is onetime use only.
+    `/INVITE username [#ch]` invites an user to join an invite only (+i) channel. Invite is onetime use only.
     `/TOPIC [#ch] :Topic message` changes the channel topic (+t means op only) 
 5. `/PART [#ch]` disconnect from the active or given channel
 6. `/NAMES [#ch]` displays current user list in the given channel (irssi only)

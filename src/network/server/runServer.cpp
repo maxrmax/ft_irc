@@ -150,6 +150,16 @@ int receive_message(Server &irc_server, int poll_index)
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
             std::cout << "[04.04.05> Appended Buffer: " << clientUser->get_inputBuffer().get_buffer() << "<04.04.05]" << std::endl;
         #endif
+        if (clientUser->get_inputBuffer().get_buffer().size() > 512)
+        {
+            clientUser->get_outputBuffer().append(":Line too long. Forcefully disconnected.");
+            sendMsg(clientUser);
+            if (!clientUser->get_outputBuffer().get_buffer().empty())
+                irc_server.getPollFD()[poll_index].events |= POLLOUT;
+            clientUser->setToDisconnect(true);
+            std::cout << "Client " << client_fd << " kicked. Message over 512 bytes long." << std::endl;
+            return -1;
+        }
     }
     else // read_len <= 0 || read_lend > 512
     {  

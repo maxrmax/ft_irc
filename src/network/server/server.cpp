@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 18:08:54 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/20 16:29:04 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:30:44 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,11 @@ Server::~Server()
     {
         if (close(server_fd) == 0)
         {    
-            // std::cout << "Server filedescriptor closed for a good nights sleep. Have some rest, too. Bye. Bye." << std::endl;
             std::cout << "Server filedescriptor closed. Server shut down." << std::endl;
             server_fd = -1;
         }
         else 
         {
-            // std::cout << "Server filedescriptor could not be closed. But you do not need to lose sleep over it. I can handle it gracefully." << std::endl;
             std::cout << "Server filedescriptor could not be closed. Operating System will handle this." << std::endl;
         }
     }       
@@ -129,7 +127,6 @@ int Server::get_server_ready(int port, std::string password)
     // However, TCP being a bit on the cautiouse side, hoggs port with TIME_WAIT for a while - ~2min, just in case some latecomer packages arrive. But we do not care about this
     // intrusive guardiance of tcp. Because we do not exist anymore to handle it. Our server is closed, dead.
     // With setsockopt we tell the operating system, we use this port anyways.
-    // if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, (void *)1, 1) == -1)
     int opt_val = 1;
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == -1)
     {
@@ -137,7 +134,6 @@ int Server::get_server_ready(int port, std::string password)
         return -1;
     }
     //bind fd of our socket of our server to an attached to an IP/port combination
-    //ANY address on server_port we put into server_address struct.
     if (bind(server_fd, (struct sockaddr *)&server_address, sizeof(server_address))  == -1)
     {
         std::cout << "Server could not be 'binded'. Try another port." << std::endl;
@@ -145,9 +141,7 @@ int Server::get_server_ready(int port, std::string password)
     }
 
     // listen
-    //backlog is the queu for the kernel 0 - 128 mostly. It will be caped by kernel if lower
-    //bottleneck is accept()
-    if (listen(server_fd, 1) < 0) // might want to change to SOMAXCONN or ~10 later to not drop connection attempts
+    if (listen(server_fd, 1) < 0)
     {
         std::cout << "Listen failed." << std::endl;
         return -1;

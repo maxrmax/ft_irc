@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:26:46 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,6 @@ static int sendMsg(ClientUser *clientUser)
         std::cout << "[05.01.01] sendMsg fd:          " << clientUser->get_ClientUser_fd() << std::endl;
     #endif
 
-    // this doesn't need to be a while loop.
-    // there is literally no case where we need it to be a while loop.
-    // the only case it needs to be a while loop, 
-    // is when we handle message that are beyond our length limit.
     if (clientUser->get_outputBuffer().get_buffer().length() > 0)
     {
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
@@ -54,12 +50,10 @@ static int sendMsg(ClientUser *clientUser)
         
         // Send N bytes of BUF to socket FD. Returns the number sent or -1.
         // This function is a cancellation point and therefore not marked with __THROW.
-        //limiting send size to 4096 if Buffer is too big, so not to overwheelm kernel, we send in chuncks
+        // limiting send size to 4096 if Buffer is too big, so not to overwheelm kernel, we send in chuncks
         // Typical OS socket buffer alignment:
         // Many OSes (Linux, BSD, macOS) internally use 4 KB pages for memory. Sending in multiples of 4096 bytes often aligns nicely with the kernel’s buffer pages.
         ssize_t send_len = send(clientUser->get_ClientUser_fd(), clientUser->get_outputBuffer().get_buffer().c_str(), std::min(clientUser->get_outputBuffer().get_buffer().size(), static_cast<size_t>(4096)), 0);
-        
-        // set pollout ?
 
         #if defined(DEBUG_BUILD) && DEBUG_BUILD
             std::cout << "[05.01.03] send_len:            " << send_len << std::endl;
@@ -115,7 +109,7 @@ static int process_fd_ready_for_sending(Server &irc_server, int poll_index)
             p.events &= ~POLLOUT;
         }
         else
-        { // never triggered? need to test
+        {
             #if defined(DEBUG_BUILD) && DEBUG_BUILD
                 std::cout << "[88] set POLLEVENT |= fd:    " << irc_server.getPollFD()[poll_index].fd << " - poll_index: " << poll_index << std::endl;
             #endif
@@ -447,14 +441,12 @@ int runPoll(Server &irc_server)
     //if empty no need to use cpu to tell kernel that something for sending is waiting on that fd
     // we already use cpu by doing this check
 
-    // can i dissolve this loop into a different spot?
     for (size_t poll_index = 0; poll_index < irc_server.getPollFD().size(); poll_index++)
     {
         if (irc_server.getPollFD()[poll_index].fd != irc_server.get_server_fd())
         {    
             ClientUser *client_for_current_fd = irc_server.getClientByFd(irc_server.getPollFD()[poll_index].fd);
             // if buffer of fd is not empty |= POLLOUT
-            // &= ~ is unsetting, never needed at the beginning of a loop
             if (!client_for_current_fd->get_outputBuffer().get_buffer().empty())
             { // runs once after register and after each part
                 #if defined(DEBUG_BUILD) && DEBUG_BUILD

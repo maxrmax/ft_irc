@@ -26,7 +26,7 @@ void CmdCap::execute(Server& server, ClientUser& clientUser, const ParsedCommand
 
     if (!cmd.params.empty() && cmd.params[0] == "LS")
     {
-        std::string outputMsg = ":server CAP * LS :\r\n";
+        std::string outputMsg = ":server CAP * LS :";
         clientUser.get_outputBuffer().append(outputMsg);
     }
 };

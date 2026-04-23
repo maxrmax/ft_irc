@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPart.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 13:17:43 by mring             #+#    #+#             */
-/*   Updated: 2026/03/16 18:02:34 by mring            ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void CmdPart::execute(Server &server, ClientUser &clientUser, const ParsedComman
     {
         // ERR_NEEDMOREPARAMS (461)
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " PART :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " PART :Not enough parameters");
         return;
     }
     
@@ -73,7 +73,7 @@ void CmdPart::execute(Server &server, ClientUser &clientUser, const ParsedComman
             // ERR_NOSUCHCHANNEL (403)
             clientUser.get_outputBuffer().append(
                 ":server 403 " + clientUser.getNickname() + " " + channelName +
-                " :No such channel (invalid name)\r\n");
+                " :No such channel (invalid name)");
             continue;
         }
 
@@ -85,7 +85,7 @@ void CmdPart::execute(Server &server, ClientUser &clientUser, const ParsedComman
             // ERR_NOTONCHANNEL 442
             clientUser.get_outputBuffer().append(
                 ":server 442 " + clientUser.getNickname() + " " + channelName +
-                " :You're not on that channel\r\n");
+                " :You're not on that channel");
             continue;
         }
         

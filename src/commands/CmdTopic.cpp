@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CmdTopic.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ngoyat <ngoyat@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 18:39:39 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 18:39:39 by ngoyat           ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "CmdTopic.hpp"
 #include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
@@ -24,7 +24,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
     if (!clientUser.isRegistered())
     {
         clientUser.get_outputBuffer().append(
-            ":server 451 * :You have not registered\r\n");
+            ":server 451 * :You have not registered");
         return;
     }
 
@@ -32,7 +32,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
     if (cmd.params.empty())
     {
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " TOPIC :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " TOPIC :Not enough parameters");
         return;
     }
 
@@ -43,7 +43,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
         // ERR_NOSUCHCHANNEL
         clientUser.get_outputBuffer().append(
             ":server 403 " + clientUser.getNickname() + " " + channelName +
-            " :No such channel\r\n");
+            " :No such channel");
         return;
     }
 
@@ -55,7 +55,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
         // ERR_NOTONCHANNEL
         clientUser.get_outputBuffer().append(
             ":server 442 " + clientUser.getNickname() + " " + channelName +
-            " :You're not on that channel\r\n");
+            " :You're not on that channel");
         return;
     }
 
@@ -67,7 +67,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
             // RPL_NOTOPIC
             clientUser.get_outputBuffer().append(
                 ":server 331 " + clientUser.getNickname() + " " + channelName +
-                " :No topic is set\r\n");
+                " :No topic is set");
         }
         else
         {
@@ -87,7 +87,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
         // ERR_CHANOPRIVSNEEDED
         clientUser.get_outputBuffer().append(
             ":server 482 " + clientUser.getNickname() + " " + channelName +
-            " :You're not channel operator\r\n");
+            " :You're not channel operator");
         return;
     }
 

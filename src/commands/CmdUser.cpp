@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdUser.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 01:22:33 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 13:44:19 by mring            ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,14 @@ void CmdUser::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (clientUser.isRegistered())
     {
         clientUser.get_outputBuffer().append(
-            ":server 462 :You may not reregister\r\n");
+            ":server 462 :You may not reregister");
         return;
     }
 
     if (cmd.params.size() < 4)
     {
         clientUser.get_outputBuffer().append(
-            ":server 461 USER :Not enough parameters\r\n");
+            ":server 461 USER :Not enough parameters");
         return;
     }
 
@@ -58,7 +58,7 @@ void CmdUser::execute(Server &server, ClientUser &clientUser, const ParsedComman
             ":server 001 " + clientUser.getNickname() +
             " :Welcome to ircserver " +
             clientUser.getNickname() + "!" +
-            clientUser.getUsername() + "@ircserver\r\n");
+            clientUser.getUsername() + "@ircserver");
     }
 }
 

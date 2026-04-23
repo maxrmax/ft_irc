@@ -78,7 +78,7 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
     if (cmd.command.empty())
     {
         std::string target = clientUser.hasNick() ? clientUser.getNickname() : "*";
-        clientUser.get_outputBuffer().append(":server 421 " + target + " :No Command\r\n");
+        clientUser.get_outputBuffer().append(":server 421 " + target + " :No Command");
         return;
     }
 
@@ -92,7 +92,7 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
         && cmd.command != "QUIT" 
         && cmd.command != "PING")
     {
-        clientUser.get_outputBuffer().append(":server 464 * :Password required\r\n");
+        clientUser.get_outputBuffer().append(":server 464 * :Password required");
         return;
     }
 
@@ -101,7 +101,7 @@ void CommandDispatcher::dispatch(Server& server, ClientUser& clientUser, const P
     if (it == _commands.end())
     {
         std::string target = clientUser.hasNick() ? clientUser.getNickname() : "*";
-        std::string msgToSend = ":server 421 " + target + " " + cmd.command + " :Unknown command\r\n";
+        std::string msgToSend = ":server 421 " + target + " " + cmd.command + " :Unknown command";
         clientUser.get_outputBuffer().append(msgToSend);
         return;
     }

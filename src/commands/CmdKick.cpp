@@ -59,7 +59,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
     {
         // ERR_NEEDMOREPARAMS (461)
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " KICK :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " KICK :Not enough parameters");
         return;
     }
 
@@ -84,7 +84,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             // ERR_NOSUCHCHANNEL (403) reused for invalid name here
             clientUser.get_outputBuffer().append(
                 ":server 403 " + clientUser.getNickname() + " " + channelName +
-                " :No such channel (invalid name)\r\n");
+                " :No such channel (invalid name)");
             continue;
         }
 
@@ -96,7 +96,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             // ERR_NOTONCHANNEL 442
             clientUser.get_outputBuffer().append(
                 ":server 442 " + clientUser.getNickname() + " " + channelName +
-                " :You're not on that channel\r\n");
+                " :You're not on that channel");
             continue;
         }
 
@@ -106,7 +106,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             // ERR_CHANOPRIVSNEEDED 482
             clientUser.get_outputBuffer().append(
                 ":server 482 " + clientUser.getNickname() + " " + channelName +
-                " :You're not channel operator\r\n");
+                " :You're not channel operator");
             continue;
         }
 
@@ -116,7 +116,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             // ERR_NOSUCHNICK 401
             clientUser.get_outputBuffer().append(
                 ":server 401 " + clientUser.getNickname() + " " + username +
-                " :No such nick\r\n");
+                " :No such nick");
             continue;
         }
 
@@ -125,7 +125,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             // ERR_USERNOTINCHANNEL 441
             clientUser.get_outputBuffer().append(
                 ":server 441 " + clientUser.getNickname() + " " + username + " " + channelName +
-                " :They aren't on that channel\r\n");
+                " :They aren't on that channel");
             continue;
         }
 

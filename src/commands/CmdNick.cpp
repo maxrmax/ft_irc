@@ -54,7 +54,7 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (cmd.params.empty())
     {
         // 431     ERR_NONICKNAMEGIVEN
-        clientUser.get_outputBuffer().append(":server 431 * " + cmd.command + " :No nickname given\r\n");
+        clientUser.get_outputBuffer().append(":server 431 * " + cmd.command + " :No nickname given");
         return;
     }
 
@@ -62,14 +62,14 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (!NickIsValid(cmd.params[0]))
     {
         // 432     ERR_ERRONEUSNICKNAME
-        clientUser.get_outputBuffer().append(":server 432 * " + cmd.params[0] + " :Erroneus nickname\r\n");
+        clientUser.get_outputBuffer().append(":server 432 * " + cmd.params[0] + " :Erroneus nickname");
         return;
     }
 
     if (server.NickIsAlreadyRegistered(cmd.params[0]))
     {
         // 433     ERR_NICKNAMEINUSE
-        clientUser.get_outputBuffer().append(":server 433 * " + cmd.params[0] + " :Nickname is already in use\r\n");
+        clientUser.get_outputBuffer().append(":server 433 * " + cmd.params[0] + " :Nickname is already in use");
         return;
     }
 
@@ -100,7 +100,7 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             ":server 001 " + clientUser.getNickname() +
             " :Welcome to ircserver " +
             clientUser.getNickname() + "!" +
-            clientUser.getUsername() + "@ircserver\r\n");
+            clientUser.getUsername() + "@ircserver");
     }
 }
 

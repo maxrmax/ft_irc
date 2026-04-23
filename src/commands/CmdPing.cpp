@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 18:59:40 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/21 11:48:37 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 void CmdPing::execute(Server&, ClientUser& clientUser, const ParsedCommand& cmd)
 {
     (void) cmd;
-    clientUser.get_outputBuffer().append("PONG :\r\n");
+    clientUser.get_outputBuffer().append("PONG :");
 };
 
 /*

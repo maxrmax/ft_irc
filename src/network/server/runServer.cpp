@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 14:47:16 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/04/10 16:29:35 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ int receive_message(Server &irc_server, int poll_index)
     {  
         if (read_len > 512)
         {
-            clientUser->get_outputBuffer().append(":Line too long. Forcefully disconnected.\r\n");
+            clientUser->get_outputBuffer().append(":Line too long. Forcefully disconnected.");
             sendMsg(clientUser);
             if (!clientUser->get_outputBuffer().get_buffer().empty())
                 irc_server.getPollFD()[poll_index].events |= POLLOUT;

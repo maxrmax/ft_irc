@@ -6,7 +6,7 @@
 /*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 19:25:39 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/21 11:50:07 by nsloniow         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
     if (!clientUser.isRegistered())
     {
         clientUser.get_outputBuffer().append(
-            ":server 451 * :You have not registered\r\n");
+            ":server 451 * :You have not registered");
         return;
     }
 
@@ -34,7 +34,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
     if (cmd.params.size() < 2)
     {
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " PRIVMSG :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " PRIVMSG :Not enough parameters");
         return;
     }
 
@@ -44,7 +44,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
     if (text.empty())
     {
         clientUser.get_outputBuffer().append(
-            ":server 412 " + clientUser.getNickname() + " :No text to send\r\n");
+            ":server 412 " + clientUser.getNickname() + " :No text to send");
         return;
     }
 
@@ -65,7 +65,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
         {
             clientUser.get_outputBuffer().append(
                 ":server 403 " + clientUser.getNickname() + " " + target +
-                " :No such channel\r\n");
+                " :No such channel");
             return;
         }
 
@@ -75,7 +75,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
             // ERR_CANNOTSENDTOCHAN
             clientUser.get_outputBuffer().append(
                 ":server 404 " + clientUser.getNickname() + " " + target +
-                " :Cannot send to channel\r\n");
+                " :Cannot send to channel");
             return;
         }
         // ── Jarvis bot ────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
         // ERR_NOSUCHNICK
         clientUser.get_outputBuffer().append(
             ":server 401 " + clientUser.getNickname() + " " + target +
-            " :No such nick\r\n");
+            " :No such nick");
         return;
     }
     

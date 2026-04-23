@@ -35,7 +35,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (cmd.params.empty())
     {   // ERR_NEEDMOREPARAMS
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters");
         return;
     }
     // user mode catch 
@@ -46,7 +46,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (!server.channelExists(cmd.params[0]))
     {   // ERR_NOSUCHCHANNEL
         clientUser.get_outputBuffer().append(
-            ":server 403 " + clientUser.getNickname() + " " + cmd.params[0] + " MODE :No such channel\r\n");
+            ":server 403 " + clientUser.getNickname() + " " + cmd.params[0] + " MODE :No such channel");
         return;
     }
     // get channel name
@@ -67,21 +67,21 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (parameterCheck(cmd))
     {   // ERR_NEEDMOREPARAMS
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " MODE :Not enough parameters");
         return;
     }
     // check if channel has the caller as member
     if (!ch.hasMember(clientUser.get_ClientUser_fd()))
     {   // ERR_NOTONCHANNEL
         clientUser.get_outputBuffer().append(
-            ":server 442 " + clientUser.getNickname() + " " + cmd.params[0] + " :You're not on that channel\r\n");
+            ":server 442 " + clientUser.getNickname() + " " + cmd.params[0] + " :You're not on that channel");
         return;
     }
     // check if caller is op
     if (!ch.isOperator(clientUser.get_ClientUser_fd()))
     {   // ERR_CHANOPRIVSNEEDED
         clientUser.get_outputBuffer().append(
-            ":server 482 " + clientUser.getNickname() + " " + cmd.params[0] + " :You're not channel operator\r\n");
+            ":server 482 " + clientUser.getNickname() + " " + cmd.params[0] + " :You're not channel operator");
         return;
     }
 
@@ -99,7 +99,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
     {
         default:
             clientUser.get_outputBuffer().append(
-                ":server 472 " + clientUser.getNickname() + " " + flag + " :Unknown MODE flag\r\n");
+                ":server 472 " + clientUser.getNickname() + " " + flag + " :Unknown MODE flag");
             break;
         case 'i':
             ch.setInviteOnly(sign);
@@ -122,7 +122,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
                     // 467 ERR_KEYSET
                     clientUser.get_outputBuffer().append(
                         ":server 467 " + clientUser.getNickname() + " " + cmd.params[0] +
-                        " :Channel key already set\r\n");
+                        " :Channel key already set");
                     return;
                 }           
                 ch.setKey(cmd.params[2]);
@@ -138,7 +138,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
                 // 401 ERR_NOSUCHNICK
                 clientUser.get_outputBuffer().append(
                     ":server 401 " + clientUser.getNickname() + " " + cmd.params[2] +
-                    " :No such nick\r\n");
+                    " :No such nick");
                 return;
             }
             if (sign == '+')

@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CmdInvite.hpp                                      :+:      :+:    :+:   */
+/*   CmdInvite.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/17 17:47:13 by mring             #+#    #+#             */
-/*   Updated: 2026/03/17 17:47:13 by mring            ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "CmdInvite.hpp"
 #include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
@@ -68,7 +68,7 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
     if (cmd.params.empty() || cmd.params.size() < 2)
     {
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " INVITE :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " INVITE :Not enough parameters");
         return;
     }
 
@@ -82,7 +82,7 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
         // ERR_NOSUCHCHANNEL (403) reused for invalid name here
         clientUser.get_outputBuffer().append(
             ":server 403 " + clientUser.getNickname() + " " + channelName +
-            " :No such channel\r\n");
+            " :No such channel");
         return;
     }
     Channel& channel = server.getChannel(channelName);
@@ -94,7 +94,7 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
         // ERR_NOTONCHANNEL 442
         clientUser.get_outputBuffer().append(
             ":server 442 " + clientUser.getNickname() + " " + channelName +
-            " :You're not on that channel\r\n");
+            " :You're not on that channel");
         return;
     }
 
@@ -104,7 +104,7 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
         // ERR_CHANOPRIVSNEEDED 482
         clientUser.get_outputBuffer().append(
             ":server 482 " + clientUser.getNickname() + " " + channelName +
-            " :You're not channel operator\r\n");
+            " :You're not channel operator");
         return;
     }
 
@@ -114,7 +114,7 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
         // ERR_NOSUCHNICK 401
         clientUser.get_outputBuffer().append(
             ":server 401 " + clientUser.getNickname() + " " + targetUsername +
-            " :No such nick\r\n");
+            " :No such nick");
         return;
     }
 
@@ -124,7 +124,7 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
         // ERR_NOTONCHANNEL 443
         clientUser.get_outputBuffer().append(
             ":server 443 " + target->getNickname() + " " + channelName +
-            " :is already on channel\r\n");
+            " :is already on channel");
         return;
     }
 

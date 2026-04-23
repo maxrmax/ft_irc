@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdPass.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 20:55:55 by nsloniow          #+#    #+#             */
-/*   Updated: 2026/03/16 13:38:48 by mring            ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ void CmdPass::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (cmd.params.empty())
     {
         // ERR_NEEDMOREPARAMS (461)
-        clientUser.get_outputBuffer().append("461 PASS : " + cmd.command + " Not enough parameters\r\n");
+        clientUser.get_outputBuffer().append("461 PASS : " + cmd.command + " Not enough parameters");
         return;
     }
     if (cmd.params[0] != server.get_server_password())
     {
-        clientUser.get_outputBuffer().append(":server 464 * :Password incorrect\r\n");
+        clientUser.get_outputBuffer().append(":server 464 * :Password incorrect");
         return;
     }
     clientUser.setPassAccepted(true);

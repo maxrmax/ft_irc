@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CmdJoin.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mring <mring@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 14:06:25 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/16 13:33:45 by mring            ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
     if (!clientUser.isRegistered())
     {
         clientUser.get_outputBuffer().append(
-            ":server 451 * :You have not registered\r\n");
+            ":server 451 * :You have not registered");
         return;
     }
 
@@ -77,7 +77,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
     if (cmd.params.empty())
     {
         clientUser.get_outputBuffer().append(
-            ":server 461 " + clientUser.getNickname() + " JOIN :Not enough parameters\r\n");
+            ":server 461 " + clientUser.getNickname() + " JOIN :Not enough parameters");
         return;
     }
 
@@ -107,7 +107,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             // ERR_NOSUCHCHANNEL (403) reused for invalid name here
             clientUser.get_outputBuffer().append(
                 ":server 403 " + clientUser.getNickname() + " " + channelName +
-                " :No such channel (invalid name)\r\n");
+                " :No such channel (invalid name)");
             continue;
         }
 
@@ -129,7 +129,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             {   // ERR_INVITEONLYCHAN (473)
                 clientUser.get_outputBuffer().append(
                     ":server 473 " + clientUser.getNickname() + " " + channelName +
-                    " :Cannot join channel (+i)\r\n");
+                    " :Cannot join channel (+i)");
                 continue;
             }
 
@@ -140,7 +140,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             {   // ERR_BADCHANNELKEY (475)
                 clientUser.get_outputBuffer().append(
                     ":server 475 " + clientUser.getNickname() + " " + channelName +
-                    " :Cannot join channel (+k)\r\n");
+                    " :Cannot join channel (+k)");
                 continue;
             }
 
@@ -150,7 +150,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
             {   // ERR_CHANNELISFULL (471)
                 clientUser.get_outputBuffer().append(
                     ":server 471 " + clientUser.getNickname() + " " + channelName +
-                    " :Cannot join channel (+l)\r\n");
+                    " :Cannot join channel (+l)");
                 continue;
             }
 
@@ -173,7 +173,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         {
             clientUser.get_outputBuffer().append(
                 ":server 331 " + clientUser.getNickname() + " " + channelName +
-                " :No topic is set\r\n");
+                " :No topic is set");
         }
         else
         {
@@ -191,7 +191,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         // RPL_ENDOFNAMES (366)
         clientUser.get_outputBuffer().append(
             ":server 366 " + clientUser.getNickname() + " " + channelName +
-            " :End of /NAMES list\r\n");
+            " :End of /NAMES list");
     }
 }
 

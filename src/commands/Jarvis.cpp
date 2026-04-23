@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Jarvis.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ngoyat <ngoyat@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: nsloniow <nsloniow@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/17 18:37:39 by ngoyat            #+#    #+#             */
-/*   Updated: 2026/03/17 18:37:39 by ngoyat           ###   ########.fr       */
+/*   Updated: 2026/04/23 11:05:06 by nsloniow         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 // Triggered when a PRIVMSG to a channel starts with "@jarvis"
 // Sends a NOTICE back to the triggering user only (not the channel).
@@ -99,7 +99,7 @@ static void dispatch(ClientUser& clientUser, const std::string& noticeTarget, co
         if (arg == "420")
     {
         // IRC formatting: NN = color (09=green),  = italic,  = reset
-        std::string msg = "09( ͡° ͜ʖ ͡°) blaze it\r\n";
+        std::string msg = "09( ͡° ͜ʖ ͡°) blaze it";
         jarvisNotice(clientUser, noticeTarget, msg);
         return;
     }
@@ -135,7 +135,7 @@ void CmdJarvis::execute(Server&, ClientUser& clientUser, const ParsedCommand& cm
 {
     if (!clientUser.isRegistered())
     {
-        clientUser.get_outputBuffer().append(":server 451 * :You have not registered\r\n");
+        clientUser.get_outputBuffer().append(":server 451 * :You have not registered");
         return;
     }
     dispatch(clientUser, clientUser.getNickname(), parseArgFromCmd(cmd));

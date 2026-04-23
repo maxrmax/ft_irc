@@ -96,36 +96,76 @@ Security / correctness notes for evaluators
 - The server sets the listening and accepted sockets to non-blocking mode with `F_SETFL, O_NONBLOCK` as required by the subject.
 - `poll()` is called once per loop iteration to inspect readiness. The server handles `POLLIN` (read), `POLLOUT` (write) and error conditions; closed clients are cleaned up and removed from the `pollfd` vector.
 
-Testing checklist (Evaluator guide)
+Testing checklist (Evaluator guide):
+----------------------------------
+1. Building: `make` — the target produces the `ircserv` binary.
+2. Starting the server: `./ircserv <port> <password>`
+    `make run` uses our default port of `6667` and password `start`.
+    `make valgrind` uses the port `6668` and password `start`
+
 netcat (nc):
 ----------------------------------
-1. Build: `make` — the target produces the `ircserv` binary.
-2. Start server: `./ircserv 6667 start` (or `make run`).
-3. Connect with `irssi` (recommended) and/or `nc -C 127.0.0.1 6667`.
-4. nc: Authenticate and register: send `PASS <password>` then `NICK <nick>` and `USER <user> * * :Real Name`.
-5. Join a channel: `JOIN #channel` and verify `PRIVMSG #channel :hello` is broadcast to other members.
-6. Channel operator features: test `MODE`, `KICK`, `INVITE`, `TOPIC` as operator and verify errors for non-ops.
-7. Partial command test: With `nc`, send a command in parts (use `Ctrl+D` to send fragmented input) to ensure the server aggregates and processes the full line.
-8. Unexpected disconnects: kill a client and verify server cleans up and continues serving other clients.
+Commands are usually case sensitive. Our server capitalizes all commands
+netcat needs to be told explicitly what it has to do
+1. Connect with `nc -C <IP/PC-NAME> <PORT>` - `nc -C 3-G-8 6667`.
+2. Authenticate and register: `PASS <password>` -> `NICK <nick>` -> `USER <user> * * :Real Name`.
+    example: `pass start` `nick nctest` `user nctest * * nctest` 
+3. Join a channel: `JOIN #channel` and verify `PRIVMSG #channel :message` is broadcast to other members.
+    `:message` -> `:` tells our server to read until the end of line, which will be `\r\n` -> without `:` it would read until the end of the word
+4. Channel operator features: `MODE`, `KICK`, `INVITE`, `TOPIC`.
+    `MODE #channel [+|-]o username` to give or take channel operator 
+    `MODE #channel [+|-]i` to set or unset a channel invite only 
+    `MODE #channel [+|-]k` to set or unset a channel key 
+    `MODE #channel [+|-]l LIMIT` to set or unset a user limit for that channel 
+    `MODE #channel [+|-]t` to set or unset a channel topic to be changed by operator only
+    `KICK #channel username` kick a user from that specific channel (op only)
+    `INVITE #channel username` invites an user to join an invite only (+i) channel. Invite is onetime use only.
+    `TOPIC #channel :Topic message` changes the channel topic (+t means op only)
+5. `PART #ch` disconnect from the given channel
+6. `PRIVMSG <#ch|nickname> :message` send a message to a channel or a private message to another user
+7. `JARVIS` or `privmsg #ch :@jarvis` to query our running bot. Only the caller will receive the message.
+    One invokes directly, the other invokes per channel.
+98. Partial command test:
+    With `nc`, send a command in parts (use `Ctrl+D` to send fragmented input) to ensure the server aggregates and processes the full line.
+    example: joi<CTRL+D>n #<CTRL+D>channel
+99. Unexpected disconnects: kill a client and verify server cleans up and continues serving other clients.
 
 irssi:
 ----------------------------------
-1. Build: `make` — the target produces the `ircserv` binary.
-2. Start server: `./ircserv 6667 start` (or `make run`).
-3. run `irssi` 
-D. Commands are case sensitive but the server capitalizes all commands
-4. Authenticate and register: send `/CONNECT <ip> <port> <pass>`.
-5. Join a channel: `/JOIN #channel` and verify chatting works by just sending a message.
-6. Channel operator features: test `/MODE`, `/KICK`, `/INVITE`, `/TOPIC` as operator and verify errors for non-ops.
-7. Unexpected disconnects: kill a client and verify server cleans up and continues serving other clients.
+irssi takes channel name implicitly by the active tab, `[]` commands are optional, unless a non-active channel is targeted.
+irssi sends some commands automatically that our server doesn't support. They can be safely ignored. (MODE #ch b, WHO...)
+1. run `irssi` 
+42. Authenticate and register: `/connect <IP/PC-NAME> <port> <pass>`.
+    example: `/connect 3-g-8 6667 start`. irssi has local configs to automatically set your username, nickname & realname. 
+3. Join a channel: `/JOIN #channel` and verify chatting works by just sending a message.
+4. Channel operator features: test `/MODE`, `/KICK`, `/INVITE`, `/TOPIC` as operator and verify errors for non-ops.
+    `/MODE [#ch] [+|-]o username` to give or take channel operator 
+    `/MODE [#ch] [+|-]i` to set or unset a channel invite only 
+    `/MODE [#ch] [+|-]k` to set or unset a channel key 
+    `/MODE [#ch] [+|-]l LIMIT` to set or unset a user limit for that channel 
+    `/MODE [#ch] [+|-]t` to set or unset a channel topic to be changed by operator only
+    `/MODE #ch` to view current applied flags. +o flag is only displayed in irssi by @ in front of a name
+    `/KICK [#ch] username` kick a user from that specific channel (op only)
+    `/INVITE [#ch] username` invites an user to join an invite only (+i) channel. Invite is onetime use only.
+    `/TOPIC [#ch] :Topic message` changes the channel topic (+t means op only) 
+5. `/PART [#ch]` disconnect from the active or given channel
+6. `/NAMES [#ch]` displays current user list in the given channel (irssi only)
+7. `/MSG <nickname> message` send a private message to another user
+8. `@jarvis` in a channel to query our running bot. Only the caller will receive the message.
+    irssi invokes per channel only.
+9. `DCC send username "filepath"` sending a file transfer request.
+    `dcc get username` to accept a file transfer request
+    example: `dcc send irs2 '~/project/rank5/The3Maggots.png'` would send a transfer request to irs2 if the file exists
+    example: `dcc get irs1` accept the request and save the file into the home directory `~/The3Maggots.png`
+99. Unexpected disconnects: kill a client and verify server cleans up and continues serving other clients.
 
 irc_tester (optional, basically netcat):
 ----------------------------------
+A little stress-test
 1. the tester compilation is included in (all)
 2. `make tester` and `make tester2` will run the tester
-3. `make tester` connects N clients. Tey run connect.conf then after-connect.conf and then repeat the loop.conf
-4. `make tester2` does the same but runs loop once, then disconnects and restarts from the beginning.
-
+3. `make tester` connects N clients. They run connect.conf then after-connect.conf then repeat the loop.conf
+4. `make tester2` connects N clients. Runs the loop once, then disconnects and restarts.
 
 ##### Unexpected Disconnects:
 with valgrind, debug prints will confirm all actions happening within the program.

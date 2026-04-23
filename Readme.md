@@ -134,8 +134,9 @@ irssi:
 ----------------------------------
 irssi takes channel name implicitly by the active tab, `[]` commands are optional, unless a non-active channel is targeted.
 irssi sends some commands automatically that our server doesn't support. They can be safely ignored. (MODE #ch b, WHO...)
+In irssi you have to sometimes switch views with ctrl+n (next) to change channel, status and private message view. Because of specific irssi behavior, for example dcc, you need to change into the status view with ctrl+n.
 1. run `irssi` 
-42. Authenticate and register: `/connect <IP/PC-NAME> <port> <pass>`.
+2. Authenticate and register: `/connect <IP/PC-NAME> <port> <pass>`.
     example: `/connect 3-g-8 6667 start`. irssi has local configs to automatically set your username, nickname & realname. 
 3. Join a channel: `/JOIN #channel` and verify chatting works by just sending a message.
 4. Channel operator features: test `/MODE`, `/KICK`, `/INVITE`, `/TOPIC` as operator and verify errors for non-ops.
@@ -153,8 +154,8 @@ irssi sends some commands automatically that our server doesn't support. They ca
 7. `/MSG <nickname> message` send a private message to another user
 8. `@jarvis` in a channel to query our running bot. Only the caller will receive the message.
     irssi invokes per channel only.
-9. `DCC send username "filepath"` sending a file transfer request.
-    `dcc get username` to accept a file transfer request
+9. `/DCC send username "filepath"` sending a file transfer request.
+    `/dcc get username` to accept a file transfer request
     example: `dcc send irs2 '~/project/rank5/The3Maggots.png'` would send a transfer request to irs2 if the file exists
     example: `dcc get irs1` accept the request and save the file into the home directory `~/The3Maggots.png`
 99. Unexpected disconnects: kill a client and verify server cleans up and continues serving other clients.

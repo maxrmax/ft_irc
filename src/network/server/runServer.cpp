@@ -171,7 +171,6 @@ int receive_message(Server &irc_server, int poll_index)
         }
         if (read_len == 0)
         {
-            std::cout << "Client " << client_fd << " disconnected." << std::endl;
             clientUser->setToDisconnect(true);
             return -1;
         }
@@ -305,11 +304,9 @@ static int pollDisconnect(Server &irc_server, pollfd &client_poll, size_t *poll_
             std::cout << "[DC] disconnect fd:             " << client_poll.fd << " - poll_index: " << *poll_index << std::endl;
         #endif
 
-        //// modify to broadcast to channel ignoring fd's
-
         std::string quitMsg = ":" + client_for_current_fd->getNickname() + 
                                 "!" + client_for_current_fd->getUsername() +
-                                "@ircserver" + " QUIT :" + client_for_current_fd->getNickname() + "\r\n";
+                                "@ircserver" + " QUIT :" + client_for_current_fd->getNickname();
 
         const int quitterFd = client_for_current_fd->get_ClientUser_fd();
         std::vector<std::string> channelList = irc_server.getChannelsOfClientFd(quitterFd);
@@ -328,10 +325,10 @@ static int pollDisconnect(Server &irc_server, pollfd &client_poll, size_t *poll_
             if (recipient)
                 recipient->get_outputBuffer().append(quitMsg);
         }
-        /////
 
         int fd_to_remove = client_for_current_fd->get_ClientUser_fd();
         close(fd_to_remove);
+        std::cout << "Client " << fd_to_remove << " disconnected." << std::endl;
         irc_server.unregisterClientFd(fd_to_remove);
         // swap-pop to remove current pollfd without invalidating iteration badly
         size_t last = irc_server.getPollFD().size() - 1;

@@ -138,7 +138,7 @@ void CmdKick::execute(Server &server, ClientUser &clientUser, const ParsedComman
                              "@ircserver" + 
                              " KICK " + channelName + " " +
                               target->getNickname() + " :" + 
-                              reason + "\r\n";
+                              reason;
 
         server.broadcastToChannel(channelName, kickMsg);
         

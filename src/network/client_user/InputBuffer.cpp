@@ -21,7 +21,6 @@ void InputBuffer::append(const std::string& data)
     _buffer += data;
 }
 
-// TODO \r\n checking in all buffer statements
 bool InputBuffer::hasLine() const
 {
     return _buffer.find("\r\n") != std::string::npos;

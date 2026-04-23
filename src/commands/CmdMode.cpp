@@ -30,18 +30,8 @@ static bool parameterCheck(const ParsedCommand &cmd)
     return false; // enough parameters
 }
 
-// TODO: implement MODE according to RFC 1459
-// necessary modes to implement:
-// i, t, k, o, l
-// i - invite-only channel flag;
-// t - topic settable by channel operator only flag;
-// k - set a channel key (password).
-// o - give/take channel operator privileges;
-// l - set the user limit to channel;
 void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedCommand &cmd)
 {
-    // TODO
-    // check if nc "MODE +i" with missing channel needs to return anything or is perfectly fine as silent error.
     if (cmd.params.empty())
     {   // ERR_NEEDMOREPARAMS
         clientUser.get_outputBuffer().append(
@@ -70,7 +60,7 @@ void CmdMode::execute(Server &server, ClientUser &clientUser, const ParsedComman
         if (!ch.getKey().empty())   modes += "k";
         if (ch.getUserLimit())      modes += "l";
         clientUser.get_outputBuffer().append(
-            ":server 324 " + clientUser.getNickname() + " " + cmd.params[0] + " " + modes + "\r\n");
+            ":server 324 " + clientUser.getNickname() + " " + cmd.params[0] + " " + modes);
         return;
     }
     // check if enough parameters are given

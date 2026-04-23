@@ -17,38 +17,11 @@ OutputBuffer::OutputBuffer() {}
 
 void OutputBuffer::append(const std::string& data)
 {
-    // TODO 7
     buffer += data;
-    buffer +="\r\n";
+    buffer += "\r\n";
 }
-
-// bool OutputBuffer::hasLine() const
-// {
-//     return _buffer.find("\r\n") != std::string::npos;
-// }
-
-// std::string OutputBuffer::popLine()
-// {
-//     size_t pos = buffer.find("\r\n");
-//     if (pos == std::string::npos)
-//         return "";
-
-
-//     if (pos > IRC_MAX_LINE)
-//     {
-//         // Discard invalid line
-//         buffer.erase(0, pos + 2);
-//         return "ERROR :Line too long";
-//     }
-
-//     std::string line = buffer.substr(0, pos);
-//     buffer.erase(0, pos + 2);
-//     return line;
-// }
 
 std::string &OutputBuffer::get_buffer()
 {
     return buffer;
 }
-
-//TODO 2 integration with recv()/poll() loop

@@ -78,7 +78,6 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
     // set new nickname for current clientUser
     clientUser.setNickname(cmd.params[0]);
     // add clientUser to server mapping based on new nickname
-    // TODO check if old nick gets removed.
     server.Nick_ClientUser_mapping(clientUser);
 
     /* if previousNickname is different to the current nickname
@@ -88,20 +87,11 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (previouseNickname != clientUser.getNickname())
     {
         server.NicknamesHistory_storing(previouseNickname, clientUser);
-
-        // nickname changed → broadcast
-        //  TODO: broadcast to all clients that have registered nickname, not just the one that changed nickname
-        //     for (auto &[fd, registered_ClientUser] : server. )
-        //     {
-        //         if (clientUser == registe)
-        //         clientUser.get_outputBuffer().append(":server " + previouseNickname + " NICK : " + clientUser.getNickname());
-        //     }
     }
 
     // Check if ready to register after setting username and realname
     if (clientUser.isReadyToRegister() && !clientUser.isRegistered())
     {
-        // std::cout << __FILE__ << __LINE__ << " NICK execute" << std::endl;
 		// Register the client with the server
         server.Nick_ClientUser_mapping(clientUser);
         clientUser.setRegistered(true);
@@ -112,9 +102,6 @@ void CmdNick::execute(Server &server, ClientUser &clientUser, const ParsedComman
             clientUser.getNickname() + "!" +
             clientUser.getUsername() + "@ircserver\r\n");
     }
-
-// TODO: check for valid nicknames + add error handling + add to client.cpp
-    // client.setNick(cmd.params[0]);
 }
 
 /*

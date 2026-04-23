@@ -78,10 +78,9 @@ public:
 
     void            setRegistered(bool reg);
     bool            isRegistered() const;
-    // TODO 7
+
     bool            isReadyToRegister() const;
 
-    // TODO 4
     void            setToDisconnect(bool disconnect);
     bool            isToDisconnect() const;
 };

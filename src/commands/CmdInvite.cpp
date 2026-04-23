@@ -134,13 +134,13 @@ void CmdInvite::execute(Server& server, ClientUser& clientUser, const ParsedComm
     // clientuser or target?
     clientUser.get_outputBuffer().append(
         ":server 341 " + clientUser.getNickname() + " " + channelName +
-        " :" + targetUsername + "\r\n");
+        " :" + targetUsername);
 
     // now send the invite to the recipient
     // :inviterNick!user@host INVITE <targetNick> <#channel>
     target->get_outputBuffer().append(
         ":" + clientUser.getNickname() + "!" + clientUser.getUsername() +
-        "@" + clientUser.getIp() + " INVITE " + targetUsername + " " + channelName + "\r\n");
+        "@" + clientUser.getIp() + " INVITE " + targetUsername + " " + channelName);
 }
 
 /*

@@ -21,8 +21,6 @@
 "ClientUser.hpp"           // <string>
 */
 
-// PASS check handled in dispatcher before any cmd can be run
-// This class merely sets password accepted true
 void CmdPass::execute(Server &server, ClientUser &clientUser, const ParsedCommand &cmd)
 {
     if (cmd.params.empty())
@@ -34,9 +32,6 @@ void CmdPass::execute(Server &server, ClientUser &clientUser, const ParsedComman
     if (cmd.params[0] != server.get_server_password())
     {
         clientUser.get_outputBuffer().append(":server 464 * :Password incorrect\r\n");
-        // on wrong password clients stay connected
-        // until they disconnect (or timeout? need research)
-        // clientUser.setToDisconnect(true); // TODO (remove)
         return;
     }
     clientUser.setPassAccepted(true);

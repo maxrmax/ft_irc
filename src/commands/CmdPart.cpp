@@ -92,7 +92,7 @@ void CmdPart::execute(Server &server, ClientUser &clientUser, const ParsedComman
         // Send PART to all channel members (including the parting user)
         std::string partMsg = ":" + clientUser.getNickname() + 
                               "!" + clientUser.getUsername() +
-                              "@ircserver" + " PART " + channelName + "\r\n";
+                              "@ircserver" + " PART " + channelName;
         server.broadcastToChannel(channelName, partMsg);
         
 

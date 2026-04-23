@@ -165,7 +165,7 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
                              clientUser.getUsername() + "@ircserver";
 
         // Broadcast JOIN to all members (including the joining user)
-        std::string joinMsg = prefix + " JOIN " + channelName + "\r\n";
+        std::string joinMsg = prefix + " JOIN " + channelName;
         server.broadcastToChannel(channelName, joinMsg);
 
         // Send no-topic (331) or  topic (332)
@@ -179,14 +179,14 @@ void CmdJoin::execute(Server& server, ClientUser& clientUser, const ParsedComman
         {
             clientUser.get_outputBuffer().append(
                 ":server 332 " + clientUser.getNickname() + " " + channelName +
-                " :" + channel.getTopic() + "\r\n");
+                " :" + channel.getTopic());
         }
 
         // RPL_NAMREPLY (353): send member list
         std::string namesList = server.getChannelMemberNicks(channelName);
         clientUser.get_outputBuffer().append(
             ":server 353 " + clientUser.getNickname() + " = " + channelName +
-            " :" + namesList + "\r\n");
+            " :" + namesList);
 
         // RPL_ENDOFNAMES (366)
         clientUser.get_outputBuffer().append(

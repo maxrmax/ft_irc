@@ -26,23 +26,8 @@
 #include "Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
 #include "ClientUser.hpp"           // <string>
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * mring:
- *      it is a global variable (const int has internal linkage, implicit static)
- *      it still is a global variable, after the change, just optimized
- *      extern is used inside a file that tries to access this variables
- * Changes:
- *      const int to inline constexpr int
- * constexpr:
- *      compile-time evaluation, stronger guarantee than const
- * inline:
- *      one shared instance across all translation units
- *      without inline each .cpp that includes this header would get a copy
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 inline constexpr int    ADDRESS_FAMILY  =   AF_INET;
 inline constexpr int    PORT_LISTEN     =   6667;
-
-// Channel and ClientUser definitions are included above
 
 /**
  * Server: core IRC server container
@@ -123,7 +108,6 @@ class Server
         void                                        printRegisteredNicks();
         
         int                                         get_server_ready(int portt, std::string password);
-        // void                clean_up();
 
         CommandDispatcher                           &get_dispatcher();
         bool                                        NickIsAlreadyRegistered(std::string nick) const;

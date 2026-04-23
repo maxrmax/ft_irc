@@ -26,7 +26,7 @@ void CmdQuit::execute(Server &server, ClientUser &clientUser, const ParsedComman
         reason = cmd.params[0];
     std::string quitMsg = ":" + clientUser.getNickname() + 
                             "!" + clientUser.getUsername() +
-                            "@ircserver" + " QUIT :" + reason + "\r\n";
+                            "@ircserver" + " QUIT :" + reason;
     ///////////////////////////
 
     const int quitterFd = clientUser.get_ClientUser_fd();

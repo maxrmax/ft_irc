@@ -15,18 +15,17 @@
 
 ClientUser::~ClientUser()
 {
-    // current debug until quit resolved with netcat
-    std::cout << "ClientUser with fd:" << ClientUser_fd << " destructed." << std::endl;
+    // std::cout << "ClientUser with fd:" << ClientUser_fd << " destructed." << std::endl;
 }
 
 ClientUser::ClientUser():ClientUser_fd(-1), registered(false), passAccepted(false), toDisconnect(false)
 {
-    std::cout << "ClientUser without fd constructed." << std::endl;
+    // std::cout << "ClientUser without fd constructed." << std::endl;
 };
 
 ClientUser::ClientUser(int filedescriptor):ClientUser_fd(filedescriptor), registered(false), passAccepted(false), toDisconnect(false)
 {
-    std::cout << "ClientUser with fd:" << ClientUser_fd << " constructed." << std::endl;
+    // std::cout << "ClientUser with fd:" << ClientUser_fd << " constructed." << std::endl;
 };
 
 
@@ -123,8 +122,6 @@ bool ClientUser::isReadyToRegister() const
     return true;
 }
 
-// Cleanup
-// TODO 4
 void ClientUser::setToDisconnect(bool disconnect)
 {
     toDisconnect = disconnect;

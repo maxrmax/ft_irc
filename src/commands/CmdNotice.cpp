@@ -38,7 +38,7 @@ void CmdNotice::execute(Server& server, ClientUser& clientUser, const ParsedComm
 
     std::string prefix = ":" + clientUser.getNickname() + "!" + clientUser.getUsername() +
              "@" + clientUser.getIp();
-    std::string msgOut = prefix + " NOTICE " + target + " :" + text + "\r\n";
+    std::string msgOut = prefix + " NOTICE " + target + " :" + text;
 
     // ── Channel message ──────────────────────────────────────────────────────
     if (target[0] == '#')

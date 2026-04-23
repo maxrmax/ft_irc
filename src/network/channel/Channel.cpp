@@ -47,7 +47,6 @@ void Channel::setTopicFlag(char sign)
         _topicFlag = false;
 }
 
-// to be used with CmdTopic later
 bool Channel::getTopicFlag() const
 {
     return _topicFlag;
@@ -68,8 +67,6 @@ void Channel::removeMember(int fd)
     _member_fds.erase(fd);
     if (isOperator(fd))
         unsetOperator(fd);
-
-    // TODO: add auto op next member (newest first in list?)
 }
 
 bool Channel::hasMember(int fd) const

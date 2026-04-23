@@ -56,7 +56,7 @@ void CmdPrivmsg::execute(Server& server, ClientUser& clientUser, const ParsedCom
     std::string prefix = ":" + clientUser.getNickname() + "!" + clientUser.getUsername() +
              "@" + clientUser.getIp();
     //end nsloniow2603121042
-    std::string msgOut = prefix + " PRIVMSG " + target + " :" + text + "\r\n";
+    std::string msgOut = prefix + " PRIVMSG " + target + " :" + text;
 
     // ── Channel message ──────────────────────────────────────────────────────
     if (target[0] == '#')

@@ -74,7 +74,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
             // RPL_TOPIC
             clientUser.get_outputBuffer().append(
                 ":server 332 " + clientUser.getNickname() + " " + channelName +
-                " :" + channel.getTopic() + "\r\n");
+                " :" + channel.getTopic());
         }
         return;
     }
@@ -97,7 +97,7 @@ void CmdTopic::execute(Server& server, ClientUser& clientUser, const ParsedComma
     // Broadcast the topic change to all members
     std::string prefix = ":" + clientUser.getNickname() + "!" +
                          clientUser.getUsername() + "@" + clientUser.getIp();
-    std::string broadcast = prefix + " TOPIC " + channelName + " :" + newTopic + "\r\n";
+    std::string broadcast = prefix + " TOPIC " + channelName + " :" + newTopic;
     server.broadcastToChannel(channelName, broadcast);
 }
 

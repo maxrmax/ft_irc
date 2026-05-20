@@ -1,0 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CmdPass.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: maxrmax <maxrmax>                          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/23 20:50:35 by student           #+#    #+#             */
+/*   Updated: 2026/03/10 17:29:07 by maxrmax          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#pragma once
+
+#include "command.hpp" // <string> - <vector>
+
+
+/**
+ * CmdPass
+ *
+ * Handles the IRC PASS command.
+ * - Syntax: PASS <password>
+ * - Provides a password used during initial registration; may set authentication state.
+ */
+class CmdPass : public Command
+{
+public:
+    void execute(Server &server,
+                 ClientUser &clientUser,
+                 const ParsedCommand &cmd) override;
+};

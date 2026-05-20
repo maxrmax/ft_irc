@@ -1,0 +1,90 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: student <student>                          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/12/23 12:47:48 by student           #+#    #+#              #
+#    Updated: 2026/03/21 11:47:35 by student          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+CC 		= 			c++
+STD		= 			-std=c++17
+FLAGS	= 			-Wall -Wextra -Werror -fsanitize=address -I$(INC_DIR)
+FLAGSV	= 			-Wall -Wextra -Werror -g -O0 -I$(INC_DIR) -DDEBUG_BUILD=1
+NAME	= 			ircserv
+
+# directories
+OBJ_DIR	=			obj
+INC_DIR	=			includes
+
+SRC		= 			src/main.cpp \
+					src/checker/isDigit.cpp \
+					src/checker/isSpecial.cpp \
+					src/commands/CmdCap.cpp \
+					src/commands/CmdInvite.cpp \
+					src/commands/CmdJoin.cpp \
+					src/commands/CmdKick.cpp \
+					src/commands/CmdMode.cpp \
+					src/commands/CmdNick.cpp \
+					src/commands/CmdNotice.cpp \
+					src/commands/CmdPart.cpp \
+					src/commands/CmdPass.cpp \
+					src/commands/CmdPing.cpp \
+					src/commands/CmdPrivmsg.cpp \
+					src/commands/CmdQuit.cpp \
+					src/commands/CmdTopic.cpp \
+					src/commands/CmdUser.cpp \
+					src/commands/CommandDispatcher.cpp \
+					src/commands/handleClientInput.cpp \
+					src/commands/Jarvis.cpp \
+					src/network/client_user/ClientUser.cpp \
+					src/network/client_user/InputBuffer.cpp \
+					src/network/client_user/OuputBuffer.cpp \
+					src/network/channel/Channel.cpp \
+					src/network/server/runServer.cpp \
+					src/network/server/Server_channels.cpp \
+					src/network/server/server.cpp \
+					src/parser/Parser.cpp 
+			
+OBJ	=				$(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
+	
+all:				$(NAME)
+					$(MAKE) -C irc_tester
+
+$(NAME):			$(OBJ)
+		 			$(CC) $(STD) $(FLAGS) $(OBJ) -o $(NAME)
+
+$(OBJ_DIR)/%.o: 	%.cpp | $(OBJ_DIR)
+					mkdir -p $(dir $@)
+					$(CC) $(STD) $(FLAGS) -c $< -o $@
+
+$(OBJ_DIR):
+					mkdir -p $(OBJ_DIR)
+
+clean:
+					rm -rf $(OBJ_DIR)
+					$(MAKE) -C irc_tester clean
+
+fclean:				clean
+		 			rm -f $(NAME)
+					$(MAKE) -C irc_tester fclean
+
+re:					fclean all
+
+run:				all
+					./ircserv 6667 start
+
+tester:
+					$(MAKE) -C irc_tester tester
+tester2:
+					$(MAKE) -C irc_tester tester2
+
+valgrind: 			FLAGS =
+valgrind: 			FLAGS += $(FLAGSV)
+valgrind:			re
+					valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-limit=no ./$(NAME) 6668 start > valgrind.log 2>&1
+
+.PHONY: all clean fclean re run valgrind tester

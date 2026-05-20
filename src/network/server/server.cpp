@@ -1,0 +1,180 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: student <student>                          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/03 18:08:54 by student           #+#    #+#             */
+/*   Updated: 2026/04/23 11:30:44 by student          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
+
+Server::~Server()
+{
+    //close fd for server
+    if (server_fd != -1)
+    {
+        if (close(server_fd) == 0)
+        {    
+            std::cout << "Server filedescriptor closed. Server shut down." << std::endl;
+            server_fd = -1;
+        }
+        else 
+        {
+            std::cout << "Server filedescriptor could not be closed. Operating System will handle this." << std::endl;
+        }
+    }       
+        
+    //errno
+};
+
+Server::Server():server_fd(-1), server_port(-1), server_password(""){};
+
+Server::Server(int filedescriptor, int port, std::string password) : server_fd(filedescriptor), server_port(port), server_password(password){};
+
+int Server::get_server_fd()
+{
+    return server_fd;
+};
+
+std::string Server::get_server_password()
+{
+    return server_password;
+};
+
+sockaddr_in Server::get_server_address()
+{
+    return server_address;
+};
+
+std::vector<pollfd> &Server::getPollFD()
+{
+    return poll_fd; 
+}
+
+const std::vector<pollfd> &Server::getPollFD() const
+{
+    return poll_fd;
+}
+
+void Server::setClientIp(int fd, const std::string &str_ip)
+{
+    ClientUser *client = getClientByFd(fd);
+    if (client)
+        client->setIp(str_ip);
+}
+
+const std::string Server::getClientIp(int fd)
+{
+    ClientUser *client = getClientByFd(fd);
+    return client->getIp();
+}
+
+std::unordered_map<int, ClientUser> &Server::get_clients_map()
+{
+    return _clients;
+}
+
+const std::unordered_map<int, ClientUser> &Server::get_clients_map() const
+{
+    return _clients;
+}
+
+/**
+ * Handles the initialization of the server class.
+ * It assigns the fd, port and passwort into the class.
+ */
+int Server::get_server_ready(int port, std::string password)
+{
+    //cat /etc/protocols -> TCP
+    //fd = socket(IPv4, in stream for TCP, protocol # for TCP)
+    server_fd   = socket(ADDRESS_FAMILY, SOCK_STREAM, 6);
+    if (server_fd == -1)
+    {
+        std::cout << "Server could not be created. Try again." << std::endl;
+        return -1;
+    }
+    // just sits there until a packet arrives. it is blocking.
+    // The call - recv() or accept() waits until it can do something, it waits for clients to accept or data to receive.
+    // When this happenened, the code continues to execute.
+    // Doing fork() and having a thread per fd would not be blocking, as it just sits and waits for its own purpose.
+
+    // Manipulating fd behavior, set flag to nonblocking, so it does not sit there open and blocks the system till something arrives at that socket
+    fcntl(server_fd, F_SETFL, O_NONBLOCK);
+    
+    server_port = port;
+    server_password = password;
+
+    //setting address information
+    std::memset(&server_address, 0, sizeof(server_address));    //setting memory to 0 to not have garbage
+    server_address.sin_addr.s_addr  = INADDR_ANY;               //listen on all interfaces, Accept connections on all IPv4 addresses of this machine.
+    server_address.sin_family       = ADDRESS_FAMILY;
+    // htons converts the unsigned short integer hostshort from host byte order to network byte order.
+    server_address.sin_port         = htons(server_port);
+    
+
+    // set socket options so we can reuse a still bound port
+    // On main exit, server instance goes out of scope and server is called and closes server socket fd. This is clean
+    // However, TCP being a bit on the cautiouse side, hoggs port with TIME_WAIT for a while - ~2min, just in case some latecomer packages arrive. But we do not care about this
+    // intrusive guardiance of tcp. Because we do not exist anymore to handle it. Our server is closed, dead.
+    // With setsockopt we tell the operating system, we use this port anyways.
+    int opt_val = 1;
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == -1)
+    {
+        std::cout << "Server could not be 'binded'. Try another port." << std::endl;
+        return -1;
+    }
+    //bind fd of our socket of our server to an attached to an IP/port combination
+    if (bind(server_fd, (struct sockaddr *)&server_address, sizeof(server_address))  == -1)
+    {
+        std::cout << "Server could not be 'binded'. Try another port." << std::endl;
+        return -1;
+    }
+
+    // listen
+    if (listen(server_fd, 1) < 0)
+    {
+        std::cout << "Listen failed." << std::endl;
+        return -1;
+    }
+    std::cout << "Listening on port " << server_port << "." << std::endl;
+    return 0;
+}
+
+CommandDispatcher &Server::get_dispatcher()
+{
+    return (dispatcher);
+};
+
+bool Server::NickIsAlreadyRegistered(std::string nick) const
+{
+    return nick_clientUser.count(nick) > 0;
+}
+
+void Server::NicknamesHistory_storing(std::string previouseNickname, ClientUser &clientUser)
+{
+    nicknames_history[previouseNickname] = &clientUser;
+};
+
+void Server::Nick_ClientUser_mapping(ClientUser &clientUser)
+{
+    nick_clientUser[clientUser.getNickname()] = &clientUser;
+};
+
+void Server::printRegisteredNicks()
+{
+    std::cout << "Registered nicknames: ";
+
+    for (const auto& [nick, client] : nick_clientUser)
+        std::cout << nick << " ";
+    std::cout << std::endl;
+}

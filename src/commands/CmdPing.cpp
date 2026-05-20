@@ -1,0 +1,63 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CmdPing.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: student <student>                          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/09 18:59:40 by student           #+#    #+#             */
+/*   Updated: 2026/04/23 11:05:06 by student          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+//CmdPing.cpp
+
+#include "CmdPing.hpp"
+#include "server.hpp" // <fcntl.h> - <iostream> - <netinet/in.h> - <cstring> - <sys/types.h> - <sys/socket.h> - <unistd.h> - <unordered_map>
+/* server.hpp:
+"poll.hpp"                 // <poll.h>   - <vector>
+"commandDispatcher.hpp"    // <map>      - <string>
+"Channel.hpp"              // <set>      - <string> - <vector> - <unordered_set>
+"ClientUser.hpp"           // <string>
+*/
+
+//client PINGs to check presence of active connection 
+//Send PONG to tell client, we are still in a valid relationship
+void CmdPing::execute(Server&, ClientUser& clientUser, const ParsedCommand& cmd)
+{
+    (void) cmd;
+    clientUser.get_outputBuffer().append("PONG :");
+};
+
+/*
+// 4.6.2 Ping message
+
+//       Command: PING
+//    Parameters: <server1> [<server2>]
+
+//    The PING message is used to test the presence of an active client at
+//    the other end of the connection.  A PING message is sent at regular
+//    intervals if no other activity detected coming from a connection.  If
+//    a connection fails to respond to a PING command within a set amount
+//    of time, that connection is closed.
+
+//    Any client which receives a PING message must respond to <server1>
+//    (server which sent the PING message out) as quickly as possible with
+//    an appropriate PONG message to indicate it is still there and alive.
+//    Servers should not respond to PING commands but rely on PINGs from
+//    the other end of the connection to indicate the connection is alive.
+//    If the <server2> parameter is specified, the PING message gets
+//    forwarded there.
+
+//    Numeric Replies:
+
+//            ERR_NOORIGIN                    ERR_NOSUCHSERVER
+
+//    Examples:
+
+//    PING tolsun.oulu.fi             ; server sending a PING message to
+//                                    another server to indicate it is still
+//                                    alive.
+
+//    PING WiZ                        ; PING message being sent to nick WiZ
+*/
